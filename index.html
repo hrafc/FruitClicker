@@ -7,6 +7,12 @@
 <title>Fruit Clicker – 10 Levelů</title>
 
 <style>
+*{
+  user-select:none;
+  -webkit-user-select:none;
+  -ms-user-select:none;
+}
+
 body{
   margin:0;
   font-family:'Segoe UI',system-ui,Roboto,Arial,sans-serif;
@@ -145,7 +151,6 @@ body{
   <div class="top-left">🪙 <span id="coinsText">0</span></div>
   <div class="menu-btn" id="menuBtn">🏠 Menu</div>
 
-  <!-- GAME -->
   <div id="gameScreen">
     <h1>🍓 Fruit Clicker</h1>
     <div id="levelText"></div>
@@ -165,7 +170,6 @@ body{
     </div>
   </div>
 
-  <!-- MENU -->
   <div id="menuScreen" class="menu-screen">
     <h2>📋 Výběr levelu</h2>
     <button class="reset-btn" id="resetBtn">RESET</button>
@@ -173,7 +177,6 @@ body{
   </div>
 </div>
 
-<!-- RESET MODAL -->
 <div class="reset-modal" id="resetModal">
   <div class="reset-box">
     <h3>Opravdu resetovat?</h3>
@@ -183,6 +186,8 @@ body{
 </div>
 
 <script>
+document.addEventListener("dragstart", e => e.preventDefault());
+
 const levels=[
  {name:'Sušenka',emoji:'🍪',need:3000},
  {name:'Meloun',emoji:'🍉',need:10000},
@@ -249,7 +254,8 @@ qs("menuBtn").onclick=()=>{
   const d=document.createElement("div");
   d.className="level-item"+(i>state.maxUnlocked?" locked":"");
   d.textContent=`Level ${i+1} – ${l.name}`;
-  if(i<=state.maxUnlocked)d.onclick=()=>{state.currentLevel=i;save();qs("menuScreen").style.display="none";qs("gameScreen").style.display="block";renderGame();}
+  if(i<=state.maxUnlocked)
+    d.onclick=()=>{state.currentLevel=i;save();qs("menuScreen").style.display="none";qs("gameScreen").style.display="block";renderGame();}
   qs("levelsList").appendChild(d);
  });
 };
@@ -263,6 +269,8 @@ renderGame();
 
 </body>
 </html>
+
+
 
 
 
