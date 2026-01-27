@@ -366,6 +366,24 @@ buyCoinMult.onclick=()=>{const p=coinMultPrice();if(p===null||state.coins<p)retu
 buyClickMult.onclick=()=>{const p=clickMultPrice();if(p===null||state.coins<p)return;state.coins-=p;state.clickMult++;state.clickMultBought++;save();renderGame();};
 
 renderGame();
+  const resetBtn = document.getElementById("resetBtn");
+const resetModal = document.getElementById("resetModal");
+const resetNo = document.getElementById("resetNo");
+const resetYes = document.getElementById("resetYes");
+
+resetBtn.onclick = () => {
+  resetModal.style.display = "flex";
+};
+
+resetNo.onclick = () => {
+  resetModal.style.display = "none";
+};
+
+resetYes.onclick = () => {
+  localStorage.removeItem("fruitClickerFinal");
+  location.reload();
+};
+
 </script>
 <script>
 if ("serviceWorker" in navigator) {
@@ -376,6 +394,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
