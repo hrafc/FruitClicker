@@ -3,220 +3,293 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
 <title>Fruit Clicker – 10 Levelů</title>
 
 <style>
 body{
   margin:0;
-  font-family:'Segoe UI',system-ui,Arial;
+  font-family:Segoe UI,system-ui,Roboto,Arial,sans-serif;
   background:radial-gradient(circle at top,#bbf7d0,#86efac,#4ade80);
   min-height:100vh;
   display:grid;
   place-items:center;
 }
 
-/* APP */
 .app{
   background:linear-gradient(180deg,#ffffff,#f0fdf4);
   width:min(620px,95vw);
   border-radius:28px;
-  padding:22px;
+  padding:24px;
   box-shadow:0 30px 60px rgba(0,0,0,.25);
   position:relative;
   text-align:center;
 }
 
-/* TOP */
 .top-left{
-  position:absolute;top:14px;left:18px;
-  background:#16a34a;color:white;
-  padding:8px 14px;border-radius:999px;
+  position:absolute;
+  top:14px;
+  left:18px;
+  background:#16a34a;
+  color:white;
+  padding:8px 14px;
+  border-radius:999px;
   font-weight:900;
 }
 
 .menu-btn{
-  position:absolute;top:14px;right:18px;
-  background:#22c55e;color:white;
-  padding:10px 16px;border-radius:999px;
-  font-weight:800;cursor:pointer;
+  position:absolute;
+  top:14px;
+  right:18px;
+  background:#22c55e;
+  color:white;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:800;
+  cursor:pointer;
 }
 
-/* GAME */
-.fruit{font-size:120px;cursor:pointer;user-select:none}
-.count{font-weight:700;margin:8px}
-.progress{height:16px;background:#dcfce7;border-radius:999px;overflow:hidden}
-.bar{height:100%;background:#22c55e;width:0%}
+h1{margin-top:40px}
+.level{font-size:20px;font-weight:800;color:#065f46}
 
-/* MENU */
-.menu-screen{display:none;text-align:left}
+.fruit{
+  font-size:120px;
+  cursor:pointer;
+  animation:float 3s ease-in-out infinite;
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+}
+
+/* LEVEL COMPLETE ANIMATION */
+.complete{
+  animation:completeAnim .6s ease;
+}
+@keyframes completeAnim{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.4) rotate(10deg)}
+  100%{transform:scale(1)}
+}
+
+.progress{
+  height:16px;
+  background:#dcfce7;
+  border-radius:999px;
+  overflow:hidden;
+  margin:10px 0;
+}
+.bar{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#22c55e,#86efac);
+}
+
+.upgrades{
+  margin-top:20px;
+  text-align:left;
+}
+.upgrade{
+  background:white;
+  padding:14px;
+  border-radius:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:10px;
+}
+.upgrade button{
+  background:#22c55e;
+  color:white;
+  border:none;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.menu-screen{display:none}
+
+.levels{
+  display:grid;
+  gap:12px;
+  margin-top:20px;
+}
 .level-item{
-  background:white;padding:14px;border-radius:16px;
-  display:flex;justify-content:space-between;
-  margin-top:10px;cursor:pointer;
+  padding:14px;
+  background:white;
+  border-radius:16px;
+  display:flex;
+  justify-content:space-between;
+  cursor:pointer;
 }
 .level-item.locked{opacity:.4;cursor:not-allowed}
 
 /* RESET */
 .reset-btn{
-  background:#e53935;color:white;
-  border:none;border-radius:14px;
-  padding:10px 24px;font-weight:900;
-  cursor:pointer;margin:10px auto;
+  margin:20px auto;
+  background:#ef4444;
+  color:white;
+  padding:12px 30px;
+  border:none;
+  border-radius:16px;
+  font-weight:800;
+  cursor:pointer;
 }
 
-/* RESET MODAL */
 .reset-modal{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;align-items:center;justify-content:center;
-  z-index:999;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
 }
 .reset-box{
-  background:white;padding:30px;border-radius:20px;
-  text-align:center;
+  background:white;
+  padding:26px;
+  border-radius:20px;
 }
+.reset-actions{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+}
+.reset-yes{background:#ef4444;color:white}
+.reset-no{background:#22c55e;color:white}
 .reset-actions button{
-  padding:10px 22px;border:none;
-  border-radius:14px;font-weight:800;
-  cursor:pointer;color:white;margin:6px;
-}
-.reset-no{background:#22c55e}
-.reset-yes{background:#e53935}
-
-/* LEVEL COMPLETE */
-.level-complete{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;align-items:center;justify-content:center;
-  z-index:1000;
-}
-.level-complete-box{
-  background:white;padding:40px 50px;
-  border-radius:30px;
-  font-size:32px;font-weight:900;
-  color:#16a34a;
-  animation:pop .6s ease;
-}
-@keyframes pop{
-  0%{transform:scale(.6);opacity:0}
-  60%{transform:scale(1.15)}
-  100%{transform:scale(1)}
+  border:none;
+  padding:10px 22px;
+  border-radius:14px;
+  font-weight:800;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 <div class="app">
-  <div class="top-left">🪙 <span id="coinsText">0</span></div>
-  <div class="menu-btn" id="menuBtn">🏠 Menu</div>
+<div class="top-left">🪙 <span id="coins">0</span></div>
+<div class="menu-btn" id="menuBtn">🏠 Menu</div>
 
-  <div id="gameScreen">
-    <h1>🍓 Fruit Clicker</h1>
-    <div id="levelText"></div>
-    <div class="fruit" id="fruit"></div>
-    <div class="count" id="countText"></div>
-    <div class="progress"><div class="bar" id="bar"></div></div>
-    <div id="reqText"></div>
-  </div>
+<!-- GAME -->
+<div id="game">
+<h1>🍓 Fruit Clicker</h1>
+<div class="level" id="levelText"></div>
+<div class="fruit" id="fruit"></div>
+<div id="count"></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
 
-  <div id="menuScreen" class="menu-screen">
-    <h2>📋 Výběr levelu</h2>
-    <button class="reset-btn" id="resetBtn">RESET</button>
-    <div id="levelsList"></div>
-  </div>
+<div class="upgrades">
+<h3>⬆️ Upgrady</h3>
+<div class="upgrade">
+<div>Coin Multiplier</div>
+<button id="buyCoin">Koupit</button>
+</div>
+<div class="upgrade">
+<div>Click Multiplier</div>
+<button id="buyClick">Koupit</button>
+</div>
+</div>
+</div>
+
+<!-- MENU -->
+<div id="menu" class="menu-screen">
+<h2>📋 Výběr levelu</h2>
+<button class="reset-btn" id="resetBtn">RESET</button>
+<div class="levels" id="levels"></div>
+</div>
 </div>
 
 <!-- RESET MODAL -->
 <div class="reset-modal" id="resetModal">
-  <div class="reset-box">
-    <h3>Are you sure?</h3>
-    <div class="reset-actions">
-      <button class="reset-no" id="resetNo">NO</button>
-      <button class="reset-yes" id="resetYes">YES</button>
-    </div>
-  </div>
+<div class="reset-box">
+<h3>Are you sure?</h3>
+<div class="reset-actions">
+<button class="reset-no" id="resetNo">NO</button>
+<button class="reset-yes" id="resetYes">YES</button>
 </div>
-
-<!-- LEVEL COMPLETE -->
-<div class="level-complete" id="levelComplete">
-  <div class="level-complete-box">🎉 LEVEL COMPLETE!</div>
+</div>
 </div>
 
 <script>
 const levels=[
- {name:'Sušenka',emoji:'🍪',need:3000},
- {name:'Meloun',emoji:'🍉',need:10000},
- {name:'Jablko',emoji:'🍎',need:20000},
- {name:'Banán',emoji:'🍌',need:35000},
- {name:'Ananas',emoji:'🍍',need:50000},
- {name:'Pomeranč',emoji:'🍊',need:100000},
- {name:'Okurka',emoji:'🥒',need:250000},
- {name:'Rajče',emoji:'🍅',need:500000},
- {name:'Broskev',emoji:'🍑',need:750000},
- {name:'Švestka',emoji:'🍇',need:1000000}
+{name:"Sušenka",emoji:"🍪",need:3000},
+{name:"Meloun",emoji:"🍉",need:10000},
+{name:"Jablko",emoji:"🍎",need:20000},
+{name:"Banán",emoji:"🍌",need:35000},
+{name:"Ananas",emoji:"🍍",need:50000}
 ];
 
-let state=JSON.parse(localStorage.getItem("fruit"))||{
- currentLevel:0,maxUnlocked:0,
- clicks:Array(levels.length).fill(0),
- coins:0
+let state=JSON.parse(localStorage.getItem("fc"))||{
+level:0,unlocked:0,clicks:0,coins:0,coinMult:1,clickMult:1
 };
 
-const $=id=>document.getElementById(id);
+const fruit=document.getElementById("fruit");
+const levelText=document.getElementById("levelText");
+const count=document.getElementById("count");
+const bar=document.getElementById("bar");
+const coins=document.getElementById("coins");
+const game=document.getElementById("game");
+const menu=document.getElementById("menu");
 
-function save(){localStorage.setItem("fruit",JSON.stringify(state));}
+function save(){localStorage.setItem("fc",JSON.stringify(state));}
 
-function renderGame(){
- const i=state.currentLevel;
- if(i>=levels.length)return;
- $("coinsText").textContent=state.coins;
- $("levelText").textContent=`Level ${i+1} – ${levels[i].name}`;
- $("fruit").textContent=levels[i].emoji;
- $("countText").textContent=`Kliky: ${state.clicks[i]}`;
- $("reqText").textContent=`Potřeba: ${levels[i].need}`;
- $("bar").style.width=Math.min(100,state.clicks[i]/levels[i].need*100)+"%";
+function render(){
+const l=levels[state.level];
+levelText.textContent=`Level ${state.level+1} – ${l.name}`;
+fruit.textContent=l.emoji;
+count.textContent=`Kliky: ${state.clicks}`;
+coins.textContent=state.coins;
+bar.style.width=Math.min(100,state.clicks/l.need*100)+"%";
 }
+
+fruit.onclick=()=>{
+state.clicks+=state.clickMult;
+state.coins+=state.coinMult;
+if(state.clicks>=levels[state.level].need){
+fruit.classList.add("complete");
+setTimeout(()=>fruit.classList.remove("complete"),600);
+state.unlocked=Math.max(state.unlocked,state.level+1);
+state.level=Math.min(state.level+1,levels.length-1);
+state.clicks=0;
+}
+save();render();
+};
+
+document.getElementById("buyCoin").onclick=()=>{state.coins>=100&&(state.coins-=100,state.coinMult++,save(),render())};
+document.getElementById("buyClick").onclick=()=>{state.coins>=200&&(state.coins-=200,state.clickMult++,save(),render())};
+
+document.getElementById("menuBtn").onclick=()=>{
+game.style.display=game.style.display==="none"?"block":"none";
+menu.style.display=menu.style.display==="block"?"none":"block";
+renderMenu();
+};
 
 function renderMenu(){
- $("levelsList").innerHTML="";
- levels.forEach((l,i)=>{
-  const d=document.createElement("div");
-  d.className="level-item"+(i>state.maxUnlocked?" locked":"");
-  d.innerHTML=`Level ${i+1} – ${l.name}<span>${l.emoji}</span>`;
-  if(i<=state.maxUnlocked)d.onclick=()=>{state.currentLevel=i;save();showGame();};
-  $("levelsList").appendChild(d);
- });
+const list=document.getElementById("levels");
+list.innerHTML="";
+levels.forEach((l,i)=>{
+const d=document.createElement("div");
+d.className="level-item"+(i>state.unlocked?" locked":"");
+d.innerHTML=`Level ${i+1} – ${l.name}<span>${l.emoji}</span>`;
+if(i<=state.unlocked)d.onclick=()=>{state.level=i;state.clicks=0;save();menu.style.display="none";game.style.display="block";render()};
+list.appendChild(d);
+});
 }
 
-function showMenu(){ $("gameScreen").style.display="none"; $("menuScreen").style.display="block"; renderMenu();}
-function showGame(){ $("menuScreen").style.display="none"; $("gameScreen").style.display="block"; renderGame();}
+document.getElementById("resetBtn").onclick=()=>resetModal.style.display="flex";
+resetNo.onclick=()=>resetModal.style.display="none";
+resetYes.onclick=()=>{localStorage.removeItem("fc");location.reload()};
 
-$("menuBtn").onclick=()=> $("menuScreen").style.display==="block"?showGame():showMenu();
-
-$("fruit").onclick=()=>{
- const i=state.currentLevel;
- state.clicks[i]++; state.coins++;
- if(state.clicks[i]>=levels[i].need){
-  $("levelComplete").style.display="flex";
-  setTimeout(()=>{
-   $("levelComplete").style.display="none";
-   state.maxUnlocked=Math.max(state.maxUnlocked,i+1);
-   state.currentLevel++;
-   save(); renderGame();
-  },1200);
-  save(); return;
- }
- save(); renderGame();
-};
-
-$("resetBtn").onclick=()=>$("resetModal").style.display="flex";
-$("resetNo").onclick=()=>$("resetModal").style.display="none";
-$("resetYes").onclick=()=>{localStorage.removeItem("fruit");location.reload();};
-
-renderGame();
+render();
 </script>
+
 </body>
 </html>
+
+
 
 
 
