@@ -1,399 +1,243 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="manifest" href="manifest.json">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fruit Clicker – 10 Leveůl</title>
-  <style>
-    body{
-      margin:0;
-      font-family:'Segoe UI',system-ui,Roboto,Arial,sans-serif;
-      background:radial-gradient(circle at top,#bbf7d0,#86efac,#4ade80);
-      min-height:100vh;
-      display:grid;
-      place-items:center;
-    }
+<title>Fruit Clicker – 10 Levelů</title>
 
-    .app{
-      /* RESET BUTTON */
-.reset-btn {
-  margin: 20px auto 0;
-  display: block;
-  background: #e53935;
-  color: white;
-  border: none;
-  padding: 12px 30px;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0,0,0,.25);
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',system-ui,Roboto,Arial,sans-serif;
+  background:radial-gradient(circle at top,#bbf7d0,#86efac,#4ade80);
+  min-height:100vh;
+  display:grid;
+  place-items:center;
 }
 
-.reset-btn:hover {
-  background: #c62828;
+.app{
+  background:linear-gradient(180deg,#ffffff,#f0fdf4);
+  width:min(620px,95vw);
+  border-radius:28px;
+  padding:22px;
+  box-shadow:0 30px 60px rgba(0,0,0,.25);
+  position:relative;
+  text-align:center;
 }
 
-/* MODAL BACKGROUND */
-.reset-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.55);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
+.top-left{
+  position:absolute;
+  top:14px;
+  left:18px;
+  font-weight:900;
+  background:#16a34a;
+  color:white;
+  padding:8px 14px;
+  border-radius:999px;
 }
 
-/* MODAL BOX */
-.reset-box {
-  background: white;
-  padding: 26px 30px;
-  border-radius: 20px;
-  text-align: center;
-  width: 280px;
-  box-shadow: 0 20px 40px rgba(0,0,0,.35);
+.menu-btn{
+  position:absolute;
+  top:14px;
+  right:18px;
+  background:#22c55e;
+  color:white;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:800;
+  cursor:pointer;
 }
 
-.reset-box h3 {
-  margin-bottom: 20px;
+.menu-screen{display:none}
+.levels{display:grid;gap:12px;margin-top:20px}
+
+.level-item{
+  background:white;
+  padding:14px;
+  border-radius:16px;
+  display:flex;
+  justify-content:space-between;
+  font-weight:700;
+  cursor:pointer;
 }
 
-/* MODAL BUTTONS */
-.reset-actions {
-  display: flex;
-  gap: 14px;
-  justify-content: center;
+.level-item.locked{opacity:.4;cursor:not-allowed}
+
+/* ===== RESET ===== */
+.reset-btn{
+  margin-top:20px;
+  background:#e53935;
+  color:white;
+  border:none;
+  padding:12px 30px;
+  border-radius:16px;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-.reset-no {
-  background: #2ecc71;
-  border: none;
-  padding: 10px 22px;
-  border-radius: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  color: white;
+.reset-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
 }
 
-.reset-yes {
-  background: #e53935;
-  border: none;
-  padding: 10px 22px;
-  border-radius: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  color: white;
+.reset-box{
+  background:white;
+  padding:26px;
+  border-radius:20px;
+  width:280px;
+  text-align:center;
 }
 
-      background:linear-gradient(180deg,#ffffff,#f0fdf4);
-      width:min(620px,95vw);
-      border-radius:28px;
-      padding:22px;
-      box-shadow:0 30px 60px rgba(0,0,0,.25);
-      position:relative;
-      text-align:center;
-      animation:popIn .6s ease;
-    }
+.reset-actions{
+  display:flex;
+  gap:14px;
+  justify-content:center;
+}
 
-    @keyframes popIn{
-      from{transform:scale(.9);opacity:0}
-      to{transform:scale(1);opacity:1}
-    }
+.reset-no{
+  background:#22c55e;
+  border:none;
+  padding:10px 22px;
+  border-radius:14px;
+  color:white;
+  font-weight:bold;
+}
 
-    .top-left{
-      position:absolute;
-      top:14px;
-      left:18px;
-      font-weight:900;
-      font-size:18px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-      background:#16a34a;
-      color:white;
-      padding:8px 14px;
-      border-radius:999px;
-      box-shadow:0 10px 20px rgba(0,0,0,.2);
-      z-index:2;
-    }
-
-    .menu-btn{
-      position:absolute;top:14px;right:18px;
-      display:flex;align-items:center;gap:8px;
-      background:#22c55e;color:white;
-      padding:10px 16px;border-radius:999px;
-      font-weight:800;cursor:pointer;
-      box-shadow:0 10px 20px rgba(0,0,0,.25);
-      transition:transform .15s ease, box-shadow .15s ease
-    }
-    .menu-btn:hover{transform:translateY(-2px);box-shadow:0 14px 26px rgba(0,0,0,.3)}
-
-    h1{margin:10px 0 6px;font-size:32px}
-    .level{font-size:22px;font-weight:800;margin-bottom:8px;color:#065f46}
-
-    .fruit{
-      font-size:120px;
-      cursor:pointer;
-      user-select:none;
-      transition:transform .08s ease, filter .08s ease;
-      animation:float 3s ease-in-out infinite
-    }
-    .fruit:active{transform:scale(.9);filter:brightness(1.15)}
-
-    @keyframes float{
-      0%,100%{transform:translateY(0)}
-      50%{transform:translateY(-10px)}
-    }
-
-    .count{font-size:18px;margin:8px 0;font-weight:600}
-
-    .progress{
-      height:16px;
-      background:#dcfce7;
-      border-radius:999px;
-      overflow:hidden;
-      margin:10px 0
-    }
-    .bar{
-      height:100%;
-      width:0%;
-      background:linear-gradient(90deg,#22c55e,#4ade80,#86efac);
-      transition:width .15s ease
-    }
-
-    .req{color:#166534;font-size:14px;margin-bottom:10px}
-
-    .upgrades{margin-top:16px;text-align:left}
-    .upgrades h3{margin-bottom:6px}
-
-    .upgrade{
-      background:white;
-      border-radius:18px;
-      padding:14px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-top:12px;
-      box-shadow:0 10px 20px rgba(0,0,0,.15);
-      transition:transform .15s ease
-    }
-    .upgrade:hover{transform:translateY(-2px)}
-
-    .upgrade button{
-      background:linear-gradient(180deg,#22c55e,#16a34a);
-      color:white;border:none;border-radius:999px;
-      padding:10px 16px;font-weight:800;cursor:pointer
-    }
-    .upgrade button:disabled{opacity:.4;cursor:not-allowed}
-
-    .menu-screen{display:none;text-align:left;animation:fade .3s ease}
-    @keyframes fade{from{opacity:0}to{opacity:1}}
-
-    .levels{display:grid;gap:12px}
-    .level-item{
-      padding:14px;
-      border-radius:16px;
-      background:white;
-      display:flex;justify-content:space-between;align-items:center;
-      cursor:pointer;font-weight:700;
-      box-shadow:0 8px 16px rgba(0,0,0,.15);
-      transition:transform .15s ease
-    }
-    .level-item:hover{transform:translateY(-2px)}
-    .level-item.locked{opacity:.4;cursor:not-allowed}
-    .level-item span{font-size:24px}
+.reset-yes{
+  background:#e53935;
+  border:none;
+  padding:10px 22px;
+  border-radius:14px;
+  color:white;
+  font-weight:bold;
+}
 </style>
 </head>
+
 <body>
+
 <div class="app">
   <div class="top-left">🪙 <span id="coinsText">0</span></div>
-  <div class="menu-btn" id="menuBtn"><span>🏠</span> Menu</div>
+  <div class="menu-btn" id="menuBtn">🏠 Menu</div>
 
   <div id="gameScreen">
     <h1>🍓 Fruit Clicker</h1>
-    <div class="level" id="levelText"></div>
-    <div class="fruit" id="fruit"></div>
-    <div class="count" id="countText"></div>
-    <div class="progress"><div class="bar" id="bar"></div></div>
-    <div class="req" id="reqText"></div>
-
-    <div class="upgrades">
-      <h3>⬆️ Upgrady</h3>
-
-      <div class="upgrade">
-        <div>
-          <strong>Coin Multiplier</strong><br>
-          <span id="coinMultText"></span><br>
-          <small id="coinMultCost"></small>
-        </div>
-        <button id="buyCoinMult">Koupit</button>
-      </div>
-
-      <div class="upgrade">
-        <div>
-          <strong>Click Multiplier</strong><br>
-          <span id="clickMultText"></span><br>
-          <small id="clickMultCost"></small>
-        </div>
-        <button id="buyClickMult">Koupit</button>
-      </div>
-    </div>
+    <h2 id="levelText"></h2>
+    <div id="fruit" style="font-size:100px;cursor:pointer"></div>
+    <div id="countText"></div>
   </div>
 
   <div id="menuScreen" class="menu-screen">
-    <h2 style="margin-top:40px">📋 Výběr levelu</h2>
-    <button class="reset-btn" id="resetBtn">RESET</button>
+    <h2>📋 Výběr levelu</h2>
+    <button id="resetBtn" class="reset-btn">RESET</button>
+    <div class="levels" id="levelsList"></div>
+  </div>
+</div>
 
-<div class="reset-modal" id="resetModal">
+<!-- RESET MODAL -->
+<div id="resetModal" class="reset-modal">
   <div class="reset-box">
     <h3>Are you sure about that ??</h3>
     <div class="reset-actions">
-      <button class="reset-no" id="resetNo">NO</button>
-      <button class="reset-yes" id="resetYes">YES</button>
+      <button id="resetNo" class="reset-no">NO</button>
+      <button id="resetYes" class="reset-yes">YES</button>
     </div>
-  </div>
-</div>
-
-    <div id="menuScreen" class="menu-screen">
-  <h2 style="margin-top:40px">📋 Výběr levelů</h2>
-
-  <!-- RESET BUTTON -->
-  <button id="resetBtn" class="reset-btn">RESET</button>
-
-  <!-- RESET MODAL -->
-  <div id="resetModal" class="modal hidden">
-    <div class="modal-box">
-      <h3>Are you sure about that ??</h3>
-      <div class="modal-actions">
-        <button id="resetNo" class="btn-no">NO</button>
-        <button id="resetYes" class="btn-yes">YES</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="levels" id="levelsList"></div>
-</div>
-
-    <div class="levels" id="levelsList"></div>
   </div>
 </div>
 
 <script>
 const levels=[
-  {name:'Sušenka',emoji:'🍪',need:3000},
-  {name:'Meloun',emoji:'🍉',need:10000},
-  {name:'Jablko',emoji:'🍎',need:20000},
-  {name:'Banán',emoji:'🍌',need:35000},
-  {name:'Ananas',emoji:'🍍',need:50000},
-  {name:'Pomeranč',emoji:'🍊',need:100000},
-  {name:'Okurka',emoji:'🥒',need:250000},
-  {name:'Rajče',emoji:'🍅',need:500000},
-  {name:'Broskev',emoji:'🍑',need:750000},
-  {name:'Švestka',emoji:'🍇',need:1000000}
+ {name:'Sušenka',emoji:'🍪',need:3000},
+ {name:'Meloun',emoji:'🍉',need:10000},
+ {name:'Jablko',emoji:'🍎',need:20000},
+ {name:'Banán',emoji:'🍌',need:35000},
+ {name:'Ananas',emoji:'🍍',need:50000},
+ {name:'Pomeranč',emoji:'🍊',need:100000},
+ {name:'Okurka',emoji:'🥒',need:250000},
+ {name:'Rajče',emoji:'🍅',need:500000},
+ {name:'Broskev',emoji:'🍑',need:750000},
+ {name:'Švestka',emoji:'🍇',need:1000000}
 ];
 
-let state = JSON.parse(localStorage.getItem('fruitClickerFinal')) || {
-  currentLevel:0,
-  maxUnlocked:0,
-  clicks:Array(levels.length).fill(0),
-  coins:0,
-  coinMult:1,
-  coinMultBought:0,
-  clickMult:1,
-  clickMultBought:0
+let state=JSON.parse(localStorage.getItem('fruitClickerFinal'))||{
+ currentLevel:0,maxUnlocked:0,clicks:Array(10).fill(0),coins:0
 };
 
-const coinsText=document.getElementById('coinsText');
-const levelText=document.getElementById('levelText');
-const fruit=document.getElementById('fruit');
-const countText=document.getElementById('countText');
-const reqText=document.getElementById('reqText');
-const bar=document.getElementById('bar');
-const menuBtn=document.getElementById('menuBtn');
-const gameScreen=document.getElementById('gameScreen');
-const menuScreen=document.getElementById('menuScreen');
-const levelsList=document.getElementById('levelsList');
+const coinsText=coinsText=document.getElementById("coinsText");
+const levelText=document.getElementById("levelText");
+const fruit=document.getElementById("fruit");
+const countText=document.getElementById("countText");
+const menuBtn=document.getElementById("menuBtn");
+const gameScreen=document.getElementById("gameScreen");
+const menuScreen=document.getElementById("menuScreen");
+const levelsList=document.getElementById("levelsList");
 
-const coinMultText=document.getElementById('coinMultText');
-const coinMultCost=document.getElementById('coinMultCost');
-const buyCoinMult=document.getElementById('buyCoinMult');
-const clickMultText=document.getElementById('clickMultText');
-const clickMultCost=document.getElementById('clickMultCost');
-const buyClickMult=document.getElementById('buyClickMult');
-
-function save(){localStorage.setItem('fruitClickerFinal',JSON.stringify(state));}
-function coinMultPrice(){return state.coinMultBought>=10?null:500*Math.pow(5,state.coinMultBought);} 
-function clickMultPrice(){return state.clickMultBought>=10?null:1000*Math.pow(5,state.clickMultBought);} 
+function save(){localStorage.setItem("fruitClickerFinal",JSON.stringify(state));}
 
 function renderGame(){
-  coinsText.textContent=state.coins;
-
-  coinMultText.textContent=`${state.coinMult}× (1 klik = ${state.coinMult} coinů)`;
-  const cp=coinMultPrice();
-  if(cp===null){coinMultCost.textContent='MAX';buyCoinMult.disabled=true;} else {coinMultCost.textContent='Cena: '+cp;buyCoinMult.disabled=state.coins<cp;}
-
-  clickMultText.textContent=`${state.clickMult}× (1 klik = ${state.clickMult} kliků)`;
-  const kp=clickMultPrice();
-  if(kp===null){clickMultCost.textContent='MAX';buyClickMult.disabled=true;} else {clickMultCost.textContent='Cena: '+kp;buyClickMult.disabled=state.coins<kp;}
-
-  const i=state.currentLevel;
-  if(i>=levels.length){levelText.textContent='🎉 HRA DOKONČENA!';fruit.textContent='🏆';countText.textContent='Doklikal jsi celou hru 💪';reqText.textContent='';bar.style.width='100%';return;}
-  const l=levels[i],c=state.clicks[i];
-  levelText.textContent=`Level ${i+1} – ${l.name}`;
-  fruit.textContent=l.emoji;
-  countText.textContent=`Kliky: ${c}`;
-  reqText.textContent=`Potřeba kliknout: ${l.need}`;
-  bar.style.width=Math.min(100,(c/l.need)*100)+'%';
+ const l=levels[state.currentLevel];
+ levelText.textContent=`Level ${state.currentLevel+1} – ${l.name}`;
+ fruit.textContent=l.emoji;
+ countText.textContent=`Kliky: ${state.clicks[state.currentLevel]}`;
+ coinsText.textContent=state.coins;
 }
-
-function renderMenu(){save();levelsList.innerHTML='';levels.forEach((l,i)=>{const d=document.createElement('div');d.className='level-item'+(i>state.maxUnlocked?' locked':'');d.innerHTML=`<div>Level ${i+1} – ${l.name}</div><span>${l.emoji}</span>`;if(i<=state.maxUnlocked){d.onclick=()=>{state.currentLevel=i;save();showGame();};}levelsList.appendChild(d);});}
-function showMenu(){gameScreen.style.display='none';menuScreen.style.display='block';renderMenu();}
-function showGame(){menuScreen.style.display='none';gameScreen.style.display='block';renderGame();}
-menuBtn.onclick=()=>{menuScreen.style.display==='block'?showGame():showMenu();};
 
 fruit.onclick=()=>{
-  const i=state.currentLevel;
-  if(i>=levels.length) return;
-  state.clicks[i]+=state.clickMult;
-  state.coins+=state.coinMult;
-  if(state.clicks[i]>=levels[i].need){state.maxUnlocked=Math.max(state.maxUnlocked,i+1);state.currentLevel=Math.min(i+1,levels.length);} 
-  save();renderGame();
+ state.clicks[state.currentLevel]++;
+ state.coins++;
+ if(state.clicks[state.currentLevel]>=levels[state.currentLevel].need){
+   state.maxUnlocked=Math.max(state.maxUnlocked,state.currentLevel+1);
+ }
+ save();renderGame();
 };
 
-buyCoinMult.onclick=()=>{const p=coinMultPrice();if(p===null||state.coins<p)return;state.coins-=p;state.coinMult++;state.coinMultBought++;save();renderGame();};
-buyClickMult.onclick=()=>{const p=clickMultPrice();if(p===null||state.coins<p)return;state.coins-=p;state.clickMult++;state.clickMultBought++;save();renderGame();};
+function renderMenu(){
+ levelsList.innerHTML="";
+ levels.forEach((l,i)=>{
+   const d=document.createElement("div");
+   d.className="level-item"+(i>state.maxUnlocked?" locked":"");
+   d.innerHTML=`Level ${i+1} – ${l.name} <span>${l.emoji}</span>`;
+   if(i<=state.maxUnlocked)d.onclick=()=>{state.currentLevel=i;save();showGame();};
+   levelsList.appendChild(d);
+ });
+}
+
+function showMenu(){gameScreen.style.display="none";menuScreen.style.display="block";renderMenu();}
+function showGame(){menuScreen.style.display="none";gameScreen.style.display="block";renderGame();}
+
+menuBtn.onclick=()=>menuScreen.style.display==="block"?showGame():showMenu();
+
+/* RESET */
+const resetBtn=document.getElementById("resetBtn");
+const resetModal=document.getElementById("resetModal");
+const resetNo=document.getElementById("resetNo");
+const resetYes=document.getElementById("resetYes");
+
+resetBtn.onclick=()=>resetModal.style.display="flex";
+resetNo.onclick=()=>resetModal.style.display="none";
+resetYes.onclick=()=>{
+ localStorage.removeItem("fruitClickerFinal");
+ location.reload();
+};
 
 renderGame();
-  const resetBtn = document.getElementById("resetBtn");
-const resetModal = document.getElementById("resetModal");
-const resetNo = document.getElementById("resetNo");
-const resetYes = document.getElementById("resetYes");
-
-resetBtn.onclick = () => {
-  resetModal.style.display = "flex";
-};
-
-resetNo.onclick = () => {
-  resetModal.style.display = "none";
-};
-
-resetYes.onclick = () => {
-  localStorage.removeItem("fruitClickerFinal");
-  location.reload();
-};
-
 </script>
+
 <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
+if("serviceWorker" in navigator){
+ navigator.serviceWorker.register("sw.js");
 }
 </script>
-
 
 </body>
 </html>
+
 
 
 
