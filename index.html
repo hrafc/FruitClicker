@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="manifest.json">
 <title>Fruit Clicker – 10 Levelů</title>
 
 <style>
 body{
   margin:0;
-  font-family:'Segoe UI',system-ui,Roboto,Arial,sans-serif;
+  font-family:'Segoe UI',system-ui,Arial;
   background:radial-gradient(circle at top,#bbf7d0,#86efac,#4ade80);
   min-height:100vh;
   display:grid;
@@ -29,107 +28,80 @@ body{
 
 /* TOP */
 .top-left{
-  position:absolute;
-  top:14px;
-  left:18px;
-  background:#16a34a;
-  color:white;
-  padding:8px 14px;
-  border-radius:999px;
+  position:absolute;top:14px;left:18px;
+  background:#16a34a;color:white;
+  padding:8px 14px;border-radius:999px;
   font-weight:900;
 }
 
 .menu-btn{
-  position:absolute;
-  top:14px;
-  right:18px;
-  background:#22c55e;
-  color:white;
-  padding:10px 16px;
-  border-radius:999px;
-  cursor:pointer;
-  font-weight:800;
+  position:absolute;top:14px;right:18px;
+  background:#22c55e;color:white;
+  padding:10px 16px;border-radius:999px;
+  font-weight:800;cursor:pointer;
 }
 
 /* GAME */
-.fruit{
-  font-size:120px;
-  cursor:pointer;
-}
-
-.progress{
-  height:16px;
-  background:#dcfce7;
-  border-radius:999px;
-  overflow:hidden;
-}
-
-.bar{
-  height:100%;
-  background:linear-gradient(90deg,#22c55e,#4ade80);
-  width:0%;
-}
+.fruit{font-size:120px;cursor:pointer;user-select:none}
+.count{font-weight:700;margin:8px}
+.progress{height:16px;background:#dcfce7;border-radius:999px;overflow:hidden}
+.bar{height:100%;background:#22c55e;width:0%}
 
 /* MENU */
-.menu-screen{display:none}
-
-.levels{
-  display:grid;
-  gap:12px;
-}
-
+.menu-screen{display:none;text-align:left}
 .level-item{
-  background:white;
-  padding:14px;
-  border-radius:16px;
-  display:flex;
-  justify-content:space-between;
-  cursor:pointer;
+  background:white;padding:14px;border-radius:16px;
+  display:flex;justify-content:space-between;
+  margin-top:10px;cursor:pointer;
 }
-
-.level-item.locked{
-  opacity:.4;
-  cursor:not-allowed;
-}
+.level-item.locked{opacity:.4;cursor:not-allowed}
 
 /* RESET */
 .reset-btn{
-  margin:20px auto;
-  display:block;
-  background:#e53935;
-  color:white;
-  border:none;
-  padding:12px 30px;
-  border-radius:16px;
-  font-weight:bold;
-  cursor:pointer;
+  background:#e53935;color:white;
+  border:none;border-radius:14px;
+  padding:10px 24px;font-weight:900;
+  cursor:pointer;margin:10px auto;
 }
 
+/* RESET MODAL */
 .reset-modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  display:none;
-  align-items:center;
-  justify-content:center;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;align-items:center;justify-content:center;
   z-index:999;
 }
-
 .reset-box{
-  background:white;
-  padding:26px;
-  border-radius:20px;
+  background:white;padding:30px;border-radius:20px;
   text-align:center;
 }
-
-.reset-actions{
-  display:flex;
-  gap:14px;
-  justify-content:center;
+.reset-actions button{
+  padding:10px 22px;border:none;
+  border-radius:14px;font-weight:800;
+  cursor:pointer;color:white;margin:6px;
 }
+.reset-no{background:#22c55e}
+.reset-yes{background:#e53935}
 
-.reset-no{background:#2ecc71;color:white;border:none;padding:10px 22px;border-radius:14px}
-.reset-yes{background:#e53935;color:white;border:none;padding:10px 22px;border-radius:14px}
+/* LEVEL COMPLETE */
+.level-complete{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;align-items:center;justify-content:center;
+  z-index:1000;
+}
+.level-complete-box{
+  background:white;padding:40px 50px;
+  border-radius:30px;
+  font-size:32px;font-weight:900;
+  color:#16a34a;
+  animation:pop .6s ease;
+}
+@keyframes pop{
+  0%{transform:scale(.6);opacity:0}
+  60%{transform:scale(1.15)}
+  100%{transform:scale(1)}
+}
 </style>
 </head>
 
@@ -142,7 +114,7 @@ body{
     <h1>🍓 Fruit Clicker</h1>
     <div id="levelText"></div>
     <div class="fruit" id="fruit"></div>
-    <div id="countText"></div>
+    <div class="count" id="countText"></div>
     <div class="progress"><div class="bar" id="bar"></div></div>
     <div id="reqText"></div>
   </div>
@@ -150,14 +122,14 @@ body{
   <div id="menuScreen" class="menu-screen">
     <h2>📋 Výběr levelu</h2>
     <button class="reset-btn" id="resetBtn">RESET</button>
-    <div class="levels" id="levelsList"></div>
+    <div id="levelsList"></div>
   </div>
 </div>
 
 <!-- RESET MODAL -->
 <div class="reset-modal" id="resetModal">
   <div class="reset-box">
-    <h3>Are you sure about that ??</h3>
+    <h3>Are you sure?</h3>
     <div class="reset-actions">
       <button class="reset-no" id="resetNo">NO</button>
       <button class="reset-yes" id="resetYes">YES</button>
@@ -165,97 +137,87 @@ body{
   </div>
 </div>
 
+<!-- LEVEL COMPLETE -->
+<div class="level-complete" id="levelComplete">
+  <div class="level-complete-box">🎉 LEVEL COMPLETE!</div>
+</div>
+
 <script>
 const levels=[
-  {name:'Sušenka',emoji:'🍪',need:3000},
-  {name:'Meloun',emoji:'🍉',need:10000},
-  {name:'Jablko',emoji:'🍎',need:20000},
-  {name:'Banán',emoji:'🍌',need:35000},
-  {name:'Ananas',emoji:'🍍',need:50000},
-  {name:'Pomeranč',emoji:'🍊',need:100000},
-  {name:'Okurka',emoji:'🥒',need:250000},
-  {name:'Rajče',emoji:'🍅',need:500000},
-  {name:'Broskev',emoji:'🍑',need:750000},
-  {name:'Švestka',emoji:'🍇',need:1000000}
+ {name:'Sušenka',emoji:'🍪',need:3000},
+ {name:'Meloun',emoji:'🍉',need:10000},
+ {name:'Jablko',emoji:'🍎',need:20000},
+ {name:'Banán',emoji:'🍌',need:35000},
+ {name:'Ananas',emoji:'🍍',need:50000},
+ {name:'Pomeranč',emoji:'🍊',need:100000},
+ {name:'Okurka',emoji:'🥒',need:250000},
+ {name:'Rajče',emoji:'🍅',need:500000},
+ {name:'Broskev',emoji:'🍑',need:750000},
+ {name:'Švestka',emoji:'🍇',need:1000000}
 ];
 
-let state = JSON.parse(localStorage.getItem("fruitClickerFinal")) || {
-  currentLevel:0,
-  maxUnlocked:0,
-  clicks:Array(levels.length).fill(0),
-  coins:0
+let state=JSON.parse(localStorage.getItem("fruit"))||{
+ currentLevel:0,maxUnlocked:0,
+ clicks:Array(levels.length).fill(0),
+ coins:0
 };
 
-const coinsText=document.getElementById("coinsText");
-const levelText=document.getElementById("levelText");
-const fruit=document.getElementById("fruit");
-const countText=document.getElementById("countText");
-const reqText=document.getElementById("reqText");
-const bar=document.getElementById("bar");
-const gameScreen=document.getElementById("gameScreen");
-const menuScreen=document.getElementById("menuScreen");
-const levelsList=document.getElementById("levelsList");
+const $=id=>document.getElementById(id);
 
-function save(){localStorage.setItem("fruitClickerFinal",JSON.stringify(state));}
+function save(){localStorage.setItem("fruit",JSON.stringify(state));}
 
 function renderGame(){
-  coinsText.textContent=state.coins;
-  const i=state.currentLevel;
-  const l=levels[i];
-  fruit.textContent=l.emoji;
-  levelText.textContent=`Level ${i+1} – ${l.name}`;
-  countText.textContent=`Kliky: ${state.clicks[i]}`;
-  reqText.textContent=`Potřeba: ${l.need}`;
-  bar.style.width=Math.min(100,(state.clicks[i]/l.need)*100)+"%";
+ const i=state.currentLevel;
+ if(i>=levels.length)return;
+ $("coinsText").textContent=state.coins;
+ $("levelText").textContent=`Level ${i+1} – ${levels[i].name}`;
+ $("fruit").textContent=levels[i].emoji;
+ $("countText").textContent=`Kliky: ${state.clicks[i]}`;
+ $("reqText").textContent=`Potřeba: ${levels[i].need}`;
+ $("bar").style.width=Math.min(100,state.clicks[i]/levels[i].need*100)+"%";
 }
 
 function renderMenu(){
-  levelsList.innerHTML="";
-  levels.forEach((l,i)=>{
-    const d=document.createElement("div");
-    d.className="level-item"+(i>state.maxUnlocked?" locked":"");
-    d.innerHTML=`<div>Level ${i+1} – ${l.name}</div><span>${l.emoji}</span>`;
-    if(i<=state.maxUnlocked){
-      d.onclick=()=>{state.currentLevel=i;save();showGame();}
-    }
-    levelsList.appendChild(d);
-  });
+ $("levelsList").innerHTML="";
+ levels.forEach((l,i)=>{
+  const d=document.createElement("div");
+  d.className="level-item"+(i>state.maxUnlocked?" locked":"");
+  d.innerHTML=`Level ${i+1} – ${l.name}<span>${l.emoji}</span>`;
+  if(i<=state.maxUnlocked)d.onclick=()=>{state.currentLevel=i;save();showGame();};
+  $("levelsList").appendChild(d);
+ });
 }
 
-function showMenu(){gameScreen.style.display="none";menuScreen.style.display="block";renderMenu();}
-function showGame(){menuScreen.style.display="none";gameScreen.style.display="block";renderGame();}
+function showMenu(){ $("gameScreen").style.display="none"; $("menuScreen").style.display="block"; renderMenu();}
+function showGame(){ $("menuScreen").style.display="none"; $("gameScreen").style.display="block"; renderGame();}
 
-document.getElementById("menuBtn").onclick=()=>menuScreen.style.display==="block"?showGame():showMenu();
+$("menuBtn").onclick=()=> $("menuScreen").style.display==="block"?showGame():showMenu();
 
-fruit.onclick=()=>{
-  const i=state.currentLevel;
-  state.clicks[i]++;
-  state.coins++;
-  if(state.clicks[i]>=levels[i].need) state.maxUnlocked=Math.max(state.maxUnlocked,i+1);
-  save();renderGame();
+$("fruit").onclick=()=>{
+ const i=state.currentLevel;
+ state.clicks[i]++; state.coins++;
+ if(state.clicks[i]>=levels[i].need){
+  $("levelComplete").style.display="flex";
+  setTimeout(()=>{
+   $("levelComplete").style.display="none";
+   state.maxUnlocked=Math.max(state.maxUnlocked,i+1);
+   state.currentLevel++;
+   save(); renderGame();
+  },1200);
+  save(); return;
+ }
+ save(); renderGame();
 };
 
-/* RESET */
-const resetBtn=document.getElementById("resetBtn");
-const resetModal=document.getElementById("resetModal");
-document.getElementById("resetNo").onclick=()=>resetModal.style.display="none";
-document.getElementById("resetYes").onclick=()=>{
-  localStorage.removeItem("fruitClickerFinal");
-  location.reload();
-};
-resetBtn.onclick=()=>resetModal.style.display="flex";
+$("resetBtn").onclick=()=>$("resetModal").style.display="flex";
+$("resetNo").onclick=()=>$("resetModal").style.display="none";
+$("resetYes").onclick=()=>{localStorage.removeItem("fruit");location.reload();};
 
 renderGame();
 </script>
-
-<script>
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
-}
-</script>
-
 </body>
 </html>
+
 
 
 
