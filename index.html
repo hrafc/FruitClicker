@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="manifest" href="manifest.json">
 <title>Fruit Clicker – 10 Levelů</title>
 
 <style>
 body{
   margin:0;
-  font-family:Segoe UI,system-ui,Roboto,Arial,sans-serif;
+  font-family:'Segoe UI',system-ui,Roboto,Arial,sans-serif;
   background:radial-gradient(circle at top,#bbf7d0,#86efac,#4ade80);
   min-height:100vh;
   display:grid;
@@ -20,7 +20,7 @@ body{
   background:linear-gradient(180deg,#ffffff,#f0fdf4);
   width:min(620px,95vw);
   border-radius:28px;
-  padding:24px;
+  padding:22px;
   box-shadow:0 30px 60px rgba(0,0,0,.25);
   position:relative;
   text-align:center;
@@ -30,11 +30,11 @@ body{
   position:absolute;
   top:14px;
   left:18px;
+  font-weight:900;
   background:#16a34a;
   color:white;
   padding:8px 14px;
   border-radius:999px;
-  font-weight:900;
 }
 
 .menu-btn{
@@ -49,92 +49,30 @@ body{
   cursor:pointer;
 }
 
-h1{margin-top:40px}
-.level{font-size:20px;font-weight:800;color:#065f46}
-
-.fruit{
-  font-size:120px;
-  cursor:pointer;
-  animation:float 3s ease-in-out infinite;
-}
-
-@keyframes float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-10px)}
-}
-
-/* LEVEL COMPLETE ANIMATION */
-.complete{
-  animation:completeAnim .6s ease;
-}
-@keyframes completeAnim{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.4) rotate(10deg)}
-  100%{transform:scale(1)}
-}
-
-.progress{
-  height:16px;
-  background:#dcfce7;
-  border-radius:999px;
-  overflow:hidden;
-  margin:10px 0;
-}
-.bar{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#22c55e,#86efac);
-}
-
-.upgrades{
-  margin-top:20px;
-  text-align:left;
-}
-.upgrade{
-  background:white;
-  padding:14px;
-  border-radius:18px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:10px;
-}
-.upgrade button{
-  background:#22c55e;
-  color:white;
-  border:none;
-  padding:10px 16px;
-  border-radius:999px;
-  font-weight:800;
-  cursor:pointer;
-}
-
 .menu-screen{display:none}
+.levels{display:grid;gap:12px;margin-top:20px}
 
-.levels{
-  display:grid;
-  gap:12px;
-  margin-top:20px;
-}
 .level-item{
-  padding:14px;
   background:white;
+  padding:14px;
   border-radius:16px;
   display:flex;
   justify-content:space-between;
+  font-weight:700;
   cursor:pointer;
 }
+
 .level-item.locked{opacity:.4;cursor:not-allowed}
 
-/* RESET */
+/* ===== RESET ===== */
 .reset-btn{
-  margin:20px auto;
-  background:#ef4444;
+  margin-top:20px;
+  background:#e53935;
   color:white;
-  padding:12px 30px;
   border:none;
+  padding:12px 30px;
   border-radius:16px;
-  font-weight:800;
+  font-weight:bold;
   cursor:pointer;
 }
 
@@ -145,149 +83,161 @@ h1{margin-top:40px}
   display:none;
   align-items:center;
   justify-content:center;
+  z-index:9999;
 }
+
 .reset-box{
   background:white;
   padding:26px;
   border-radius:20px;
+  width:280px;
+  text-align:center;
 }
+
 .reset-actions{
   display:flex;
-  gap:12px;
+  gap:14px;
   justify-content:center;
 }
-.reset-yes{background:#ef4444;color:white}
-.reset-no{background:#22c55e;color:white}
-.reset-actions button{
+
+.reset-no{
+  background:#22c55e;
   border:none;
   padding:10px 22px;
   border-radius:14px;
-  font-weight:800;
-  cursor:pointer;
+  color:white;
+  font-weight:bold;
+}
+
+.reset-yes{
+  background:#e53935;
+  border:none;
+  padding:10px 22px;
+  border-radius:14px;
+  color:white;
+  font-weight:bold;
 }
 </style>
 </head>
 
 <body>
+
 <div class="app">
-<div class="top-left">🪙 <span id="coins">0</span></div>
-<div class="menu-btn" id="menuBtn">🏠 Menu</div>
+  <div class="top-left">🪙 <span id="coinsText">0</span></div>
+  <div class="menu-btn" id="menuBtn">🏠 Menu</div>
 
-<!-- GAME -->
-<div id="game">
-<h1>🍓 Fruit Clicker</h1>
-<div class="level" id="levelText"></div>
-<div class="fruit" id="fruit"></div>
-<div id="count"></div>
-<div class="progress"><div class="bar" id="bar"></div></div>
+  <div id="gameScreen">
+    <h1>🍓 Fruit Clicker</h1>
+    <h2 id="levelText"></h2>
+    <div id="fruit" style="font-size:100px;cursor:pointer"></div>
+    <div id="countText"></div>
+  </div>
 
-<div class="upgrades">
-<h3>⬆️ Upgrady</h3>
-<div class="upgrade">
-<div>Coin Multiplier</div>
-<button id="buyCoin">Koupit</button>
-</div>
-<div class="upgrade">
-<div>Click Multiplier</div>
-<button id="buyClick">Koupit</button>
-</div>
-</div>
-</div>
-
-<!-- MENU -->
-<div id="menu" class="menu-screen">
-<h2>📋 Výběr levelu</h2>
-<button class="reset-btn" id="resetBtn">RESET</button>
-<div class="levels" id="levels"></div>
-</div>
+  <div id="menuScreen" class="menu-screen">
+    <h2>📋 Výběr levelu</h2>
+    <button id="resetBtn" class="reset-btn">RESET</button>
+    <div class="levels" id="levelsList"></div>
+  </div>
 </div>
 
 <!-- RESET MODAL -->
-<div class="reset-modal" id="resetModal">
-<div class="reset-box">
-<h3>Are you sure?</h3>
-<div class="reset-actions">
-<button class="reset-no" id="resetNo">NO</button>
-<button class="reset-yes" id="resetYes">YES</button>
-</div>
-</div>
+<div id="resetModal" class="reset-modal">
+  <div class="reset-box">
+    <h3>Are you sure about that ??</h3>
+    <div class="reset-actions">
+      <button id="resetNo" class="reset-no">NO</button>
+      <button id="resetYes" class="reset-yes">YES</button>
+    </div>
+  </div>
 </div>
 
 <script>
 const levels=[
-{name:"Sušenka",emoji:"🍪",need:3000},
-{name:"Meloun",emoji:"🍉",need:10000},
-{name:"Jablko",emoji:"🍎",need:20000},
-{name:"Banán",emoji:"🍌",need:35000},
-{name:"Ananas",emoji:"🍍",need:50000}
+ {name:'Sušenka',emoji:'🍪',need:3000},
+ {name:'Meloun',emoji:'🍉',need:10000},
+ {name:'Jablko',emoji:'🍎',need:20000},
+ {name:'Banán',emoji:'🍌',need:35000},
+ {name:'Ananas',emoji:'🍍',need:50000},
+ {name:'Pomeranč',emoji:'🍊',need:100000},
+ {name:'Okurka',emoji:'🥒',need:250000},
+ {name:'Rajče',emoji:'🍅',need:500000},
+ {name:'Broskev',emoji:'🍑',need:750000},
+ {name:'Švestka',emoji:'🍇',need:1000000}
 ];
 
-let state=JSON.parse(localStorage.getItem("fc"))||{
-level:0,unlocked:0,clicks:0,coins:0,coinMult:1,clickMult:1
+let state=JSON.parse(localStorage.getItem('fruitClickerFinal'))||{
+ currentLevel:0,maxUnlocked:0,clicks:Array(10).fill(0),coins:0
 };
 
-const fruit=document.getElementById("fruit");
+const coinsText=coinsText=document.getElementById("coinsText");
 const levelText=document.getElementById("levelText");
-const count=document.getElementById("count");
-const bar=document.getElementById("bar");
-const coins=document.getElementById("coins");
-const game=document.getElementById("game");
-const menu=document.getElementById("menu");
+const fruit=document.getElementById("fruit");
+const countText=document.getElementById("countText");
+const menuBtn=document.getElementById("menuBtn");
+const gameScreen=document.getElementById("gameScreen");
+const menuScreen=document.getElementById("menuScreen");
+const levelsList=document.getElementById("levelsList");
 
-function save(){localStorage.setItem("fc",JSON.stringify(state));}
+function save(){localStorage.setItem("fruitClickerFinal",JSON.stringify(state));}
 
-function render(){
-const l=levels[state.level];
-levelText.textContent=`Level ${state.level+1} – ${l.name}`;
-fruit.textContent=l.emoji;
-count.textContent=`Kliky: ${state.clicks}`;
-coins.textContent=state.coins;
-bar.style.width=Math.min(100,state.clicks/l.need*100)+"%";
+function renderGame(){
+ const l=levels[state.currentLevel];
+ levelText.textContent=`Level ${state.currentLevel+1} – ${l.name}`;
+ fruit.textContent=l.emoji;
+ countText.textContent=`Kliky: ${state.clicks[state.currentLevel]}`;
+ coinsText.textContent=state.coins;
 }
 
 fruit.onclick=()=>{
-state.clicks+=state.clickMult;
-state.coins+=state.coinMult;
-if(state.clicks>=levels[state.level].need){
-fruit.classList.add("complete");
-setTimeout(()=>fruit.classList.remove("complete"),600);
-state.unlocked=Math.max(state.unlocked,state.level+1);
-state.level=Math.min(state.level+1,levels.length-1);
-state.clicks=0;
-}
-save();render();
-};
-
-document.getElementById("buyCoin").onclick=()=>{state.coins>=100&&(state.coins-=100,state.coinMult++,save(),render())};
-document.getElementById("buyClick").onclick=()=>{state.coins>=200&&(state.coins-=200,state.clickMult++,save(),render())};
-
-document.getElementById("menuBtn").onclick=()=>{
-game.style.display=game.style.display==="none"?"block":"none";
-menu.style.display=menu.style.display==="block"?"none":"block";
-renderMenu();
+ state.clicks[state.currentLevel]++;
+ state.coins++;
+ if(state.clicks[state.currentLevel]>=levels[state.currentLevel].need){
+   state.maxUnlocked=Math.max(state.maxUnlocked,state.currentLevel+1);
+ }
+ save();renderGame();
 };
 
 function renderMenu(){
-const list=document.getElementById("levels");
-list.innerHTML="";
-levels.forEach((l,i)=>{
-const d=document.createElement("div");
-d.className="level-item"+(i>state.unlocked?" locked":"");
-d.innerHTML=`Level ${i+1} – ${l.name}<span>${l.emoji}</span>`;
-if(i<=state.unlocked)d.onclick=()=>{state.level=i;state.clicks=0;save();menu.style.display="none";game.style.display="block";render()};
-list.appendChild(d);
-});
+ levelsList.innerHTML="";
+ levels.forEach((l,i)=>{
+   const d=document.createElement("div");
+   d.className="level-item"+(i>state.maxUnlocked?" locked":"");
+   d.innerHTML=`Level ${i+1} – ${l.name} <span>${l.emoji}</span>`;
+   if(i<=state.maxUnlocked)d.onclick=()=>{state.currentLevel=i;save();showGame();};
+   levelsList.appendChild(d);
+ });
 }
 
-document.getElementById("resetBtn").onclick=()=>resetModal.style.display="flex";
-resetNo.onclick=()=>resetModal.style.display="none";
-resetYes.onclick=()=>{localStorage.removeItem("fc");location.reload()};
+function showMenu(){gameScreen.style.display="none";menuScreen.style.display="block";renderMenu();}
+function showGame(){menuScreen.style.display="none";gameScreen.style.display="block";renderGame();}
 
-render();
+menuBtn.onclick=()=>menuScreen.style.display==="block"?showGame():showMenu();
+
+/* RESET */
+const resetBtn=document.getElementById("resetBtn");
+const resetModal=document.getElementById("resetModal");
+const resetNo=document.getElementById("resetNo");
+const resetYes=document.getElementById("resetYes");
+
+resetBtn.onclick=()=>resetModal.style.display="flex";
+resetNo.onclick=()=>resetModal.style.display="none";
+resetYes.onclick=()=>{
+ localStorage.removeItem("fruitClickerFinal");
+ location.reload();
+};
+
+renderGame();
+</script>
+
+<script>
+if("serviceWorker" in navigator){
+ navigator.serviceWorker.register("sw.js");
+}
 </script>
 
 </body>
 </html>
+
 
 
 
