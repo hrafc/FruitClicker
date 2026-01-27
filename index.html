@@ -173,6 +173,26 @@
 
   <div id="menuScreen" class="menu-screen">
     <h2 style="margin-top:40px">📋 Výběr levelu</h2>
+    <div id="menuScreen" class="menu-screen">
+  <h2 style="margin-top:40px">📋 Výběr levelů</h2>
+
+  <!-- RESET BUTTON -->
+  <button id="resetBtn" class="reset-btn">RESET</button>
+
+  <!-- RESET MODAL -->
+  <div id="resetModal" class="modal hidden">
+    <div class="modal-box">
+      <h3>Are you sure about that ??</h3>
+      <div class="modal-actions">
+        <button id="resetNo" class="btn-no">NO</button>
+        <button id="resetYes" class="btn-yes">YES</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="levels" id="levelsList"></div>
+</div>
+
     <div class="levels" id="levelsList"></div>
   </div>
 </div>
@@ -273,5 +293,6 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
