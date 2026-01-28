@@ -7,9 +7,8 @@
 
 <style>
 *{
+  box-sizing:border-box;
   user-select:none;
-  -webkit-user-select:none;
-  -ms-user-select:none;
 }
 
 body{
@@ -17,13 +16,16 @@ body{
   font-family:'Segoe UI',system-ui,Roboto,Arial,sans-serif;
   background:radial-gradient(circle at top,#bbf7d0,#86efac,#4ade80);
   min-height:100vh;
-  display:grid;
-  place-items:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
+/* CARD */
 .app{
   background:linear-gradient(180deg,#ffffff,#f0fdf4);
-  width:min(620px,95vw);
+  width:620px;
+  max-width:95vw;
   border-radius:28px;
   padding:24px;
   box-shadow:0 30px 60px rgba(0,0,0,.25);
@@ -32,9 +34,9 @@ body{
 }
 
 /* TOP */
-.top-left{
+.coins{
   position:absolute;
-  top:14px;
+  top:16px;
   left:18px;
   background:#16a34a;
   color:white;
@@ -45,7 +47,7 @@ body{
 
 .menu-btn{
   position:absolute;
-  top:14px;
+  top:16px;
   right:18px;
   background:#22c55e;
   color:white;
@@ -56,12 +58,25 @@ body{
 }
 
 /* GAME */
+h1{
+  margin-top:10px;
+  font-size:32px;
+}
+
+.level{
+  font-weight:800;
+  margin-bottom:10px;
+}
+
 .fruit{
   font-size:120px;
   cursor:pointer;
 }
 
-.count{font-weight:700;margin:6px 0}
+.count{
+  font-weight:600;
+  margin-top:8px;
+}
 
 .progress{
   height:14px;
@@ -77,36 +92,54 @@ body{
   width:0%;
 }
 
-.req{font-size:14px;color:#166534}
+.req{
+  font-size:14px;
+  color:#166534;
+}
 
 /* UPGRADES */
-.upgrades{margin-top:16px;text-align:left}
+.upgrades{
+  margin-top:20px;
+  text-align:left;
+}
 
 .upgrade{
   background:white;
-  border-radius:16px;
+  border-radius:18px;
   padding:14px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-top:10px;
-  box-shadow:0 10px 20px rgba(0,0,0,.12);
+  margin-top:12px;
+  box-shadow:0 8px 16px rgba(0,0,0,.15);
 }
 
 .upgrade button{
   background:#22c55e;
-  color:white;
   border:none;
+  color:white;
+  padding:8px 16px;
   border-radius:999px;
-  padding:8px 14px;
-  cursor:pointer;
   font-weight:800;
+  cursor:pointer;
+}
+
+.upgrade button:disabled{
+  opacity:.4;
+  cursor:not-allowed;
 }
 
 /* MENU */
-.menu-screen{display:none;text-align:left}
+.menu-screen{
+  display:none;
+  text-align:left;
+}
 
-.levels{display:grid;gap:12px;margin-top:10px}
+.levels{
+  margin-top:10px;
+  display:grid;
+  gap:10px;
+}
 
 .level-item{
   background:white;
@@ -116,7 +149,7 @@ body{
   justify-content:space-between;
   cursor:pointer;
   font-weight:700;
-  box-shadow:0 8px 16px rgba(0,0,0,.12);
+  box-shadow:0 6px 12px rgba(0,0,0,.15);
 }
 
 .level-item.locked{
@@ -126,14 +159,14 @@ body{
 
 /* RESET */
 .reset-btn{
-  margin:16px auto;
+  margin:14px auto;
   display:block;
   background:#e53935;
   color:white;
   border:none;
-  padding:12px 30px;
-  border-radius:16px;
-  font-weight:bold;
+  padding:10px 26px;
+  border-radius:999px;
+  font-weight:900;
   cursor:pointer;
 }
 
@@ -144,26 +177,40 @@ body{
   display:none;
   align-items:center;
   justify-content:center;
+  z-index:999;
 }
 
 .reset-box{
   background:white;
-  padding:26px;
+  padding:24px;
   border-radius:20px;
   text-align:center;
 }
+
+.reset-box button{
+  margin:8px;
+  padding:8px 18px;
+  border:none;
+  border-radius:999px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.no{background:#22c55e;color:white}
+.yes{background:#e53935;color:white}
 </style>
 </head>
 
 <body>
 
 <div class="app">
-  <div class="top-left">🪙 <span id="coinsText">0</span></div>
+  <div class="coins">🪙 <span id="coins">0</span></div>
   <div class="menu-btn" id="menuBtn">🏠 Menu</div>
 
-  <div id="gameScreen">
+  <!-- GAME -->
+  <div id="game">
     <h1>🍓 Fruit Clicker</h1>
-    <div id="levelText"></div>
+    <div class="level" id="levelText"></div>
     <div class="fruit" id="fruit"></div>
     <div class="count" id="countText"></div>
     <div class="progress"><div class="bar" id="bar"></div></div>
@@ -171,106 +218,108 @@ body{
 
     <div class="upgrades">
       <div class="upgrade">
-        <div>Coin multiplier (<span id="coinMultText"></span>x)</div>
-        <button id="buyCoin">+</button>
+        <div>
+          <strong>Coin Multiplier</strong><br>
+          <small id="coinMultText"></small>
+        </div>
+        <button id="buyCoin">Koupit</button>
       </div>
+
       <div class="upgrade">
-        <div>Click multiplier (<span id="clickMultText"></span>x)</div>
-        <button id="buyClick">+</button>
+        <div>
+          <strong>Click Multiplier</strong><br>
+          <small id="clickMultText"></small>
+        </div>
+        <button id="buyClick">Koupit</button>
       </div>
     </div>
   </div>
 
-  <div id="menuScreen" class="menu-screen">
+  <!-- MENU -->
+  <div id="menu" class="menu-screen">
     <h2>📋 Výběr levelu</h2>
     <button class="reset-btn" id="resetBtn">RESET</button>
-    <div class="levels" id="levelsList"></div>
+    <div class="levels" id="levels"></div>
   </div>
 </div>
 
+<!-- RESET MODAL -->
 <div class="reset-modal" id="resetModal">
   <div class="reset-box">
     <h3>Opravdu resetovat?</h3>
-    <button id="resetYes">ANO</button>
-    <button id="resetNo">NE</button>
+    <button class="no" id="resetNo">NE</button>
+    <button class="yes" id="resetYes">ANO</button>
   </div>
 </div>
 
 <script>
-document.addEventListener("dragstart",e=>e.preventDefault());
-
 const levels=[
- {name:'Sušenka',emoji:'🍪',need:3000},
- {name:'Meloun',emoji:'🍉',need:10000},
- {name:'Jablko',emoji:'🍎',need:20000},
- {name:'Banán',emoji:'🍌',need:35000},
- {name:'Ananas',emoji:'🍍',need:50000},
- {name:'Pomeranč',emoji:'🍊',need:100000},
- {name:'Okurka',emoji:'🥒',need:250000},
- {name:'Rajče',emoji:'🍅',need:500000},
- {name:'Broskev',emoji:'🍑',need:750000},
- {name:'Švestka',emoji:'🍇',need:1000000}
+ ['Sušenka','🍪',3000],
+ ['Meloun','🍉',10000],
+ ['Jablko','🍎',20000],
+ ['Banán','🍌',35000],
+ ['Ananas','🍍',50000],
+ ['Pomeranč','🍊',100000],
+ ['Okurka','🥒',250000],
+ ['Rajče','🍅',500000],
+ ['Broskev','🍑',750000],
+ ['Švestka','🍇',1000000]
 ];
 
-let state=JSON.parse(localStorage.getItem("fruitClicker"))||{
- currentLevel:0,maxUnlocked:0,
- clicks:Array(levels.length).fill(0),
- coins:0,coinMult:1,clickMult:1
+let s=JSON.parse(localStorage.getItem("fc"))||{
+ lvl:0,unlock:0,clicks:Array(10).fill(0),
+ coins:0,cm:1,km:1
 };
 
 const $=id=>document.getElementById(id);
-const save=()=>localStorage.setItem("fruitClicker",JSON.stringify(state));
+const save=()=>localStorage.setItem("fc",JSON.stringify(s));
 
-function renderGame(){
- const i=state.currentLevel,l=levels[i];
- $("coinsText").textContent=state.coins;
- $("levelText").textContent=`Level ${i+1} – ${l.name}`;
- $("fruit").textContent=l.emoji;
- $("countText").textContent=`Kliky: ${state.clicks[i]}`;
- $("reqText").textContent=`Potřeba: ${l.need}`;
- $("bar").style.width=Math.min(100,(state.clicks[i]/l.need)*100)+"%";
- $("coinMultText").textContent=state.coinMult;
- $("clickMultText").textContent=state.clickMult;
+function render(){
+ $("coins").textContent=s.coins;
+ $("levelText").textContent=`Level ${s.lvl+1} – ${levels[s.lvl][0]}`;
+ $("fruit").textContent=levels[s.lvl][1];
+ $("countText").textContent=`Kliky: ${s.clicks[s.lvl]}`;
+ $("reqText").textContent=`Potřeba kliknout: ${levels[s.lvl][2]}`;
+ $("bar").style.width=Math.min(100,s.clicks[s.lvl]/levels[s.lvl][2]*100)+"%";
+ $("coinMultText").textContent=`${s.cm}× (cena 500)`;
+ $("clickMultText").textContent=`${s.km}× (cena 1000)`;
 }
 
 $("fruit").onclick=()=>{
- const i=state.currentLevel;
- state.clicks[i]+=state.clickMult;
- state.coins+=state.coinMult;
- if(state.clicks[i]>=levels[i].need){
-   state.maxUnlocked=Math.max(state.maxUnlocked,i+1);
-   if(i<levels.length-1) state.currentLevel++;
+ s.clicks[s.lvl]+=s.km;
+ s.coins+=s.cm;
+ if(s.clicks[s.lvl]>=levels[s.lvl][2]){
+   s.unlock=Math.max(s.unlock,s.lvl+1);
+   if(s.lvl<9)s.lvl++;
  }
- save();renderGame();
+ save();render();
 };
 
-$("buyCoin").onclick=()=>{if(state.coins>=100){state.coins-=100;state.coinMult++;save();renderGame();}};
-$("buyClick").onclick=()=>{if(state.coins>=200){state.coins-=200;state.clickMult++;save();renderGame();}};
+$("buyCoin").onclick=()=>{if(s.coins>=500){s.coins-=500;s.cm++;save();render();}};
+$("buyClick").onclick=()=>{if(s.coins>=1000){s.coins-=1000;s.km++;save();render();}};
 
 $("menuBtn").onclick=()=>{
- $("gameScreen").style.display="none";
- $("menuScreen").style.display="block";
- $("levelsList").innerHTML="";
+ $("game").style.display="none";
+ $("menu").style.display="block";
+ $("levels").innerHTML="";
  levels.forEach((l,i)=>{
-  const d=document.createElement("div");
-  d.className="level-item"+(i>state.maxUnlocked?" locked":"");
-  d.innerHTML=`<div>Level ${i+1} – ${l.name}</div><span>${l.emoji}</span>`;
-  if(i<=state.maxUnlocked)d.onclick=()=>{state.currentLevel=i;save();$("menuScreen").style.display="none";$("gameScreen").style.display="block";renderGame();}
-  $("levelsList").appendChild(d);
+  let d=document.createElement("div");
+  d.className="level-item"+(i>s.unlock?" locked":"");
+  d.innerHTML=`Level ${i+1} – ${l[0]} <span>${l[1]}</span>`;
+  if(i<=s.unlock)d.onclick=()=>{s.lvl=i;save();$("menu").style.display="none";$("game").style.display="block";render();}
+  $("levels").appendChild(d);
  });
 };
 
 $("resetBtn").onclick=()=>$("resetModal").style.display="flex";
 $("resetNo").onclick=()=>$("resetModal").style.display="none";
-$("resetYes").onclick=()=>{localStorage.removeItem("fruitClicker");location.reload();};
+$("resetYes").onclick=()=>{localStorage.removeItem("fc");location.reload();};
 
-renderGame();
+render();
 </script>
 
 </body>
 </html>
-
-
 
 
 
