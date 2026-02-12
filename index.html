@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fruit Clicker </title>
+<title>Fruit Clicker</title>
 
 <style>
 *{user-select:none}
@@ -19,7 +19,7 @@ body{
 
 .app{
   background:linear-gradient(180deg,#ffffff,#f0fdf4);
-  width:min(620px,95vw);
+  width:min(760px,95vw);
   border-radius:28px;
   padding:22px;
   box-shadow:0 30px 60px rgba(0,0,0,.25);
@@ -27,7 +27,6 @@ body{
   text-align:center;
 }
 
-/* TOP */
 .top-left{
   position:absolute;
   top:14px;
@@ -51,10 +50,33 @@ body{
   font-weight:800;
 }
 
-/* GAME */
+.game-wrapper{
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  align-items:center;
+}
+
 .fruit{
   font-size:120px;
   cursor:pointer;
+}
+
+.auto-panel{
+  background:#e2e8f0;
+  padding:15px;
+  border-radius:16px;
+  display:none;
+  width:160px;
+}
+
+.auto-panel button{
+  margin-top:10px;
+  padding:6px 12px;
+  border:none;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:bold;
 }
 
 .progress{
@@ -69,6 +91,12 @@ body{
   height:100%;
   background:linear-gradient(90deg,#22c55e,#4ade80);
   width:0%;
+}
+
+.upgrades-title{
+  margin-top:20px;
+  font-size:22px;
+  font-weight:bold;
 }
 
 .upgrade{
@@ -97,7 +125,6 @@ body{
   cursor:not-allowed;
 }
 
-/* MENU */
 .menu-screen{display:none}
 
 .levels{
@@ -121,7 +148,6 @@ body{
   cursor:not-allowed;
 }
 
-/* RESET */
 .reset-btn{
   margin:20px auto;
   display:block;
@@ -132,22 +158,6 @@ body{
   border-radius:16px;
   font-weight:bold;
   cursor:pointer;
-}
-
-.reset-modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-
-.reset-box{
-  background:white;
-  padding:26px;
-  border-radius:20px;
-  text-align:center;
 }
 </style>
 </head>
@@ -161,10 +171,32 @@ body{
   <div id="game">
     <h1>🍓 Fruit Clicker</h1>
     <div id="levelText"></div>
-    <div class="fruit" id="fruit"></div>
-    <div id="clickText"></div>
+
+    <div class="game-wrapper">
+      <div>
+        <div class="fruit" id="fruit"></div>
+        <div id="clickText"></div>
+      </div>
+
+      <div class="auto-panel" id="autoPanel">
+        <b>AUTO CLICKER</b>
+        <div id="autoStatus">OFF</div>
+        <button id="toggleAuto">Zapnout</button>
+      </div>
+    </div>
+
     <div class="progress"><div class="bar" id="bar"></div></div>
     <div id="needText"></div>
+
+    <div class="upgrades-title">⬆️ UPGRADY</div>
+
+    <div class="upgrade">
+      <div>
+        <b>Auto Clicker</b><br>
+        <small id="autoCost">Cena: 3000</small>
+      </div>
+      <button id="buyAuto">Koupit</button>
+    </div>
 
     <div class="upgrade">
       <div>
@@ -192,14 +224,6 @@ body{
   </div>
 </div>
 
-<div class="reset-modal" id="resetModal">
-  <div class="reset-box">
-    <h3>Opravdu resetovat?</h3>
-    <button id="resetYes">ANO</button>
-    <button id="resetNo">NE</button>
-  </div>
-</div>
-
 <script>
 const $=id=>document.getElementById(id);
 
@@ -219,8 +243,12 @@ const levels=[
 let s=JSON.parse(localStorage.getItem("fruitSave"))||{
  lvl:0, unlock:0, clicks:Array(10).fill(0),
  coins:0, coinMult:1, clickMult:1,
- coinBought:0, clickBought:0
+ coinBought:0, clickBought:0,
+ autoBought:false,
+ autoOn:false
 };
+
+let autoInterval=null;
 
 function save(){localStorage.setItem("fruitSave",JSON.stringify(s));}
 
@@ -245,16 +273,27 @@ function render(){
  const kp=clickPrice();
  $("clickCost").textContent=kp?`Cena: ${kp}`:"MAX";
  $("buyClick").disabled=!kp||s.coins<kp;
+
+ // Auto Clicker
+ if(s.autoBought){
+   $("autoCost").textContent="Koupeno";
+   $("buyAuto").disabled=true;
+   $("autoPanel").style.display="block";
+   $("autoStatus").textContent=s.autoOn?"ON":"OFF";
+ }else{
+   $("buyAuto").disabled=s.coins<3000;
+ }
 }
 
-$("fruit").onclick=()=>{
+function clickFruit(){
  s.clicks[s.lvl]+=s.clickMult;
  s.coins+=s.coinMult;
 
  if(s.clicks[s.lvl]>=levels[s.lvl][2]){
    if(s.lvl===9){
-     save();
      alert("🎉 Gratuluji, dohrál jsi celou hru!");
+     s.lvl=0;
+     save();
      $("game").style.display="none";
      $("menu").style.display="block";
      renderMenu();
@@ -262,6 +301,25 @@ $("fruit").onclick=()=>{
    }
    s.unlock=Math.max(s.unlock,s.lvl+1);
    s.lvl++;
+ }
+ save();render();
+}
+
+$("fruit").onclick=clickFruit;
+
+$("buyAuto").onclick=()=>{
+ if(s.coins<3000)return;
+ s.coins-=3000;
+ s.autoBought=true;
+ save();render();
+};
+
+$("toggleAuto").onclick=()=>{
+ s.autoOn=!s.autoOn;
+ if(s.autoOn){
+   autoInterval=setInterval(clickFruit,1000);
+ }else{
+   clearInterval(autoInterval);
  }
  save();render();
 };
@@ -299,20 +357,10 @@ $("menuBtn").onclick=()=>{
  renderMenu();
 };
 
-$("resetBtn").onclick=()=>$("resetModal").style.display="flex";
-$("resetNo").onclick=()=>$("resetModal").style.display="none";
-$("resetYes").onclick=()=>{localStorage.removeItem("fruitSave");location.reload();};
+$("resetBtn").onclick=()=>{localStorage.removeItem("fruitSave");location.reload();};
 
 render();
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
