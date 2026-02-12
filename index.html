@@ -19,7 +19,7 @@ body{
 
 .app{
   background:linear-gradient(180deg,#ffffff,#f0fdf4);
-  width:min(760px,95vw);
+  width:min(620px,95vw);
   border-radius:28px;
   padding:22px;
   box-shadow:0 30px 60px rgba(0,0,0,.25);
@@ -38,33 +38,21 @@ body{
   font-weight:900;
 }
 
-.game-row{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:30px;
+.menu-btn{
+  position:absolute;
+  top:14px;
+  right:18px;
+  background:#22c55e;
+  color:white;
+  padding:10px 16px;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:800;
 }
 
 .fruit{
   font-size:120px;
   cursor:pointer;
-}
-
-.auto-panel{
-  background:#e2e8f0;
-  padding:14px;
-  border-radius:16px;
-  width:150px;
-  display:none;
-}
-
-.auto-panel button{
-  margin-top:8px;
-  padding:6px 10px;
-  border:none;
-  border-radius:999px;
-  cursor:pointer;
-  font-weight:bold;
 }
 
 .progress{
@@ -79,12 +67,6 @@ body{
   height:100%;
   background:linear-gradient(90deg,#22c55e,#4ade80);
   width:0%;
-}
-
-.upgrades-title{
-  margin-top:20px;
-  font-weight:bold;
-  font-size:20px;
 }
 
 .upgrade{
@@ -102,7 +84,7 @@ body{
   background:#22c55e;
   border:none;
   color:white;
-  padding:8px 14px;
+  padding:10px 16px;
   border-radius:999px;
   font-weight:800;
   cursor:pointer;
@@ -112,6 +94,41 @@ body{
   opacity:.4;
   cursor:not-allowed;
 }
+
+.menu-screen{display:none}
+
+.levels{
+  display:grid;
+  gap:12px;
+}
+
+.level-item{
+  background:white;
+  padding:14px;
+  border-radius:16px;
+  display:flex;
+  justify-content:space-between;
+  cursor:pointer;
+  font-weight:700;
+  box-shadow:0 8px 16px rgba(0,0,0,.15);
+}
+
+.level-item.locked{
+  opacity:.4;
+  cursor:not-allowed;
+}
+
+.reset-btn{
+  margin:20px auto;
+  display:block;
+  background:#e53935;
+  color:white;
+  border:none;
+  padding:12px 30px;
+  border-radius:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -119,54 +136,54 @@ body{
 
 <div class="app">
   <div class="top-left">🪙 <span id="coins">0</span></div>
+  <div class="menu-btn" id="menuBtn">🏠 Menu</div>
 
-  <h1>🍓 Fruit Clicker</h1>
-  <div id="levelText"></div>
+  <div id="game">
+    <h1>🍓 Fruit Clicker</h1>
+    <div id="levelText"></div>
+    <div class="fruit" id="fruit"></div>
+    <div id="clickText"></div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div id="needText"></div>
 
-  <div class="game-row">
-    <div>
-      <div class="fruit" id="fruit"></div>
-      <div id="clickText"></div>
+    <div class="upgrade">
+      <div>
+        <b>Coin Multiplier</b><br>
+        <span id="coinInfo"></span><br>
+        <small id="coinCost"></small>
+      </div>
+      <button id="buyCoin">Koupit</button>
     </div>
 
-    <div class="auto-panel" id="autoPanel">
-      <b>AUTO CLICKER</b>
-      <div id="autoStatus">OFF</div>
-      <button id="toggleAuto">Zapnout</button>
+    <div class="upgrade">
+      <div>
+        <b>Click Multiplier</b><br>
+        <span id="clickInfo"></span><br>
+        <small id="clickCost"></small>
+      </div>
+      <button id="buyClick">Koupit</button>
     </div>
+
+    <div class="upgrade">
+      <div>
+        <b>Auto Clicker</b><br>
+        <small id="autoCost">Cena: 3000</small>
+      </div>
+      <button id="buyAuto">Koupit</button>
+    </div>
+
+    <div id="autoPanel" style="margin-top:10px; display:none;">
+      Auto Clicker:
+      <button id="autoToggle">OFF</button>
+    </div>
+
   </div>
 
-  <div class="progress"><div class="bar" id="bar"></div></div>
-  <div id="needText"></div>
-
-  <div class="upgrades-title">⬆️ UPGRADY</div>
-
-  <div class="upgrade">
-    <div>
-      <b>Auto Clicker</b><br>
-      <small id="autoCost">Cena: 3000</small>
-    </div>
-    <button id="buyAuto">Koupit</button>
+  <div id="menu" class="menu-screen">
+    <h2>📋 Výběr levelu</h2>
+    <button class="reset-btn" id="resetBtn">RESET</button>
+    <div class="levels" id="levels"></div>
   </div>
-
-  <div class="upgrade">
-    <div>
-      <b>Coin Multiplier</b><br>
-      <span id="coinInfo"></span><br>
-      <small id="coinCost"></small>
-    </div>
-    <button id="buyCoin">Koupit</button>
-  </div>
-
-  <div class="upgrade">
-    <div>
-      <b>Click Multiplier</b><br>
-      <span id="clickInfo"></span><br>
-      <small id="clickCost"></small>
-    </div>
-    <button id="buyClick">Koupit</button>
-  </div>
-
 </div>
 
 <script>
@@ -189,13 +206,14 @@ const coinPrices=[200,500,1000,2000,3000];
 const clickPrices=[300,600,1200,2300,3450];
 
 let s=JSON.parse(localStorage.getItem("fruitSave"))||{
- lvl:0, unlock:0, clicks:Array(10).fill(0),
- coins:0, coinMult:1, clickMult:1,
+ lvl:0, unlock:0,
+ clicks:Array(10).fill(0),
+ coins:0,
+ coinMult:1, clickMult:1,
  coinBought:0, clickBought:0,
- autoBought:false, autoOn:false
+ autoBought:false,
+ autoOn:false
 };
-
-let autoInterval=null;
 
 function save(){localStorage.setItem("fruitSave",JSON.stringify(s));}
 
@@ -225,47 +243,26 @@ function render(){
    $("autoCost").textContent="Koupeno";
    $("buyAuto").disabled=true;
    $("autoPanel").style.display="block";
-   $("autoStatus").textContent=s.autoOn?"ON":"OFF";
- }else{
-   $("buyAuto").disabled=s.coins<3000;
+   $("autoToggle").textContent=s.autoOn?"ON":"OFF";
  }
 }
 
-function clickFruit(){
+$("fruit").onclick=()=>{
  s.clicks[s.lvl]+=s.clickMult;
  s.coins+=s.coinMult;
 
  if(s.clicks[s.lvl]>=levels[s.lvl][2]){
    if(s.lvl===9){
      alert("🎉 Gratuluji, dohrál jsi celou hru!");
+     $("game").style.display="none";
+     $("menu").style.display="block";
+     renderMenu();
      return;
    }
    s.unlock=Math.max(s.unlock,s.lvl+1);
    s.lvl++;
  }
- save();
- render();
-}
-
-$("fruit").onclick=clickFruit;
-
-$("buyAuto").onclick=()=>{
- if(s.coins<3000)return;
- s.coins-=3000;
- s.autoBought=true;
- save();
- render();
-};
-
-$("toggleAuto").onclick=()=>{
- s.autoOn=!s.autoOn;
- if(s.autoOn){
-   autoInterval=setInterval(clickFruit,1000);
- }else{
-   clearInterval(autoInterval);
- }
- save();
- render();
+ save();render();
 };
 
 $("buyCoin").onclick=()=>{
@@ -274,8 +271,7 @@ $("buyCoin").onclick=()=>{
  s.coins-=p;
  s.coinMult+=2;
  s.coinBought++;
- save();
- render();
+ save();render();
 };
 
 $("buyClick").onclick=()=>{
@@ -284,8 +280,52 @@ $("buyClick").onclick=()=>{
  s.coins-=p;
  s.clickMult+=2;
  s.clickBought++;
- save();
- render();
+ save();render();
+};
+
+$("buyAuto").onclick=()=>{
+ if(s.coins>=3000 && !s.autoBought){
+   s.coins-=3000;
+   s.autoBought=true;
+   save();render();
+ }
+};
+
+setInterval(()=>{
+ if(s.autoBought && s.autoOn){
+   s.clicks[s.lvl]+=s.clickMult;
+   s.coins+=s.coinMult;
+   save();render();
+ }
+},1000);
+
+$("autoToggle").onclick=()=>{
+ s.autoOn=!s.autoOn;
+ save();render();
+};
+
+function renderMenu(){
+ $("levels").innerHTML="";
+ levels.forEach((l,i)=>{
+  const d=document.createElement("div");
+  d.className="level-item"+(i>s.unlock?" locked":"");
+  d.innerHTML=`Level ${i+1} – ${l[0]} <span>${l[1]}</span>`;
+  if(i<=s.unlock){
+    d.onclick=()=>{s.lvl=i;save();$("menu").style.display="none";$("game").style.display="block";render();}
+  }
+  $("levels").appendChild(d);
+ });
+}
+
+$("menuBtn").onclick=()=>{
+ $("game").style.display="none";
+ $("menu").style.display="block";
+ renderMenu();
+};
+
+$("resetBtn").onclick=()=>{
+ localStorage.removeItem("fruitSave");
+ location.reload();
 };
 
 render();
