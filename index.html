@@ -19,7 +19,7 @@ body{
 
 .app{
   background:linear-gradient(180deg,#ffffff,#f0fdf4);
-  width:min(620px,95vw);
+  width:min(760px,95vw);
   border-radius:28px;
   padding:22px;
   box-shadow:0 30px 60px rgba(0,0,0,.25);
@@ -38,21 +38,33 @@ body{
   font-weight:900;
 }
 
-.menu-btn{
-  position:absolute;
-  top:14px;
-  right:18px;
-  background:#22c55e;
-  color:white;
-  padding:10px 16px;
-  border-radius:999px;
-  cursor:pointer;
-  font-weight:800;
+.game-row{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:30px;
 }
 
 .fruit{
   font-size:120px;
   cursor:pointer;
+}
+
+.auto-panel{
+  background:#e2e8f0;
+  padding:14px;
+  border-radius:16px;
+  width:150px;
+  display:none;
+}
+
+.auto-panel button{
+  margin-top:8px;
+  padding:6px 10px;
+  border:none;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:bold;
 }
 
 .progress{
@@ -67,6 +79,12 @@ body{
   height:100%;
   background:linear-gradient(90deg,#22c55e,#4ade80);
   width:0%;
+}
+
+.upgrades-title{
+  margin-top:20px;
+  font-weight:bold;
+  font-size:20px;
 }
 
 .upgrade{
@@ -84,7 +102,7 @@ body{
   background:#22c55e;
   border:none;
   color:white;
-  padding:10px 16px;
+  padding:8px 14px;
   border-radius:999px;
   font-weight:800;
   cursor:pointer;
@@ -94,57 +112,6 @@ body{
   opacity:.4;
   cursor:not-allowed;
 }
-
-.menu-screen{display:none}
-
-.levels{
-  display:grid;
-  gap:12px;
-}
-
-.level-item{
-  background:white;
-  padding:14px;
-  border-radius:16px;
-  display:flex;
-  justify-content:space-between;
-  cursor:pointer;
-  font-weight:700;
-  box-shadow:0 8px 16px rgba(0,0,0,.15);
-}
-
-.level-item.locked{
-  opacity:.4;
-  cursor:not-allowed;
-}
-
-.reset-btn{
-  margin:20px auto;
-  display:block;
-  background:#e53935;
-  color:white;
-  border:none;
-  padding:12px 30px;
-  border-radius:16px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.reset-modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-
-.reset-box{
-  background:white;
-  padding:26px;
-  border-radius:20px;
-  text-align:center;
-}
 </style>
 </head>
 
@@ -152,34 +119,54 @@ body{
 
 <div class="app">
   <div class="top-left">🪙 <span id="coins">0</span></div>
-  <div class="menu-btn" id="menuBtn">🏠 Menu</div>
 
-  <div id="game">
-    <h1>🍓 Fruit Clicker</h1>
-    <div id="levelText"></div>
-    <div class="fruit" id="fruit"></div>
-    <div id="clickText"></div>
-    <div class="progress"><div class="bar" id="bar"></div></div>
-    <div id="needText"></div>
+  <h1>🍓 Fruit Clicker</h1>
+  <div id="levelText"></div>
 
-    <div class="upgrade">
-      <div>
-        <b>Coin Multiplier</b><br>
-        <span id="coinInfo"></span><br>
-        <small id="coinCost"></small>
-      </div>
-      <button id="buyCoin">Koupit</button>
+  <div class="game-row">
+    <div>
+      <div class="fruit" id="fruit"></div>
+      <div id="clickText"></div>
     </div>
 
-    <div class="upgrade">
-      <div>
-        <b>Click Multiplier</b><br>
-        <span id="clickInfo"></span><br>
-        <small id="clickCost"></small>
-      </div>
-      <button id="buyClick">Koupit</button>
+    <div class="auto-panel" id="autoPanel">
+      <b>AUTO CLICKER</b>
+      <div id="autoStatus">OFF</div>
+      <button id="toggleAuto">Zapnout</button>
     </div>
   </div>
+
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div id="needText"></div>
+
+  <div class="upgrades-title">⬆️ UPGRADY</div>
+
+  <div class="upgrade">
+    <div>
+      <b>Auto Clicker</b><br>
+      <small id="autoCost">Cena: 3000</small>
+    </div>
+    <button id="buyAuto">Koupit</button>
+  </div>
+
+  <div class="upgrade">
+    <div>
+      <b>Coin Multiplier</b><br>
+      <span id="coinInfo"></span><br>
+      <small id="coinCost"></small>
+    </div>
+    <button id="buyCoin">Koupit</button>
+  </div>
+
+  <div class="upgrade">
+    <div>
+      <b>Click Multiplier</b><br>
+      <span id="clickInfo"></span><br>
+      <small id="clickCost"></small>
+    </div>
+    <button id="buyClick">Koupit</button>
+  </div>
+
 </div>
 
 <script>
@@ -204,18 +191,16 @@ const clickPrices=[300,600,1200,2300,3450];
 let s=JSON.parse(localStorage.getItem("fruitSave"))||{
  lvl:0, unlock:0, clicks:Array(10).fill(0),
  coins:0, coinMult:1, clickMult:1,
- coinBought:0, clickBought:0
+ coinBought:0, clickBought:0,
+ autoBought:false, autoOn:false
 };
+
+let autoInterval=null;
 
 function save(){localStorage.setItem("fruitSave",JSON.stringify(s));}
 
-function coinPrice(){
- return s.coinBought>=5?null:coinPrices[s.coinBought];
-}
-
-function clickPrice(){
- return s.clickBought>=5?null:clickPrices[s.clickBought];
-}
+function coinPrice(){return s.coinBought>=5?null:coinPrices[s.coinBought];}
+function clickPrice(){return s.clickBought>=5?null:clickPrices[s.clickBought];}
 
 function render(){
  const l=levels[s.lvl];
@@ -226,31 +211,59 @@ function render(){
  $("needText").textContent=`Potřeba kliknout: ${l[2]}`;
  $("bar").style.width=Math.min(100,(s.clicks[s.lvl]/l[2])*100)+"%";
 
- $("coinInfo").textContent=`${s.coinMult}×`;
  const cp=coinPrice();
+ $("coinInfo").textContent=`${s.coinMult}×`;
  $("coinCost").textContent=cp?`Cena: ${cp}`:"MAX";
  $("buyCoin").disabled=!cp||s.coins<cp;
 
- $("clickInfo").textContent=`${s.clickMult}×`;
  const kp=clickPrice();
+ $("clickInfo").textContent=`${s.clickMult}×`;
  $("clickCost").textContent=kp?`Cena: ${kp}`:"MAX";
  $("buyClick").disabled=!kp||s.coins<kp;
+
+ if(s.autoBought){
+   $("autoCost").textContent="Koupeno";
+   $("buyAuto").disabled=true;
+   $("autoPanel").style.display="block";
+   $("autoStatus").textContent=s.autoOn?"ON":"OFF";
+ }else{
+   $("buyAuto").disabled=s.coins<3000;
+ }
 }
 
-$("fruit").onclick=()=>{
+function clickFruit(){
  s.clicks[s.lvl]+=s.clickMult;
  s.coins+=s.coinMult;
 
  if(s.clicks[s.lvl]>=levels[s.lvl][2]){
    if(s.lvl===9){
-     save();
      alert("🎉 Gratuluji, dohrál jsi celou hru!");
      return;
    }
    s.unlock=Math.max(s.unlock,s.lvl+1);
    s.lvl++;
  }
+ save();
+ render();
+}
 
+$("fruit").onclick=clickFruit;
+
+$("buyAuto").onclick=()=>{
+ if(s.coins<3000)return;
+ s.coins-=3000;
+ s.autoBought=true;
+ save();
+ render();
+};
+
+$("toggleAuto").onclick=()=>{
+ s.autoOn=!s.autoOn;
+ if(s.autoOn){
+   autoInterval=setInterval(clickFruit,1000);
+ }else{
+   clearInterval(autoInterval);
+ }
  save();
  render();
 };
@@ -258,7 +271,6 @@ $("fruit").onclick=()=>{
 $("buyCoin").onclick=()=>{
  const p=coinPrice();
  if(!p||s.coins<p)return;
-
  s.coins-=p;
  s.coinMult+=2;
  s.coinBought++;
@@ -269,7 +281,6 @@ $("buyCoin").onclick=()=>{
 $("buyClick").onclick=()=>{
  const p=clickPrice();
  if(!p||s.coins<p)return;
-
  s.coins-=p;
  s.clickMult+=2;
  s.clickBought++;
