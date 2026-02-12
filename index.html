@@ -13,17 +13,36 @@ body{
   font-family:'Segoe UI',system-ui,Roboto,Arial,sans-serif;
   background:radial-gradient(circle at top,#bbf7d0,#86efac,#4ade80);
   min-height:100vh;
+  overflow:hidden;
   display:grid;
   place-items:center;
 }
 
+/* ====== PADÁNÍ OVOCE ====== */
+.falling{
+  position:fixed;
+  top:-50px;
+  pointer-events:none;
+  z-index:0;
+  opacity:.8;
+  animation:fall linear infinite;
+}
+
+@keyframes fall{
+  to{
+    transform:translateY(110vh);
+  }
+}
+
+/* ====== KARTA ====== */
 .app{
+  position:relative;
+  z-index:2;
   background:linear-gradient(180deg,#ffffff,#f0fdf4);
   width:min(620px,95vw);
   border-radius:28px;
   padding:22px;
   box-shadow:0 30px 60px rgba(0,0,0,.25);
-  position:relative;
   text-align:center;
 }
 
@@ -117,44 +136,6 @@ body{
   opacity:.4;
   cursor:not-allowed;
 }
-
-.reset-btn{
-  margin:20px auto;
-  display:block;
-  background:#e53935;
-  color:white;
-  border:none;
-  padding:12px 30px;
-  border-radius:16px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.reset-modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-
-.reset-box{
-  background:white;
-  padding:26px;
-  border-radius:20px;
-  text-align:center;
-}
-
-.auto-panel{
-  position:absolute;
-  right:-200px;
-  top:140px;
-  background:white;
-  padding:15px;
-  border-radius:18px;
-  box-shadow:0 10px 25px rgba(0,0,0,.2);
-}
 </style>
 </head>
 
@@ -204,43 +185,55 @@ body{
 
 </div>
 
-<div class="auto-panel" id="autoPanel" style="display:none">
-<b>Auto Clicker</b><br><br>
-<button id="toggleAuto">OFF</button>
-</div>
-
 <div id="menu" class="menu-screen">
 <h2>📋 Výběr levelu</h2>
-<button class="reset-btn" id="resetBtn">RESET</button>
 <div class="levels" id="levels"></div>
 </div>
 
 </div>
 
-<div class="reset-modal" id="resetModal">
-<div class="reset-box">
-<h3>Opravdu resetovat?</h3>
-<button id="resetYes">ANO</button>
-<button id="resetNo">NE</button>
-</div>
-</div>
-
 <script>
+/* ====== PADÁNÍ OVOCE ====== */
+
+const fallingFruits=["🍪","🍉","🍎","🍌","🍍","🍊","🥒","🍅","🍑","🍇"];
+
+function createFalling(){
+  const el=document.createElement("div");
+  el.className="falling";
+  el.textContent=fallingFruits[Math.floor(Math.random()*fallingFruits.length)];
+
+  const size=Math.random()*30+20;
+  el.style.fontSize=size+"px";
+  el.style.left=Math.random()*100+"vw";
+
+  const duration=Math.random()*15+15; // 15–30 sec
+  el.style.animationDuration=duration+"s";
+
+  document.body.appendChild(el);
+
+  setTimeout(()=>el.remove(),duration*1000);
+}
+
+setInterval(createFalling,800);
+
+
+/* ====== HRA ====== */
+
 const $=id=>document.getElementById(id);
 
 const multiplierPrices=[200,500,800,1300,1999,2400,3000,4500,5500,6500];
 
 const levels=[
-["Sušenka","🍪",450],
-["Meloun","🍉",750],
-["Jablko","🍎",1000],
-["Banán","🍌",2222],
-["Ananas","🍍",3400],
-["Pomeranč","🍊",5300],
-["Okurka","🥒",6767],
-["Rajče","🍅",7432],
-["Broskev","🍑",8321],
-["Švestka","🍇",9555]
+["Sušenka","🍪",250],
+["Meloun","🍉",500],
+["Jablko","🍎",750],
+["Banán","🍌",1000],
+["Ananas","🍍",1250],
+["Pomeranč","🍊",1500],
+["Okurka","🥒",1750],
+["Rajče","🍅",2000],
+["Broskev","🍑",2250],
+["Švestka","🍇",2500]
 ];
 
 let s=JSON.parse(localStorage.getItem("fruitSave"))||{
@@ -278,7 +271,6 @@ $("buyClick").disabled=s.clickBought>=10||s.coins<kp;
 if(s.auto){
 $("autoCost").textContent="Koupeno";
 $("buyAuto").disabled=true;
-$("autoPanel").style.display="block";
 }
 }
 
@@ -288,11 +280,7 @@ s.coins+=s.coinMult;
 
 if(s.clicks[s.lvl]>=levels[s.lvl][2]){
 if(s.lvl===9){
-save();
 alert("🎉 Gratuluji, dohrál jsi hru!");
-$("game").style.display="none";
-$("menu").style.display="block";
-renderMenu();
 return;
 }
 s.unlock=Math.max(s.unlock,s.lvl+1);
@@ -326,52 +314,12 @@ $("buyAuto").onclick=()=>{
 if(s.auto||s.coins<3000)return;
 s.coins-=3000;
 s.auto=true;
+autoInterval=setInterval(doClick,1000);
 save();render();
 };
-
-$("toggleAuto").onclick=()=>{
-if(!s.auto)return;
-s.autoOn=!s.autoOn;
-$("toggleAuto").textContent=s.autoOn?"ON":"OFF";
-if(s.autoOn){
-autoInterval=setInterval(doClick,1000);
-}else{
-clearInterval(autoInterval);
-}
-};
-
-function renderMenu(){
-$("levels").innerHTML="";
-levels.forEach((l,i)=>{
-const d=document.createElement("div");
-d.className="level-item"+(i>s.unlock?" locked":"");
-d.innerHTML=`Level ${i+1} – ${l[0]} <span>${l[1]}</span>`;
-if(i<=s.unlock){
-d.onclick=()=>{
-s.lvl=i;
-save();
-$("menu").style.display="none";
-$("game").style.display="block";
-render();
-};
-}
-$("levels").appendChild(d);
-});
-}
-
-$("menuBtn").onclick=()=>{
-$("game").style.display="none";
-$("menu").style.display="block";
-renderMenu();
-};
-
-$("resetBtn").onclick=()=>$("resetModal").style.display="flex";
-$("resetNo").onclick=()=>$("resetModal").style.display="none";
-$("resetYes").onclick=()=>{localStorage.removeItem("fruitSave");location.reload();};
 
 render();
 </script>
 
 </body>
 </html>
-
