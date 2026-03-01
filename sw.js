@@ -1,8 +1,9 @@
 // Fruit Clicker Service Worker
-// Cíl: když je offline a jde o otevření stránky (navigate), vrátí offline.html
-// Assety (png/js/json) jedou cache-first.
+// - Navigace (otevření stránky/refresh): když nejde síť -> offline.html
+// - Assety: cache-first, fallback na network
+// - Update: SKIP_WAITING přes message + clients.claim
 
-const CACHE_NAME = "fruit-clicker-v3"; // 🔥 změň vždycky když chceš vynutit update
+const CACHE_NAME = "fruit-clicker-v3";
 
 const FILES = [
   "/FruitClicker/",
@@ -13,62 +14,45 @@ const FILES = [
   "/FruitClicker/sw.js",
 ];
 
+// 1) Install: nacacheuj soubory
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES))
   );
-  self.skipWaiting(); // ať se nový SW nasadí hned
+  self.skipWaiting();
 });
 
+// 2) Activate: smaž staré cache + převezmi kontrolu
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null)))
     )
   );
-  self.clients.claim(); // ať začne řídit stránky hned
+  self.clients.claim();
 });
 
+// 3) Message: umožníme index.html poslat "SKIP_WAITING"
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
+// 4) Fetch: navigace -> network, při offline -> offline.html
 self.addEventListener("fetch", (event) => {
   const req = event.request;
 
-  // 👉 každé otevření stránky (index.html / refresh)
+  // Navigace (HTML stránky)
   if (req.mode === "navigate") {
     event.respondWith(
-      fetch(req)
-        .then((res) => res)
-        .catch(() => {
-          // 🔥 když není internet → VŽDY offline stránka
-          return caches.match("/FruitClicker/offline.html");
-        })
+      fetch(req).catch(() => caches.match("/FruitClicker/offline.html"))
     );
     return;
   }
 
-  // 👉 ostatní soubory (obrázky atd.)
+  // Ostatní soubory: cache-first
   event.respondWith(
-    caches.match(req).then((cached) => {
-      return cached || fetch(req);
-    })
+    caches.match(req).then((cached) => cached || fetch(req))
   );
 });
-
-  // 2) Ostatní soubory (png/js/css/json) -> cache-first, fallback na fetch
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-          return res;
-        })
-        .catch(() => {
-          // když by něco chybělo
-          return caches.match("/FruitClicker/offline.html");
-        });
-    })
-  );
-});
-
