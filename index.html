@@ -425,15 +425,42 @@ render();
   <!-- ✅ Registrace Service Workeru -->
 <script>
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js")
-      .then(() => console.log("SW registered"))
-      .catch(err => console.log("SW error:", err));
+  window.addEventListener("load", async () => {
+    try {
+      const reg = await navigator.serviceWorker.register("/FruitClicker/sw.js", { scope: "/FruitClicker/" });
+      console.log("SW registered:", reg.scope);
+
+      // když už je update stažený a čeká, aktivuj ho hned
+      if (reg.waiting) {
+        reg.waiting.postMessage({ type: "SKIP_WAITING" });
+      }
+
+      reg.addEventListener("updatefound", () => {
+        const nw = reg.installing;
+        if (!nw) return;
+
+        nw.addEventListener("statechange", () => {
+          if (nw.state === "installed") {
+            // nový SW je stažený -> aktivuj
+            if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
+          }
+          if (nw.state === "activated") {
+            location.reload();
+          }
+        });
+      });
+
+      // když se SW změní, refresh (super spolehlivý)
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        location.reload();
+      });
+
+    } catch (err) {
+      console.log("SW error:", err);
+    }
   });
 }
 </script>
 
 </body>
 </html>
-
-
