@@ -1,20 +1,27 @@
 // Fruit Clicker Service Worker
-// Režim: když je OFFLINE a jde o otevření stránky -> vždy vrátí offline.html
 
-const CACHE_NAME = "fruit-clicker-v6";
+const CACHE_NAME = "fruit-clicker-v7";
 
 const FILES = [
-  "/FruitClicker/",
   "/FruitClicker/index.html",
   "/FruitClicker/offline.html",
   "/FruitClicker/logo.png",
-  "/FruitClicker/manifest.json",
-  "/FruitClicker/sw.js"
+  "/FruitClicker/manifest.json"
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES))
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        return Promise.all(
+          FILES.map((file) =>
+            fetch(file).then((response) => {
+              if (!response.ok) throw new Error(file + " failed");
+              return cache.put(file, response);
+            })
+          )
+        );
+      })
   );
   self.skipWaiting();
 });
@@ -22,7 +29,10 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+      Promise.all(
+        keys.filter((key) => key !== CACHE_NAME)
+            .map((key) => caches.delete(key))
+      )
     )
   );
   self.clients.claim();
@@ -31,36 +41,9 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
-  // ✅ NAVIGACE (otevření stránky / reload / přechod) -> NETWORK FIRST
-  // Offline = ukaž offline.html (i když je index.html v cache)
-  if (event.request.mode === "navigate") {
-    event.respondWith((async () => {
-      try {
-        const fresh = await fetch(event.request);
-        const cache = await caches.open(CACHE_NAME);
-        cache.put(event.request, fresh.clone());
-        return fresh;
-      } catch (e) {
-        return caches.match("/FruitClicker/offline.html");
-      }
-    })());
-    return;
-  }
-
-  // ✅ Ostatní soubory -> CACHE FIRST (rychlé)
-  event.respondWith((async () => {
-    const cached = await caches.match(event.request);
-    if (cached) return cached;
-
-    try {
-      const fresh = await fetch(event.request);
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(event.request, fresh.clone());
-      return fresh;
-    } catch (e) {
-      // když nejde síť a soubor není v cache, vrať aspoň offline stránku
+  event.respondWith(
+    fetch(event.request).catch(() => {
       return caches.match("/FruitClicker/offline.html");
-    }
-  })());
+    })
+  );
 });
-
