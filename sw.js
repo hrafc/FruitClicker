@@ -1,7 +1,7 @@
 // Fruit Clicker Service Worker
 // Režim: když je OFFLINE a jde o otevření stránky -> vždy vrátí offline.html
 
-const CACHE_NAME = "fruit-clicker-v5";
+const CACHE_NAME = "fruit-clicker-v6";
 
 const FILES = [
   "/FruitClicker/",
@@ -63,3 +63,4 @@ self.addEventListener("fetch", (event) => {
     }
   })());
 });
+
