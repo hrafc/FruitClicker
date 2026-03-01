@@ -1,6 +1,6 @@
 // Fruit Clicker Service Worker (stabilní offline + bez spam errorů)
 
-const CACHE_NAME = "fruit-clicker-v5"; // <- zvedni při změnách
+const CACHE_NAME = "fruit-clicker-v6"; // <- zvedni při změnách
 const OFFLINE_URL = "/FruitClicker/offline.html";
 const LOGO_URL = "/FruitClicker/logo.png";
 
@@ -30,40 +30,36 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
 
-  // jen GET (POST atd. neřešíme)
-  if (req.method !== "GET") return;
-
-  const url = new URL(req.url);
-
-  // 0) Favicon -> vrať logo z cache (ať to offline neřve)
-  if (url.origin === location.origin && url.pathname === "/favicon.ico") {
-    event.respondWith(
-      caches.match(LOGO_URL).then((res) => res || fetch(LOGO_URL))
-    );
-    return;
-  }
-
-  // 1) Navigace (otevření stránky / refresh)
+  // Navigace (otevření stránky / refresh)
   if (req.mode === "navigate") {
     event.respondWith(
-      fetch(req).catch(() => caches.match(OFFLINE_URL))
+      fetch(req).catch(() =>
+        caches.match("/FruitClicker/offline.html", { ignoreSearch: true })
+      )
     );
     return;
   }
 
-  // 2) Ostatní soubory (cache-first)
+  // Assety: cache-first + ignoruj ?v=...
   event.respondWith(
-    caches.match(req).then((cached) => {
+    caches.match(req, { ignoreSearch: true }).then((cached) => {
       if (cached) return cached;
 
       return fetch(req)
         .then((res) => {
           const copy = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+          const url = new URL(req.url);
+
+// ukládej do cache jen vlastní soubory (ne cizí requesty)
+if (url.origin === self.location.origin) {
+  url.search = ""; // zahodí ?v=... z GitHub Pages
+  caches.open(CACHE_NAME).then((cache) => cache.put(url.toString(), copy));
+}
           return res;
         })
-        .catch(() => cached || caches.match(OFFLINE_URL)); // fallback
+        .catch(() =>
+          caches.match("/FruitClicker/offline.html", { ignoreSearch: true })
+        );
     })
   );
 });
-
