@@ -502,13 +502,32 @@ if(s.auto){
 autoInterval=setInterval(doClick,1000);
 }
 }
-/* ======================
-   THEME SYSTEM
-====================== */
+// =================
+// THEME SYSTEM
+// =================
+
+// sem vlož celý THEMES array
 
 const THEMES = [
-   {
-   function applyTheme(){
+  {
+    id:"default",
+    name:"Kawaii Pink 🌸",
+    price:0,
+    vars:{
+      bg1:"#ffe6f0",
+      bg2:"#fff0b3",
+      bg3:"#b3f0ff",
+      bg4:"#c1ffc1",
+      card:"#fff8f0",
+      card2:"#fff0f5",
+      accent:"#ff66aa",
+      accent2:"#ff99cc",
+      text:"#222"
+    }
+  }
+];
+
+function applyTheme(){
   const t = THEMES.find(x => x.id === s.theme);
   if(!t) return;
 
@@ -516,64 +535,6 @@ const THEMES = [
   for(const key in t.vars){
     root.style.setProperty(`--${key}`, t.vars[key]);
   }
-}
-
-function renderThemeShop(){
-  const box = $("themeShop");
-  if(!box) return;
-
-  box.innerHTML = "";
-
-  THEMES.forEach(t=>{
-    const owned = s.themeOwned.includes(t.id);
-    const active = s.theme === t.id;
-
-    const card = document.createElement("div");
-    card.className = "theme-card";
-
-    const left = document.createElement("div");
-    left.className = "theme-left";
-    left.innerHTML = `
-      <div class="theme-name">${t.name}</div>
-      <div class="theme-badge">
-        ${active ? "✅ Active" : (owned ? "💖 Owned" : `🪙 ${t.price}`)}
-      </div>
-    `;
-
-    const btn = document.createElement("button");
-
-    if(active){
-      btn.textContent="Active";
-      btn.disabled=true;
-    }
-    else if(owned){
-      btn.textContent="Apply";
-      btn.onclick=()=>{
-        s.theme=t.id;
-        save();
-        applyTheme();
-        renderThemeShop();
-      };
-    }
-    else{
-      btn.textContent="Buy";
-      btn.disabled=s.coins<t.price;
-      btn.onclick=()=>{
-        if(s.coins<t.price) return;
-        s.coins-=t.price;
-        s.themeOwned.push(t.id);
-        s.theme=t.id;
-        save();
-        applyTheme();
-        render();
-        renderThemeShop();
-      };
-    }
-
-    card.appendChild(left);
-    card.appendChild(btn);
-    box.appendChild(card);
-  });
 }
 /* ====== FALLING FRUIT ====== */
 const bgFruits=["🍓","🍌","🍉","🍍","🍎","🍑","🍊"];
@@ -848,6 +809,7 @@ navigator.serviceWorker.addEventListener("controllerchange", () => {
 
 </body>
 </html>
+
 
 
 
