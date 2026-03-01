@@ -295,14 +295,14 @@ body{
 <div class="progress"><div class="bar" id="bar"></div></div>
 <div id="needText"></div>
 
-<h3>⬆️ UPGRADY</h3>
+<h3>⬆️ UPGRADES</h3>
 
 <div class="upgrade">
 <div>
 <b>Auto Clicker</b><br>
-<small id="autoCost">Cena: 3000</small>
+<small id="autoCost">Price: 3000</small>
 </div>
-<button id="buyAuto">Koupit</button>
+<button id="buyAuto">Buy</button>
 </div>
 
 <div class="upgrade">
@@ -311,7 +311,7 @@ body{
 <span id="coinInfo"></span><br>
 <small id="coinCost"></small>
 </div>
-<button id="buyCoin">Koupit</button>
+<button id="buyCoin">Buy</button>
 </div>
 
 <div class="upgrade">
@@ -320,13 +320,13 @@ body{
 <span id="clickInfo"></span><br>
 <small id="clickCost"></small>
 </div>
-<button id="buyClick">Koupit</button>
+<button id="buyClick">Buy</button>
 </div>
 
 </div>
 
 <div id="menu" class="menu-screen">
-<h2>📋 Výběr levelu</h2>
+<h2>📋 Level selection</h2>
 <div class="levels" id="levels"></div>
 
 <!-- ✅ RESET BUTTON ONLY IN MENU -->
@@ -337,7 +337,7 @@ body{
 <div id="resetModal" class="kawaii-overlay kawaii-hidden">
   <div class="kawaii-card">
     <div class="kawaii-title">🍪 Reset progress?</div>
-    <div class="kawaii-text">Sušenka říká: “Jsi si fakt jistý?” 🥺</div>
+    <div class="kawaii-text">Cookie says: “Are you sure ??” 🥺</div>
 
     <div class="kawaii-actions">
       <button id="resetNo" class="kawaii-btn ghost">Ne</button>
@@ -348,17 +348,17 @@ body{
 
 <div id="mathModal" class="kawaii-overlay kawaii-hidden">
   <div class="kawaii-card">
-    <div class="kawaii-title">✨ Mini příklad</div>
-    <div class="kawaii-text">Spočítej: <b id="mathQ"></b></div>
+    <div class="kawaii-title">✨ Verification</div>
+    <div class="kawaii-text">Answer: <b id="mathQ"></b></div>
 
     <input id="mathA" class="kawaii-input" inputmode="numeric" placeholder="odpověď…" />
 
     <div class="kawaii-actions">
-      <button id="mathCancel" class="kawaii-btn ghost">Zpět</button>
+      <button id="mathCancel" class="kawaii-btn ghost">Back</button>
       <button id="mathOk" class="kawaii-btn">OK</button>
     </div>
 
-    <div id="mathErr" class="kawaii-error kawaii-hidden">Špatně 😭 zkus znovu</div>
+    <div id="mathErr" class="kawaii-error kawaii-hidden">Wrong 😭 try again</div>
   </div>
 </div>
 
@@ -368,16 +368,16 @@ const $=id=>document.getElementById(id);
 const multiplierPrices=[200,500,800,1300,1999,2400,3000,4500,5500,6500];
 
 const levels=[
-["Sušenka","🍪",250],
-["Meloun","🍉",500],
-["Jablko","🍎",750],
-["Banán","🍌",1000],
-["Ananas","🍍",1250],
-["Pomeranč","🍊",1500],
-["Okurka","🥒",1750],
-["Rajče","🍅",2000],
-["Broskev","🍑",2250],
-["Švestka","🍇",2500]
+["Cookie","🍪",250],
+["Watermelon","🍉",500],
+["Apple","🍎",750],
+["Banana","🍌",1000],
+["Pineapple","🍍",1250],
+["Orange","🍊",1500],
+["Pickle","🥒",1750],
+["Tomato","🍅",2000],
+["Peach","🍑",2250],
+["Plum","🍇",2500]
 ];
 
 let s=JSON.parse(localStorage.getItem("fruitSave"))||{
@@ -662,3 +662,4 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
