@@ -1,1 +1,116 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fruit Clicker – Offline</title>
+  <link rel="icon" href="./logo.png">
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family:'Comic Sans MS','Segoe UI',cursive,sans-serif;
+      background: linear-gradient(160deg, #ffe6f0, #fff0b3, #b3f0ff, #c1ffc1);
+      overflow:hidden;
+    }
+    .card{
+      width:min(560px,92vw);
+      background:rgba(255,248,240,.92);
+      border-radius:30px;
+      padding:26px 26px 22px;
+      text-align:center;
+      box-shadow:0 22px 50px rgba(0,0,0,.18);
+      border:2px solid rgba(255,255,255,.6);
+      position:relative;
+      z-index:2;
+    }
+    .logo{
+      width:120px;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,.18));
+      border-radius:22px;
+    }
+    h1{margin:14px 0 6px; font-size:34px}
+    p{margin:0; opacity:.85; font-size:16px}
+    .row{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      margin-top:16px;
+      flex-wrap:wrap;
+    }
+    button{
+      border:none;
+      padding:12px 18px;
+      border-radius:999px;
+      font-weight:800;
+      cursor:pointer;
+      background:#ff66aa;
+      color:#fff;
+      box-shadow:0 10px 20px rgba(255,102,170,.35);
+      transition:.15s;
+    }
+    button:hover{transform:translateY(-2px)}
+    button:active{transform:translateY(0) scale(.98)}
+    .ghost{
+      background:rgba(0,0,0,.06);
+      color:#111;
+      box-shadow:none;
+    }
+    /* cute falling sparkles */
+    .spark{
+      position:fixed;
+      top:-40px;
+      pointer-events:none;
+      opacity:.65;
+      font-size:22px;
+      animation: fall linear infinite;
+      z-index:1;
+    }
+    @keyframes fall{
+      to{ transform: translateY(120vh) rotate(360deg); }
+    }
+    .dino{
+      margin-top:14px;
+      font-size:14px;
+      opacity:.7;
+      user-select:none;
+    }
+    .dino b{opacity:1}
+  </style>
+</head>
+<body>
 
+  <div class="card">
+    <img class="logo" src="./logo.png" alt="Fruit Clicker logo">
+    <h1>Jsi offline 📴</h1>
+    <p>Internet je pryč, ale hra bude zase hned jak se připojíš 😊</p>
+
+    <div class="row">
+      <button onclick="location.reload()">🔄 Zkusit znovu</button>
+      <button class="ghost" onclick="alert('🦖 Drak říká: Zapni net a jdeme dál!')">🦖 Drak</button>
+    </div>
+
+    <div class="dino">Tip: Dino z Chromu se ukáže, když stránka není v cache. Teď už máš <b>vlastní</b> offline screen 😄</div>
+  </div>
+
+<script>
+  // pastel sparkles in background
+  const icons = ["✨","⭐","💖","🍓","🍪","🌸"];
+  for(let i=0;i<18;i++){
+    const s=document.createElement("div");
+    s.className="spark";
+    s.textContent=icons[Math.floor(Math.random()*icons.length)];
+    s.style.left=(Math.random()*100)+"vw";
+    const dur=8+Math.random()*10;
+    s.style.animationDuration=dur+"s";
+    s.style.animationDelay=(-Math.random()*dur)+"s";
+    s.style.fontSize=(16+Math.random()*18)+"px";
+    document.body.appendChild(s);
+  }
+</script>
+
+</body>
+</html>
