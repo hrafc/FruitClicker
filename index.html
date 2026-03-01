@@ -417,10 +417,16 @@ body{
 </div>
 
 <div id="menu" class="menu-screen">
-<h2>📋 Level selection</h2>
-<div class="levels" id="levels"></div>
-    <h2 style="margin-top:20px;">🎨 Themes Shop</h2>
-  <div class="theme-shop" id="themeShop"></div>
+  <h2>📋 Level selection</h2>
+  <div class="levels" id="levels"></div>
+  <!-- 👇 NOVÉ tlačítko -->
+  <button id="themeBtn" class="reset-btn" style="margin-top:14px;">🎨 Themes Shop</button>
+
+  <!-- 👇 Shop panel (toggle) -->
+  <div id="shopPanel" style="display:none; margin-top:12px;">
+    <h2 style="margin-top:6px;">🎨 Themes Shop</h2>
+    <div class="theme-shop" id="themeShop"></div>
+  </div>
 </div>
 
 <!-- ✅ RESET BUTTON ONLY IN MENU -->
@@ -551,10 +557,62 @@ const THEMES = [
 ];
 
 function applyTheme(){
-  const t = THEMES.find(x => x.id === s.theme) || THEMES[0];
-  const root = document.documentElement;
-  for(const key in t.vars){
-    root.style.setProperty(`--${key}`, t.vars[key]);
+  function renderThemeShop(){
+  const box = $("themeShop");
+  if(!box) return;
+
+  box.innerHTML = "";
+
+  THEMES.forEach(t=>{
+    const owned = s.themeOwned?.includes(t.id);
+    const active = s.theme === t.id;
+
+    const card = document.createElement("div");
+    card.className = "theme-card";
+
+    const left = document.createElement("div");
+    left.className = "theme-left";
+    left.innerHTML = `
+      <div class="theme-name">${t.name}</div>
+      <div class="theme-badge">
+        ${active ? "✅ Active" : (owned ? "💖 Owned" : `🪙 ${t.price}`)}
+      </div>
+    `;
+
+    const btn = document.createElement("button");
+
+    if(active){
+      btn.textContent = "Active";
+      btn.disabled = true;
+    } else if(owned){
+      btn.textContent = "Apply";
+      btn.onclick = ()=>{
+        s.theme = t.id;
+        save();
+        applyTheme();
+        renderThemeShop();
+      };
+    } else {
+      btn.textContent = "Buy";
+      btn.disabled = s.coins < t.price;
+      btn.onclick = ()=>{
+        if(s.coins < t.price) return;
+        s.coins -= t.price;
+        s.themeOwned.push(t.id);
+        s.theme = t.id;
+        save();
+        applyTheme();
+        renderThemeShop();
+        render(); // aby se aktualizovaly coiny nahoře
+        spawnConfetti();
+      };
+    }
+
+    card.appendChild(left);
+    card.appendChild(btn);
+    box.appendChild(card);
+  });
+}
   }
 }
 /* ====== FALLING FRUIT ====== */
@@ -755,6 +813,13 @@ $("game").style.display="block";
 }
 
 $("menuBtn").onclick=()=>{
+   // 🎨 Themes shop toggle button
+$("themeBtn").onclick = ()=>{
+  const p = $("shopPanel");
+  const isOpen = p.style.display === "block";
+  p.style.display = isOpen ? "none" : "block";
+  if(!isOpen) renderThemeShop();
+};
 if($("menu").style.display==="block"){
 showGame();
 }else{
@@ -777,6 +842,7 @@ $("mathA").addEventListener("keydown",(e)=>{
 startAuto();
 applyTheme();
 render();
+renderThemeShop(); // aby se shop hned naplnil (i když je schovaný)
 </script>
 
 <!-- ✅ Registrace Service Workeru -->
@@ -821,6 +887,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
