@@ -29,9 +29,7 @@ body{
 }
 
 @keyframes fall{
-  to{
-    transform:translateY(110vh);
-  }
+  to{ transform:translateY(110vh); }
 }
 
 /* ====== KARTA ====== */
@@ -193,32 +191,6 @@ body{
 </div>
 
 <script>
-/* ====== PADÁNÍ OVOCE ====== */
-
-const fallingFruits=["🍪","🍉","🍎","🍌","🍍","🍊","🥒","🍅","🍑","🍇"];
-
-function createFalling(){
-  const el=document.createElement("div");
-  el.className="falling";
-  el.textContent=fallingFruits[Math.floor(Math.random()*fallingFruits.length)];
-
-  const size=Math.random()*30+20;
-  el.style.fontSize=size+"px";
-  el.style.left=Math.random()*100+"vw";
-
-  const duration=Math.random()*15+15; // 15–30 sec
-  el.style.animationDuration=duration+"s";
-
-  document.body.appendChild(el);
-
-  setTimeout(()=>el.remove(),duration*1000);
-}
-
-setInterval(createFalling,800);
-
-
-/* ====== HRA ====== */
-
 const $=id=>document.getElementById(id);
 
 const multiplierPrices=[200,500,800,1300,1999,2400,3000,4500,5500,6500];
@@ -241,12 +213,19 @@ lvl:0,unlock:0,clicks:Array(10).fill(0),
 coins:0,
 coinMult:1,clickMult:1,
 coinBought:0,clickBought:0,
-auto:false,autoOn:false
+auto:false
 };
 
 let autoInterval=null;
 
 function save(){localStorage.setItem("fruitSave",JSON.stringify(s));}
+
+function startAuto(){
+if(autoInterval) clearInterval(autoInterval);
+if(s.auto){
+autoInterval=setInterval(doClick,1000);
+}
+}
 
 function render(){
 const l=levels[s.lvl];
@@ -272,6 +251,26 @@ if(s.auto){
 $("autoCost").textContent="Koupeno";
 $("buyAuto").disabled=true;
 }
+
+renderLevels();
+}
+
+function renderLevels(){
+$("levels").innerHTML="";
+levels.forEach((lvl,i)=>{
+const div=document.createElement("div");
+div.className="level-item"+(i>s.unlock?" locked":"");
+div.textContent=`Level ${i+1} – ${lvl[0]}`;
+if(i<=s.unlock){
+div.onclick=()=>{
+s.lvl=i;
+save();
+render();
+showGame();
+};
+}
+$("levels").appendChild(div);
+});
 }
 
 function doClick(){
@@ -279,12 +278,10 @@ s.clicks[s.lvl]+=s.clickMult;
 s.coins+=s.coinMult;
 
 if(s.clicks[s.lvl]>=levels[s.lvl][2]){
-if(s.lvl===9){
-alert("🎉 Gratuluji, dohrál jsi hru!");
-return;
-}
+if(s.lvl<9){
 s.unlock=Math.max(s.unlock,s.lvl+1);
 s.lvl++;
+}
 }
 save();
 render();
@@ -296,7 +293,7 @@ $("buyCoin").onclick=()=>{
 const price=multiplierPrices[s.coinBought];
 if(s.coinBought>=10||s.coins<price)return;
 s.coins-=price;
-s.coinMult+=1;
+s.coinMult++;
 s.coinBought++;
 save();render();
 };
@@ -305,7 +302,7 @@ $("buyClick").onclick=()=>{
 const price=multiplierPrices[s.clickBought];
 if(s.clickBought>=10||s.coins<price)return;
 s.coins-=price;
-s.clickMult+=1;
+s.clickMult++;
 s.clickBought++;
 save();render();
 };
@@ -314,10 +311,29 @@ $("buyAuto").onclick=()=>{
 if(s.auto||s.coins<3000)return;
 s.coins-=3000;
 s.auto=true;
-autoInterval=setInterval(doClick,1000);
+startAuto();
 save();render();
 };
 
+function showMenu(){
+$("game").style.display="none";
+$("menu").style.display="block";
+}
+
+function showGame(){
+$("menu").style.display="none";
+$("game").style.display="block";
+}
+
+$("menuBtn").onclick=()=>{
+if($("menu").style.display==="block"){
+showGame();
+}else{
+showMenu();
+}
+};
+
+startAuto();
 render();
 </script>
 
