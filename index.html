@@ -5,103 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fruit Clicker 🌸</title>
 
-<!-- ✅ LOGO / IKONA (favicon) -->
 <link rel="icon" type="image/png" href="logo.png?v=5">
 <link rel="apple-touch-icon" href="logo.png?v=5">
 <meta name="theme-color" content="#ff66aa">
-   <style>
-:root {
-  --bg1: #ffe6f0;
-  --bg2: #fff0b3;
-  --bg3: #b3f0ff;
-  --bg4: #c1ffc1;
-  --card: #fff8f0;
-  --card2:#fff0f5;
-  --accent:#ff66aa;
-  --accent2:#ff99cc;
-  --text:#222;
-}
-/* =========================
-   THEMES (ADVANCED + SAVE)
-   ========================= */
 
-/* apply variables */
-body{
-  background: linear-gradient(160deg, var(--bg1), var(--bg2), var(--bg3), var(--bg4)) !important;
-  color: var(--text);
-}
-.app{ background: var(--card) !important; }
-.upgrade, .level-item{ background: var(--card2) !important; }
-.menu-btn{ background: var(--accent) !important; }
-.menu-btn:hover{ background: #ff3399 !important; }
-.top-left{ background: var(--accent2) !important; }
-
-/* cute theme cards in shop */
-.theme-shop{
-  margin-top: 14px;
-  display:grid;
-  gap:12px;
-}
-.theme-card{
-  background: #ffffffaa;
-  border-radius: 20px;
-  padding: 14px;
-  box-shadow:0 8px 16px rgba(0,0,0,0.08);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-.theme-left{
-  text-align:left;
-}
-.theme-name{
-  font-weight:900;
-}
-.theme-badge{
-  display:inline-block;
-  margin-top:6px;
-  font-size:12px;
-  padding:4px 10px;
-  border-radius:999px;
-  background: #ffe6f0;
-}
-.theme-card button{
-  background: var(--accent2);
-  border:none;
-  color:white;
-  padding:10px 16px;
-  border-radius:999px;
-  cursor:pointer;
-  font-weight:900;
-  transition:.15s;
-}
-.theme-card button:hover:not(:disabled){
-  transform: scale(1.06);
-  background: var(--accent);
-}
-.theme-card button:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
+<style>
 *{user-select:none; box-sizing:border-box; margin:0; padding:0;}
-:root {
-  --bg1: #ffe6f0;
-  --bg2: #fff0b3;
-  --bg3: #b3f0ff;
-  --bg4: #c1ffc1;
-  --card: #fff8f0;
-}
+
 body{
   font-family:'Comic Sans MS','Segoe UI',cursive,sans-serif;
-  background: linear-gradient(160deg, var(--bg1), var(--bg2), var(--bg3), var(--bg4));
+  background: linear-gradient(160deg,#ffe6f0,#fff0b3,#b3f0ff,#c1ffc1);
   min-height:100vh;
   display:grid;
   place-items:center;
   overflow:hidden;
 }
 
-/* ====== FALLING FRUIT ====== */
 .falling{
   position:fixed;
   top:-50px;
@@ -109,32 +28,27 @@ body{
   z-index:0;
   opacity:.8;
   font-size:50px;
-  user-select:none;
-  animation-name:fall;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
+  animation:fall linear infinite;
 }
 
 @keyframes fall{
-  0% { transform: translateY(-50px); }
-  100% { transform: translateY(110vh); }
+  0%{transform:translateY(-50px);}
+  100%{transform:translateY(110vh);}
 }
 
-/* ====== APP CARD ====== */
 .app{
-  background: var(--card);
+  background:#fff8f0;
   border-radius:32px;
   padding:25px;
-  width:min(900px, 92vw);   /* ✅ větší karta */
-  transform: scale(1.15);   /* ✅ zvětší všechno uvnitř */
-  transform-origin: center;
+  width:min(900px,92vw);
+  transform:scale(1.15);
+  transform-origin:center;
   text-align:center;
   box-shadow:0 20px 40px rgba(0,0,0,0.15);
   position:relative;
   z-index:1;
 }
 
-/* ====== TOP LEFT COINS ====== */
 .top-left{
   position:absolute;
   top:14px;
@@ -144,10 +58,8 @@ body{
   padding:8px 14px;
   border-radius:999px;
   font-weight:900;
-  box-shadow:0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* ====== MENU BUTTON ====== */
 .menu-btn{
   position:absolute;
   top:14px;
@@ -158,27 +70,14 @@ body{
   border-radius:999px;
   cursor:pointer;
   font-weight:800;
-  transition:0.2s;
-  box-shadow:0 4px 10px rgba(0,0,0,0.2);
-}
-.menu-btn:hover{
-  transform: scale(1.1);
-  background:#ff3399;
 }
 
-/* ====== FRUIT ====== */
 .fruit{
   font-size:140px;
   cursor:pointer;
-  transition: transform 0.2s;
-  text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
   margin:12px 0;
 }
-.fruit:active{
-  transform: scale(1.2) rotate(15deg);
-}
 
-/* ====== PROGRESS BAR ====== */
 .progress{
   height:20px;
   background:#ffe6f0;
@@ -190,10 +89,8 @@ body{
   height:100%;
   background: linear-gradient(90deg,#ff99cc,#ff66aa,#ff3399);
   width:0%;
-  transition: width 0.3s;
 }
 
-/* ====== UPGRADES ====== */
 .upgrade{
   background:#fff0f5;
   border-radius:20px;
@@ -202,12 +99,8 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  box-shadow:0 10px 20px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
 }
-.upgrade:hover{
-  transform: translateY(-3px);
-}
+
 .upgrade button{
   background:#ff99cc;
   border:none;
@@ -216,26 +109,10 @@ body{
   border-radius:24px;
   font-weight:bold;
   cursor:pointer;
-  transition: transform 0.2s, background 0.3s;
-}
-.upgrade button:hover:not(:disabled){
-  transform: scale(1.1);
-  background:#ff66aa;
-}
-.upgrade button:active:not(:disabled){
-  transform: scale(0.95);
-}
-.upgrade button:disabled{
-  opacity:.5;
-  cursor:not-allowed;
 }
 
-/* ====== MENU SCREEN ====== */
 .menu-screen{display:none; margin-top:20px;}
-.levels{
-  display:grid;
-  gap:12px;
-}
+.levels{display:grid; gap:12px;}
 .level-item{
   background:#fff0f5;
   padding:14px;
@@ -244,129 +121,26 @@ body{
   justify-content:space-between;
   cursor:pointer;
   font-weight:700;
-  box-shadow:0 8px 16px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
-}
-.level-item:hover:not(.locked){
-  transform: translateY(-3px);
 }
 .level-item.locked{
   opacity:.4;
   cursor:not-allowed;
 }
 
-/* ====== CONFETTI ====== */
-.confetti-piece{
-  position:fixed;
-  width:10px;
-  height:10px;
-  background-color:red;
-  z-index:2;
-  pointer-events:none;
-  opacity:0.9;
-  border-radius:50%;
-  animation:confetti-fall linear forwards;
-}
-@keyframes confetti-fall{
-  to{
-    transform: translate(var(--x), 100vh) rotate(360deg);
-    opacity:0;
-  }
-}
-
-/* ====== KAWAII RESET SYSTEM ====== */
 .reset-btn{
   width:100%;
   margin-top:14px;
-  background: linear-gradient(135deg,#ff9ad5,#ffd1ea);
+  background:linear-gradient(135deg,#ff9ad5,#ffd1ea);
   border:none;
-  color:#7a1d52;
-  padding:12px 16px;
+  padding:12px;
   border-radius:18px;
   font-weight:900;
   cursor:pointer;
-  box-shadow:0 12px 22px rgba(0,0,0,0.12);
-  transition: transform .12s ease, filter .2s ease;
-}
-.reset-btn:hover{ transform: translateY(-1px) scale(1.01); filter: brightness(1.03); }
-.reset-btn:active{ transform: translateY(1px) scale(.99); }
-
-.kawaii-overlay{
-  position:fixed; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  background:rgba(0,0,0,.25);
-  backdrop-filter: blur(6px);
-  z-index:9999;
-}
-.kawaii-hidden{ display:none !important; }
-
-.kawaii-card{
-  width:min(460px,92vw);
-  background:rgba(255,255,255,.94);
-  border-radius:26px;
-  padding:18px 18px 16px;
-  box-shadow:0 24px 70px rgba(0,0,0,.20);
-  border:2px solid rgba(255,170,220,.35);
-  text-align:center;
-  position:relative;
 }
 
-.kawaii-title{
-  font-size:20px;
-  font-weight:900;
-  margin-bottom:8px;
-}
-.kawaii-text{ opacity:.92; margin-bottom:14px; }
-
-.kawaii-actions{
-  display:flex; gap:10px;
-  justify-content:center;
-  margin-top:10px;
-}
-
-.kawaii-btn{
-  padding:10px 14px;
-  border:none;
-  border-radius:14px;
-  cursor:pointer;
-  font-weight:900;
-  background:linear-gradient(135deg,#ff7ec8,#ffd2ea);
-  box-shadow:0 10px 20px rgba(0,0,0,.12);
-}
-.kawaii-btn.ghost{
-  background:rgba(255,255,255,.9);
-  border:2px solid rgba(255,150,210,.45);
-}
-.kawaii-btn.danger{
-  background:linear-gradient(135deg,#ff5b7a,#ffb3c1);
-  color:white;
-}
-
-.kawaii-input{
-  width:100%;
-  padding:10px 12px;
-  border-radius:14px;
-  border:2px solid rgba(255,150,210,.35);
-  outline:none;
-  font-size:16px;
-  margin-top:8px;
-}
-
-.kawaii-error{
-  margin-top:10px;
-  font-weight:900;
-  color:#c4003a;
-}
-      /* 📱 Mobile fix – aby se to na malém displeji nerozbilo */
-@media (max-width: 520px){
-  .app{
-    transform: scale(1);
-    width: 94vw;
-  }
-
-  .fruit{
-    font-size:110px;
-  }
+@media (max-width:520px){
+  .app{transform:scale(1);width:94vw;}
+  .fruit{font-size:110px;}
 }
 </style>
 </head>
@@ -379,7 +153,6 @@ body{
 <div class="menu-btn" id="menuBtn">🏠 Menu</div>
 
 <div id="game">
-
 <h1>🍓 Fruit Clicker 🌸</h1>
 <div id="levelText"></div>
 <div class="fruit" id="fruit"></div>
@@ -390,77 +163,28 @@ body{
 <h3>⬆️ UPGRADES</h3>
 
 <div class="upgrade">
-<div>
-<b>Auto Clicker</b><br>
-<small id="autoCost">Price: 3000</small>
-</div>
+<div><b>Auto Clicker</b><br><small id="autoCost">Price: 3000</small></div>
 <button id="buyAuto">Buy</button>
 </div>
 
 <div class="upgrade">
-<div>
-<b>Coin Multiplier</b><br>
-<span id="coinInfo"></span><br>
-<small id="coinCost"></small>
-</div>
+<div><b>Coin Multiplier</b><br><span id="coinInfo"></span><br><small id="coinCost"></small></div>
 <button id="buyCoin">Buy</button>
 </div>
 
 <div class="upgrade">
-<div>
-<b>Click Multiplier</b><br>
-<span id="clickInfo"></span><br>
-<small id="clickCost"></small>
-</div>
+<div><b>Click Multiplier</b><br><span id="clickInfo"></span><br><small id="clickCost"></small></div>
 <button id="buyClick">Buy</button>
 </div>
 
 </div>
 
 <div id="menu" class="menu-screen">
-  <h2>📋 Level selection</h2>
-  <div class="levels" id="levels"></div>
-  <!-- 👇 NOVÉ tlačítko -->
-  <button id="themeBtn" class="reset-btn" style="margin-top:14px;">🎨 Themes Shop</button>
-
-  <!-- 👇 Shop panel (toggle) -->
-  <div id="shopPanel" style="display:none; margin-top:12px;">
-    <h2 style="margin-top:6px;">🎨 Themes Shop</h2>
-    <div class="theme-shop" id="themeShop"></div>
-  </div>
+<h2>📋 Level selection</h2>
+<div class="levels" id="levels"></div>
 </div>
 
-<!-- ✅ RESET BUTTON ONLY IN MENU -->
 <button id="resetBtn" class="reset-btn">🧁 Reset progress</button>
-</div>
-
-<!-- ====== KAWAII RESET MODALS ====== -->
-<div id="resetModal" class="kawaii-overlay kawaii-hidden">
-  <div class="kawaii-card">
-    <div class="kawaii-title">🍪 Reset progress?</div>
-    <div class="kawaii-text">Cookie says: “Are you sure ??” 🥺</div>
-
-    <div class="kawaii-actions">
-      <button id="resetNo" class="kawaii-btn ghost">No</button>
-      <button id="resetYes" class="kawaii-btn danger">Yes</button>
-    </div>
-  </div>
-</div>
-
-<div id="mathModal" class="kawaii-overlay kawaii-hidden">
-  <div class="kawaii-card">
-    <div class="kawaii-title">✨ Verification</div>
-    <div class="kawaii-text">Answer: <b id="mathQ"></b></div>
-
-    <input id="mathA" class="kawaii-input" inputmode="numeric" placeholder="answer…" />
-
-    <div class="kawaii-actions">
-      <button id="mathCancel" class="kawaii-btn ghost">Back</button>
-      <button id="mathOk" class="kawaii-btn">OK</button>
-    </div>
-
-    <div id="mathErr" class="kawaii-error kawaii-hidden">Wrong 😭 try again</div>
-  </div>
 </div>
 
 <script>
@@ -482,14 +206,12 @@ const levels=[
 ];
 
 let s = JSON.parse(localStorage.getItem("fruitSave")) || {
-  lvl:0, unlock:0, clicks:Array(10).fill(0),
-  coins:0,
-  coinMult:1, clickMult:1,
-  coinBought:0, clickBought:0,
-  auto:false,
-  theme:"default",
-  themeOwned:["default"],
-  completed:false
+lvl:0, unlock:0, clicks:Array(10).fill(0),
+coins:0,
+coinMult:1, clickMult:1,
+coinBought:0, clickBought:0,
+auto:false,
+completed:false
 };
 
 let autoInterval=null;
@@ -498,133 +220,7 @@ function save(){localStorage.setItem("fruitSave",JSON.stringify(s));}
 
 function startAuto(){
 if(autoInterval) clearInterval(autoInterval);
-if(s.auto){
-autoInterval=setInterval(doClick,1000);
-}
-}
-// =================
-// THEME SYSTEM
-// =================
-
-// sem vlož celý THEMES array
-
-const THEMES = [
-  {
-    id:"default",
-    name:"Kawaii Pink 🌸",
-    price:0,
-    vars:{
-      bg1:"#ffe6f0",
-      bg2:"#fff0b3",
-      bg3:"#b3f0ff",
-      bg4:"#c1ffc1",
-      card:"#fff8f0",
-      card2:"#fff0f5",
-      accent:"#ff66aa",
-      accent2:"#ff99cc",
-      text:"#222"
-    }
-  }
-];
-
-function applyTheme(){
-  const t = THEMES.find(x => x.id === s.theme);
-  if(!t) return;
-
-  const root = document.documentElement;
-  for(const key in t.vars){
-    root.style.setProperty(`--${key}`, t.vars[key]);
-  }
-}
-/* ====== FALLING FRUIT ====== */
-const bgFruits=["🍓","🍌","🍉","🍍","🍎","🍑","🍊"];
-for(let i=0;i<20;i++){
-  const f=document.createElement("div");
-  f.className="falling";
-  f.textContent=bgFruits[Math.floor(Math.random()*bgFruits.length)];
-  f.style.left=Math.random()*100+"vw";
-  let speed=8+Math.random()*10;   // ✅ pomale "lazo plazo"
-  f.style.animationDuration=speed+"s";
-  f.style.fontSize=(28+Math.random()*44)+"px";
-  f.style.animationDelay=(-Math.random()*speed)+"s"; // ✅ aby nepadaly všechny najednou
-  document.body.appendChild(f);
-}
-
-/* ====== CONFETTI ====== */
-function spawnConfetti(){
-  for(let i=0;i<40;i++){
-    const c=document.createElement("div");
-    c.className="confetti-piece";
-    c.style.background=["#ff66aa","#ff99cc","#ffe6f0","#ffcc99","#ffff99","#b3f0ff","#c1ffc1"][Math.floor(Math.random()*7)];
-    c.style.left=(Math.random()*window.innerWidth)+"px";
-    c.style.top="-10px";
-    c.style.setProperty('--x', (Math.random()*160-80)+'px');
-    c.style.animationDuration=(1.2+Math.random()*1.3)+'s';
-    document.body.appendChild(c);
-    setTimeout(()=>c.remove(),2600);
-  }
-}
-
-/* ====== KAWAII RESET SYSTEM (ONLY LOCAL USER) ====== */
-const resetModal = $("resetModal");
-const mathModal  = $("mathModal");
-let mathAnswer = null;
-
-function openModal(el){ el.classList.remove("kawaii-hidden"); }
-function closeModal(el){ el.classList.add("kawaii-hidden"); }
-
-function askReset(source="menu"){
-  spawnConfetti();
-  setTimeout(spawnConfetti, 200);
-  openModal(resetModal);
-}
-
-function genMath(){
-  const a = 2 + Math.floor(Math.random()*8); // 2..9
-  const b = 1 + Math.floor(Math.random()*9); // 1..9
-  const c = 1 + Math.floor(Math.random()*6); // 1..6
-
-  if (Math.random() < 0.5) {
-    const ans = (a + b) - c;
-    return { q: `(${a} + ${b}) - ${c}`, ans };
-  } else {
-    const ans = a + (b - c);
-    return { q: `${a} + (${b} - ${c})`, ans };
-  }
-}
-
-function startResetFlow(){
-  closeModal(resetModal);
-
-  const { q, ans } = genMath();
-  mathAnswer = ans;
-
-  $("mathQ").textContent = q;
-  $("mathA").value = "";
-  $("mathErr").classList.add("kawaii-hidden");
-
-  openModal(mathModal);
-  setTimeout(()=> $("mathA").focus(), 30);
-}
-
-function resetProgressLocal(){
-  localStorage.removeItem("fruitSave");
-  location.reload();
-}
-
-function checkMathAndReset(){
-  const v = $("mathA").value.trim();
-  const n = Number(v);
-
-  if (!Number.isFinite(n) || n !== mathAnswer) {
-    $("mathErr").classList.remove("kawaii-hidden");
-    spawnConfetti();
-    return;
-  }
-
-  spawnConfetti();
-  setTimeout(spawnConfetti, 200);
-  resetProgressLocal();
+if(s.auto) autoInterval=setInterval(doClick,1000);
 }
 
 function render(){
@@ -639,19 +235,6 @@ $("bar").style.width=Math.min(100,(s.clicks[s.lvl]/l[2])*100)+"%";
 $("coinInfo").textContent=`${s.coinMult}×`;
 $("clickInfo").textContent=`${s.clickMult}×`;
 
-const cp=multiplierPrices[s.coinBought];
-$("coinCost").textContent=s.coinBought>=10?"MAX":`Price: ${cp}`;
-$("buyCoin").disabled=s.coinBought>=10||s.coins<cp;
-
-const kp=multiplierPrices[s.clickBought];
-$("clickCost").textContent=s.clickBought>=10?"MAX":`Price: ${kp}`;
-$("buyClick").disabled=s.clickBought>=10||s.coins<kp;
-
-if(s.auto){
-$("autoCost").textContent="Bought";
-$("buyAuto").disabled=true;
-}
-
 renderLevels();
 }
 
@@ -662,12 +245,7 @@ const div=document.createElement("div");
 div.className="level-item"+(i>s.unlock?" locked":"");
 div.textContent=`Level ${i+1} – ${lvl[0]}`;
 if(i<=s.unlock){
-div.onclick=()=>{
-s.lvl=i;
-save();
-render();
-showGame();
-};
+div.onclick=()=>{s.lvl=i;save();render();showGame();};
 }
 $("levels").appendChild(div);
 });
@@ -678,18 +256,10 @@ s.clicks[s.lvl]+=s.clickMult;
 s.coins+=s.coinMult;
 
 if(s.clicks[s.lvl]>=levels[s.lvl][2]){
-  spawnConfetti(); // ✅ confetti při level-upu
-  if(s.lvl<9){
-    s.unlock=Math.max(s.unlock,s.lvl+1);
-    s.lvl++;
-  } else {
-    // ✅ dohraná CELÁ hra (poslední level) -> ukázat reset tabulku
-    if(!s.completed){
-      s.completed = true;
-      save();
-      setTimeout(()=> askReset("win"), 250);
-    }
-  }
+if(s.lvl<9){
+s.unlock=Math.max(s.unlock,s.lvl+1);
+s.lvl++;
+}
 }
 save();
 render();
@@ -732,88 +302,20 @@ function showGame(){
 $("menu").style.display="none";
 $("game").style.display="block";
 }
-$("menuBtn").onclick = () => {
-  if ($("menu").style.display === "block") {
-    showGame();
-  } else {
-    showMenu();
-  }
+
+$("menuBtn").onclick=()=>{
+if($("menu").style.display==="block") showGame();
+else showMenu();
 };
 
-$("themeBtn").onclick = () => {
-  const p = $("shopPanel");
-  const isOpen = p.style.display === "block";
-  p.style.display = isOpen ? "none" : "block";
-  if (!isOpen) renderThemeShop();
+$("resetBtn").onclick=()=>{
+localStorage.removeItem("fruitSave");
+location.reload();
 };
-/* ====== RESET BUTTON EVENTS (MENU ONLY) ====== */
-$("resetBtn").onclick = () => askReset("menu");
-
-$("resetNo").onclick  = () => closeModal(resetModal);
-$("resetYes").onclick = () => startResetFlow();
-
-$("mathCancel").onclick = () => closeModal(mathModal);
-$("mathOk").onclick     = () => checkMathAndReset();
-$("mathA").addEventListener("keydown",(e)=>{
-  if(e.key==="Enter") checkMathAndReset();
-});
 
 startAuto();
-applyTheme();
 render();
-renderThemeShop(); // aby se shop hned naplnil (i když je schovaný)
-</script>
-
-<!-- ✅ Registrace Service Workeru -->
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", async () => {
-    try {
-      const reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
-      console.log("SW registered:", reg.scope);
-
-      // když už je update stažený a čeká, aktivuj ho hned
-      if (reg.waiting) {
-        reg.waiting.postMessage({ type: "SKIP_WAITING" });
-      }
-
-      reg.addEventListener("updatefound", () => {
-        const nw = reg.installing;
-        if (!nw) return;
-
-        nw.addEventListener("statechange", () => {
-          if (nw.state === "installed") {
-            // nový SW je stažený -> aktivuj
-            if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
-          }
-          if (nw.state === "activated") {
-            location.reload();
-          }
-        });
-      });
-
-     let refreshing = false;
-
-navigator.serviceWorker.addEventListener("controllerchange", () => {
-  if (refreshing) return;
-  refreshing = true;
-  window.location.reload();
-});
-
-    } catch (err) {
-      console.log("SW error:", err);
-    }
-  });
-}
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
