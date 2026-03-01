@@ -17,7 +17,7 @@ body{
   overflow:hidden;
 }
 
-/* ====== FALLING FRUIT (background effect) ====== */
+/* ====== FALLING FRUIT ====== */
 .falling{
   position:fixed;
   top:-50px;
@@ -26,6 +26,14 @@ body{
   opacity:.8;
   font-size:50px;
   user-select:none;
+  animation-name:fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes fall{
+  0% { transform: translateY(-50px); }
+  100% { transform: translateY(110vh); }
 }
 
 /* ====== APP CARD ====== */
@@ -261,10 +269,8 @@ auto:false
 
 let autoInterval=null;
 
-/* ====== SAVE ====== */
 function save(){localStorage.setItem("fruitSave",JSON.stringify(s));}
 
-/* ====== AUTO CLICK ====== */
 function startAuto(){
 if(autoInterval) clearInterval(autoInterval);
 if(s.auto){
@@ -272,15 +278,15 @@ autoInterval=setInterval(doClick,1000);
 }
 }
 
-/* ====== FALLING FRUIT BACKGROUND ====== */
+/* ====== FALLING FRUIT ====== */
 const bgFruits=["🍓","🍌","🍉","🍍","🍎","🍑","🍊"];
 for(let i=0;i<20;i++){
   const f=document.createElement("div");
   f.className="falling";
   f.textContent=bgFruits[Math.floor(Math.random()*bgFruits.length)];
   f.style.left=Math.random()*100+"vw";
-  let speed=2+Math.random()*3; // pomale
-  f.style.animation=`fall ${10/speed}s linear infinite`;
+  let speed=5+Math.random()*10; // rychlost padání
+  f.style.animationDuration=speed+"s";
   f.style.fontSize=(30+Math.random()*40)+"px";
   document.body.appendChild(f);
 }
@@ -302,7 +308,6 @@ function spawnConfetti(){
   }
 }
 
-/* ====== RENDER GAME ====== */
 function render(){
 const l=levels[s.lvl];
 $("coins").textContent=s.coins;
@@ -331,7 +336,6 @@ $("buyAuto").disabled=true;
 renderLevels();
 }
 
-/* ====== LEVELS MENU ====== */
 function renderLevels(){
 $("levels").innerHTML="";
 levels.forEach((lvl,i)=>{
@@ -350,7 +354,6 @@ $("levels").appendChild(div);
 });
 }
 
-/* ====== CLICK FUNCTION ====== */
 function doClick(){
 s.clicks[s.lvl]+=s.clickMult;
 s.coins+=s.coinMult;
@@ -367,7 +370,6 @@ save();
 render();
 }
 
-/* ====== CLICK EVENTS ====== */
 $("fruit").onclick=doClick;
 
 $("buyCoin").onclick=()=>{
@@ -396,7 +398,6 @@ startAuto();
 save();render();
 };
 
-/* ====== MENU SHOW/HIDE ====== */
 function showMenu(){
 $("game").style.display="none";
 $("menu").style.display="block";
