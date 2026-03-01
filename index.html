@@ -831,10 +831,13 @@ if ("serviceWorker" in navigator) {
         });
       });
 
-      // když se SW změní, refresh (super spolehlivý)
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        location.reload();
-      });
+     let refreshing = false;
+
+navigator.serviceWorker.addEventListener("controllerchange", () => {
+  if (refreshing) return;
+  refreshing = true;
+  window.location.reload();
+});
 
     } catch (err) {
       console.log("SW error:", err);
@@ -845,6 +848,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
