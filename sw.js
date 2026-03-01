@@ -1,6 +1,6 @@
 // Fruit Clicker Service Worker (stabilní offline + bez spam errorů)
 
-const CACHE_NAME = "fruit-clicker-v4"; // <- zvedni při změnách
+const CACHE_NAME = "fruit-clicker-v5"; // <- zvedni při změnách
 const OFFLINE_URL = "/FruitClicker/offline.html";
 const LOGO_URL = "/FruitClicker/logo.png";
 
@@ -66,3 +66,4 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
