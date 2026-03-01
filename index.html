@@ -506,7 +506,8 @@ autoInterval=setInterval(doClick,1000);
    THEME SYSTEM
 ====================== */
 
-const THEMES = [ ... ]
+const THEMES = [
+   {
    function applyTheme(){
   const t = THEMES.find(x => x.id === s.theme);
   if(!t) return;
@@ -844,6 +845,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
