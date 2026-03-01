@@ -3,7 +3,7 @@
 // - Assety: cache-first, fallback na network
 // - Update: SKIP_WAITING přes message + clients.claim
 
-const CACHE_NAME = "fruit-clicker-v3";
+const CACHE_NAME = "fruit-clicker-v4";
 
 const FILES = [
   "/FruitClicker/",
@@ -56,3 +56,4 @@ self.addEventListener("fetch", (event) => {
     caches.match(req).then((cached) => cached || fetch(req))
   );
 });
+
