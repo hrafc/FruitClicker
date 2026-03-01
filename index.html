@@ -43,16 +43,19 @@ body{
 
 /* ====== APP CARD ====== */
 .app{
-  background: #fff8f0;
+  background: var(--card);
   border-radius:32px;
   padding:25px;
-  width:min(600px,90vw);
+
+  width:min(900px, 92vw);   /* ✅ větší karta */
+  transform: scale(1.15);   /* ✅ zvětší všechno uvnitř */
+  transform-origin: center;
+
   text-align:center;
   box-shadow:0 20px 40px rgba(0,0,0,0.15);
   position:relative;
   z-index:1;
 }
-
 /* ====== TOP LEFT COINS ====== */
 .top-left{
   position:absolute;
@@ -275,6 +278,10 @@ body{
   margin-top:10px;
   font-weight:900;
   color:#c4003a;
+}
+  @media (max-width: 520px){
+  .app{ transform: scale(1); width: 94vw; }
+  .fruit{ font-size: 110px; }
 }
 </style>
 </head>
@@ -662,3 +669,4 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
