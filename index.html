@@ -461,14 +461,15 @@ const levels=[
 ["Plum","🍇",2500]
 ];
 
-let s=JSON.parse(localStorage.getItem("fruitSave"))||{
-lvl:0,unlock:0,clicks:Array(10).fill(0),
-coins:0,
-coinMult:1,clickMult:1,
-coinBought:0,clickBought:0,
-auto:false
-   theme:"default",
-themeOwned:["default"],
+let s = JSON.parse(localStorage.getItem("fruitSave")) || {
+  lvl:0, unlock:0, clicks:Array(10).fill(0),
+  coins:0,
+  coinMult:1, clickMult:1,
+  coinBought:0, clickBought:0,
+  auto:false,
+  theme:"default",
+  themeOwned:["default"],
+  completed:false
 };
 
 let autoInterval=null;
@@ -770,7 +771,7 @@ render();
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
     try {
-      const reg = await navigator.serviceWorker.register("/FruitClicker/sw.js", { scope: "/FruitClicker/" });
+      const reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
       console.log("SW registered:", reg.scope);
 
       // když už je update stažený a čeká, aktivuj ho hned
@@ -807,3 +808,4 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
