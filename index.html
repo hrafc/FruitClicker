@@ -654,7 +654,7 @@ $("coins").textContent=s.coins;
 $("levelText").textContent=`Level ${s.lvl+1} – ${l[0]}`;
 $("fruit").textContent=l[1];
 $("clickText").textContent=`Clicks: ${s.clicks[s.lvl]}`;
-$("needText").textContent=`Potřeba kliknout: ${l[2]}`;
+$("needText").textContent=`You have to click: ${l[2]}`;
 $("bar").style.width=Math.min(100,(s.clicks[s.lvl]/l[2])*100)+"%";
 
 $("coinInfo").textContent=`${s.coinMult}×`;
@@ -821,5 +821,6 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
