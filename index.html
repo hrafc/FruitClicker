@@ -411,6 +411,9 @@ body{
 <div id="menu" class="menu-screen">
 <h2>📋 Level selection</h2>
 <div class="levels" id="levels"></div>
+    <h2 style="margin-top:20px;">🎨 Themes Shop</h2>
+  <div class="theme-shop" id="themeShop"></div>
+</div>
 
 <!-- ✅ RESET BUTTON ONLY IN MENU -->
 <button id="resetBtn" class="reset-btn">🧁 Reset progress</button>
@@ -469,6 +472,8 @@ coins:0,
 coinMult:1,clickMult:1,
 coinBought:0,clickBought:0,
 auto:false
+   theme:"default",
+themeOwned:["default"],
 };
 
 let autoInterval=null;
@@ -481,7 +486,68 @@ if(s.auto){
 autoInterval=setInterval(doClick,1000);
 }
 }
+/* ======================
+   THEME SYSTEM
+====================== */
 
+const THEMES = [
+{
+  id:"default",
+  name:"Kawaii Pink 🌸",
+  price:0,
+  vars:{
+    bg1:"#ffe6f0",
+    bg2:"#fff0b3",
+    bg3:"#b3f0ff",
+    bg4:"#c1ffc1",
+    card:"#fff8f0",
+    card2:"#fff0f5",
+    accent:"#ff66aa",
+    accent2:"#ff99cc",
+    text:"#222"
+  }
+},
+{
+  id:"midnight",
+  name:"Midnight Neon 🌙",
+  price:1200,
+  vars:{
+    bg1:"#0f172a",
+    bg2:"#1e293b",
+    bg3:"#0f2027",
+    bg4:"#134e4a",
+    card:"#111827",
+    card2:"#1f2937",
+    accent:"#8b5cf6",
+    accent2:"#ec4899",
+    text:"#f1f5f9"
+  }
+},
+{
+  id:"matcha",
+  name:"Matcha Latte 🍵",
+  price:900,
+  vars:{
+    bg1:"#e8fff1",
+    bg2:"#f9ffe6",
+    bg3:"#d7fff7",
+    bg4:"#eaffd8",
+    card:"#f7fff8",
+    card2:"#ecfff0",
+    accent:"#22c55e",
+    accent2:"#86efac",
+    text:"#143b22"
+  }
+}
+];
+
+function applyTheme(){
+  const t = THEMES.find(x => x.id === s.theme) || THEMES[0];
+  const root = document.documentElement;
+  for(const key in t.vars){
+    root.style.setProperty(`--${key}`, t.vars[key]);
+  }
+}
 /* ====== FALLING FRUIT ====== */
 const bgFruits=["🍓","🍌","🍉","🍍","🍎","🍑","🍊"];
 for(let i=0;i<20;i++){
@@ -745,6 +811,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
