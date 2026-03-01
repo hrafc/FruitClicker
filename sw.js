@@ -2,7 +2,7 @@
 // Cíl: když je offline a jde o otevření stránky (navigate), vrátí offline.html
 // Assety (png/js/json) jedou cache-first.
 
-const CACHE_NAME = "fruit-clicker-v2"; // 🔥 změň vždycky když chceš vynutit update
+const CACHE_NAME = "fruit-clicker-v3"; // 🔥 změň vždycky když chceš vynutit update
 
 const FILES = [
   "/FruitClicker/",
@@ -32,20 +32,26 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
 
-  // 1) Navigace (otevření stránky / refresh)
+  // 👉 každé otevření stránky (index.html / refresh)
   if (req.mode === "navigate") {
     event.respondWith(
       fetch(req)
-        .then((res) => {
-          // uložíme čerstvou stránku do cache (volitelné, ale fajn)
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-          return res;
+        .then((res) => res)
+        .catch(() => {
+          // 🔥 když není internet → VŽDY offline stránka
+          return caches.match("/FruitClicker/offline.html");
         })
-        .catch(() => caches.match("/FruitClicker/offline.html"))
     );
     return;
   }
+
+  // 👉 ostatní soubory (obrázky atd.)
+  event.respondWith(
+    caches.match(req).then((cached) => {
+      return cached || fetch(req);
+    })
+  );
+});
 
   // 2) Ostatní soubory (png/js/css/json) -> cache-first, fallback na fetch
   event.respondWith(
@@ -65,3 +71,4 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
