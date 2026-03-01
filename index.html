@@ -10,19 +10,20 @@
 <link rel="apple-touch-icon" href="logo.png?v=5">
 <meta name="theme-color" content="#ff66aa">
    <style>
+:root {
+  --bg1: #ffe6f0;
+  --bg2: #fff0b3;
+  --bg3: #b3f0ff;
+  --bg4: #c1ffc1;
+  --card: #fff8f0;
+  --card2:#fff0f5;
+  --accent:#ff66aa;
+  --accent2:#ff99cc;
+  --text:#222;
+}
 /* =========================
    THEMES (ADVANCED + SAVE)
    ========================= */
-
-/* default theme values */
-
-  --card2:#fff0f5;
-
-  --accent:#ff66aa;
-  --accent2:#ff99cc;
-
-  --text:#222;
-}
 
 /* apply variables */
 body{
@@ -505,66 +506,25 @@ autoInterval=setInterval(doClick,1000);
    THEME SYSTEM
 ====================== */
 
-const THEMES = [
-{
-  id:"default",
-  name:"Kawaii Pink 🌸",
-  price:0,
-  vars:{
-    bg1:"#ffe6f0",
-    bg2:"#fff0b3",
-    bg3:"#b3f0ff",
-    bg4:"#c1ffc1",
-    card:"#fff8f0",
-    card2:"#fff0f5",
-    accent:"#ff66aa",
-    accent2:"#ff99cc",
-    text:"#222"
-  }
-},
-{
-  id:"midnight",
-  name:"Midnight Neon 🌙",
-  price:1200,
-  vars:{
-    bg1:"#0f172a",
-    bg2:"#1e293b",
-    bg3:"#0f2027",
-    bg4:"#134e4a",
-    card:"#111827",
-    card2:"#1f2937",
-    accent:"#8b5cf6",
-    accent2:"#ec4899",
-    text:"#f1f5f9"
-  }
-},
-{
-  id:"matcha",
-  name:"Matcha Latte 🍵",
-  price:900,
-  vars:{
-    bg1:"#e8fff1",
-    bg2:"#f9ffe6",
-    bg3:"#d7fff7",
-    bg4:"#eaffd8",
-    card:"#f7fff8",
-    card2:"#ecfff0",
-    accent:"#22c55e",
-    accent2:"#86efac",
-    text:"#143b22"
+const THEMES = [ ... ]
+   function applyTheme(){
+  const t = THEMES.find(x => x.id === s.theme);
+  if(!t) return;
+
+  const root = document.documentElement;
+  for(const key in t.vars){
+    root.style.setProperty(`--${key}`, t.vars[key]);
   }
 }
-];
 
-function applyTheme(){
-  function renderThemeShop(){
+function renderThemeShop(){
   const box = $("themeShop");
   if(!box) return;
 
   box.innerHTML = "";
 
   THEMES.forEach(t=>{
-    const owned = s.themeOwned?.includes(t.id);
+    const owned = s.themeOwned.includes(t.id);
     const active = s.theme === t.id;
 
     const card = document.createElement("div");
@@ -582,29 +542,30 @@ function applyTheme(){
     const btn = document.createElement("button");
 
     if(active){
-      btn.textContent = "Active";
-      btn.disabled = true;
-    } else if(owned){
-      btn.textContent = "Apply";
-      btn.onclick = ()=>{
-        s.theme = t.id;
+      btn.textContent="Active";
+      btn.disabled=true;
+    }
+    else if(owned){
+      btn.textContent="Apply";
+      btn.onclick=()=>{
+        s.theme=t.id;
         save();
         applyTheme();
         renderThemeShop();
       };
-    } else {
-      btn.textContent = "Buy";
-      btn.disabled = s.coins < t.price;
-      btn.onclick = ()=>{
-        if(s.coins < t.price) return;
-        s.coins -= t.price;
+    }
+    else{
+      btn.textContent="Buy";
+      btn.disabled=s.coins<t.price;
+      btn.onclick=()=>{
+        if(s.coins<t.price) return;
+        s.coins-=t.price;
         s.themeOwned.push(t.id);
-        s.theme = t.id;
+        s.theme=t.id;
         save();
         applyTheme();
+        render();
         renderThemeShop();
-        render(); // aby se aktualizovaly coiny nahoře
-        spawnConfetti();
       };
     }
 
@@ -612,8 +573,6 @@ function applyTheme(){
     card.appendChild(btn);
     box.appendChild(card);
   });
-}
-  }
 }
 /* ====== FALLING FRUIT ====== */
 const bgFruits=["🍓","🍌","🍉","🍍","🍎","🍑","🍊"];
@@ -811,22 +770,20 @@ function showGame(){
 $("menu").style.display="none";
 $("game").style.display="block";
 }
+$("menuBtn").onclick = () => {
+  if ($("menu").style.display === "block") {
+    showGame();
+  } else {
+    showMenu();
+  }
+};
 
-$("menuBtn").onclick=()=>{
-   // 🎨 Themes shop toggle button
-$("themeBtn").onclick = ()=>{
+$("themeBtn").onclick = () => {
   const p = $("shopPanel");
   const isOpen = p.style.display === "block";
   p.style.display = isOpen ? "none" : "block";
-  if(!isOpen) renderThemeShop();
+  if (!isOpen) renderThemeShop();
 };
-if($("menu").style.display==="block"){
-showGame();
-}else{
-showMenu();
-}
-};
-
 /* ====== RESET BUTTON EVENTS (MENU ONLY) ====== */
 $("resetBtn").onclick = () => askReset("menu");
 
@@ -887,6 +844,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
