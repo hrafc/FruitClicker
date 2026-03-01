@@ -3,136 +3,181 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fruit Clicker</title>
+<title>Fruit Clicker 🌸</title>
 
 <style>
-*{user-select:none}
+*{user-select:none; box-sizing:border-box; margin:0; padding:0;}
 
 body{
-  margin:0;
-  font-family:'Segoe UI',system-ui,Roboto,Arial,sans-serif;
-  background:radial-gradient(circle at top,#bbf7d0,#86efac,#4ade80);
+  font-family:'Comic Sans MS','Segoe UI',cursive,sans-serif;
+  background: linear-gradient(160deg, #ffe6f0, #fff0b3, #b3f0ff, #c1ffc1);
   min-height:100vh;
-  overflow:hidden;
   display:grid;
   place-items:center;
+  overflow:hidden;
 }
 
-/* ====== PADÁNÍ OVOCE ====== */
+/* ====== FALLING FRUIT (background effect) ====== */
 .falling{
   position:fixed;
   top:-50px;
   pointer-events:none;
   z-index:0;
   opacity:.8;
-  animation:fall linear infinite;
+  font-size:50px;
+  user-select:none;
 }
 
-@keyframes fall{
-  to{ transform:translateY(110vh); }
-}
-
-/* ====== KARTA ====== */
+/* ====== APP CARD ====== */
 .app{
-  position:relative;
-  z-index:2;
-  background:linear-gradient(180deg,#ffffff,#f0fdf4);
-  width:min(620px,95vw);
-  border-radius:28px;
-  padding:22px;
-  box-shadow:0 30px 60px rgba(0,0,0,.25);
+  background: #fff8f0;
+  border-radius:32px;
+  padding:25px;
+  width:min(600px,90vw);
   text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,0.15);
+  position:relative;
+  z-index:1;
 }
 
+/* ====== TOP LEFT COINS ====== */
 .top-left{
   position:absolute;
   top:14px;
   left:18px;
-  background:#16a34a;
+  background:#ff99cc;
   color:white;
   padding:8px 14px;
   border-radius:999px;
   font-weight:900;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
 }
 
+/* ====== MENU BUTTON ====== */
 .menu-btn{
   position:absolute;
   top:14px;
   right:18px;
-  background:#22c55e;
+  background:#ff66aa;
   color:white;
   padding:10px 16px;
   border-radius:999px;
   cursor:pointer;
   font-weight:800;
+  transition:0.2s;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+.menu-btn:hover{
+  transform: scale(1.1);
+  background:#ff3399;
 }
 
+/* ====== FRUIT ====== */
 .fruit{
-  font-size:120px;
+  font-size:140px;
   cursor:pointer;
+  transition: transform 0.2s;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+  margin:12px 0;
+}
+.fruit:active{
+  transform: scale(1.2) rotate(15deg);
 }
 
+/* ====== PROGRESS BAR ====== */
 .progress{
-  height:16px;
-  background:#dcfce7;
+  height:20px;
+  background:#ffe6f0;
   border-radius:999px;
   overflow:hidden;
-  margin:10px 0;
+  margin:12px 0;
 }
-
 .bar{
   height:100%;
-  background:linear-gradient(90deg,#22c55e,#4ade80);
+  background: linear-gradient(90deg,#ff99cc,#ff66aa,#ff3399);
   width:0%;
+  transition: width 0.3s;
 }
 
+/* ====== UPGRADES ====== */
 .upgrade{
-  background:white;
-  border-radius:18px;
+  background:#fff0f5;
+  border-radius:20px;
   padding:14px;
   margin-top:12px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  box-shadow:0 10px 20px rgba(0,0,0,.15);
+  box-shadow:0 10px 20px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
 }
-
+.upgrade:hover{
+  transform: translateY(-3px);
+}
 .upgrade button{
-  background:#22c55e;
+  background:#ff99cc;
   border:none;
   color:white;
-  padding:10px 16px;
-  border-radius:999px;
-  font-weight:800;
+  padding:12px 20px;
+  border-radius:24px;
+  font-weight:bold;
   cursor:pointer;
+  transition: transform 0.2s, background 0.3s;
 }
-
+.upgrade button:hover:not(:disabled){
+  transform: scale(1.1);
+  background:#ff66aa;
+}
+.upgrade button:active:not(:disabled){
+  transform: scale(0.95);
+}
 .upgrade button:disabled{
-  opacity:.4;
+  opacity:.5;
   cursor:not-allowed;
 }
 
-.menu-screen{display:none}
-
+/* ====== MENU SCREEN ====== */
+.menu-screen{display:none; margin-top:20px;}
 .levels{
   display:grid;
   gap:12px;
 }
-
 .level-item{
-  background:white;
+  background:#fff0f5;
   padding:14px;
-  border-radius:16px;
+  border-radius:20px;
   display:flex;
   justify-content:space-between;
   cursor:pointer;
   font-weight:700;
-  box-shadow:0 8px 16px rgba(0,0,0,.15);
+  box-shadow:0 8px 16px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
 }
-
+.level-item:hover:not(.locked){
+  transform: translateY(-3px);
+}
 .level-item.locked{
   opacity:.4;
   cursor:not-allowed;
+}
+
+/* ====== CONFETTI ====== */
+.confetti-piece{
+  position:fixed;
+  width:10px;
+  height:10px;
+  background-color:red;
+  z-index:2;
+  pointer-events:none;
+  opacity:0.9;
+  border-radius:50%;
+  animation:confetti-fall linear forwards;
+}
+@keyframes confetti-fall{
+  to{
+    transform: translate(var(--x), 100vh) rotate(360deg);
+    opacity:0;
+  }
 }
 </style>
 </head>
@@ -146,7 +191,7 @@ body{
 
 <div id="game">
 
-<h1>🍓 Fruit Clicker</h1>
+<h1>🍓 Fruit Clicker 🌸</h1>
 <div id="levelText"></div>
 <div class="fruit" id="fruit"></div>
 <div id="clickText"></div>
@@ -188,8 +233,6 @@ body{
 <div class="levels" id="levels"></div>
 </div>
 
-</div>
-
 <script>
 const $=id=>document.getElementById(id);
 
@@ -218,8 +261,10 @@ auto:false
 
 let autoInterval=null;
 
+/* ====== SAVE ====== */
 function save(){localStorage.setItem("fruitSave",JSON.stringify(s));}
 
+/* ====== AUTO CLICK ====== */
 function startAuto(){
 if(autoInterval) clearInterval(autoInterval);
 if(s.auto){
@@ -227,6 +272,37 @@ autoInterval=setInterval(doClick,1000);
 }
 }
 
+/* ====== FALLING FRUIT BACKGROUND ====== */
+const bgFruits=["🍓","🍌","🍉","🍍","🍎","🍑","🍊"];
+for(let i=0;i<20;i++){
+  const f=document.createElement("div");
+  f.className="falling";
+  f.textContent=bgFruits[Math.floor(Math.random()*bgFruits.length)];
+  f.style.left=Math.random()*100+"vw";
+  let speed=2+Math.random()*3; // pomale
+  f.style.animation=`fall ${10/speed}s linear infinite`;
+  f.style.fontSize=(30+Math.random()*40)+"px";
+  document.body.appendChild(f);
+}
+
+/* ====== CONFETTI ====== */
+function spawnConfetti(){
+  for(let i=0;i<30;i++){
+    const c=document.createElement("div");
+    c.className="confetti-piece";
+    c.style.background=["#ff66aa","#ff99cc","#ffe6f0","#ffcc99","#ffff99"][Math.floor(Math.random()*5)];
+    const x=Math.random()*window.innerWidth+"px";
+    const y="-10px";
+    c.style.left=x;
+    c.style.top=y;
+    c.style.setProperty('--x', (Math.random()*100-50)+'px');
+    c.style.animationDuration=(1+Math.random()*1.5)+'s';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),2000);
+  }
+}
+
+/* ====== RENDER GAME ====== */
 function render(){
 const l=levels[s.lvl];
 $("coins").textContent=s.coins;
@@ -255,6 +331,7 @@ $("buyAuto").disabled=true;
 renderLevels();
 }
 
+/* ====== LEVELS MENU ====== */
 function renderLevels(){
 $("levels").innerHTML="";
 levels.forEach((lvl,i)=>{
@@ -273,11 +350,14 @@ $("levels").appendChild(div);
 });
 }
 
+/* ====== CLICK FUNCTION ====== */
 function doClick(){
 s.clicks[s.lvl]+=s.clickMult;
 s.coins+=s.coinMult;
 
+/* Level-up confetti */
 if(s.clicks[s.lvl]>=levels[s.lvl][2]){
+spawnConfetti();
 if(s.lvl<9){
 s.unlock=Math.max(s.unlock,s.lvl+1);
 s.lvl++;
@@ -287,6 +367,7 @@ save();
 render();
 }
 
+/* ====== CLICK EVENTS ====== */
 $("fruit").onclick=doClick;
 
 $("buyCoin").onclick=()=>{
@@ -315,6 +396,7 @@ startAuto();
 save();render();
 };
 
+/* ====== MENU SHOW/HIDE ====== */
 function showMenu(){
 $("game").style.display="none";
 $("menu").style.display="block";
