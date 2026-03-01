@@ -9,8 +9,85 @@
 <link rel="icon" type="image/png" href="logo.png?v=5">
 <link rel="apple-touch-icon" href="logo.png?v=5">
 <meta name="theme-color" content="#ff66aa">
+/* =========================
+   THEMES (ADVANCED + SAVE)
+   ========================= */
 
-<style>
+/* default theme values */
+:root{
+  --bg1:#ffe6f0;
+  --bg2:#fff0b3;
+  --bg3:#b3f0ff;
+  --bg4:#c1ffc1;
+
+  --card:#fff8f0;
+  --card2:#fff0f5;
+
+  --accent:#ff66aa;
+  --accent2:#ff99cc;
+
+  --text:#222;
+}
+
+/* apply variables */
+body{
+  background: linear-gradient(160deg, var(--bg1), var(--bg2), var(--bg3), var(--bg4)) !important;
+  color: var(--text);
+}
+.app{ background: var(--card) !important; }
+.upgrade, .level-item{ background: var(--card2) !important; }
+.menu-btn{ background: var(--accent) !important; }
+.menu-btn:hover{ background: #ff3399 !important; }
+.top-left{ background: var(--accent2) !important; }
+
+/* cute theme cards in shop */
+.theme-shop{
+  margin-top: 14px;
+  display:grid;
+  gap:12px;
+}
+.theme-card{
+  background: #ffffffaa;
+  border-radius: 20px;
+  padding: 14px;
+  box-shadow:0 8px 16px rgba(0,0,0,0.08);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.theme-left{
+  text-align:left;
+}
+.theme-name{
+  font-weight:900;
+}
+.theme-badge{
+  display:inline-block;
+  margin-top:6px;
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:999px;
+  background: #ffe6f0;
+}
+.theme-card button{
+  background: var(--accent2);
+  border:none;
+  color:white;
+  padding:10px 16px;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:900;
+  transition:.15s;
+}
+.theme-card button:hover:not(:disabled){
+  transform: scale(1.06);
+  background: var(--accent);
+}
+.theme-card button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
 *{user-select:none; box-sizing:border-box; margin:0; padding:0;}
 :root {
   --bg1: #ffe6f0;
@@ -668,6 +745,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
