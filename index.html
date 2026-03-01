@@ -192,6 +192,90 @@ body{
     opacity:0;
   }
 }
+
+/* ====== KAWAII RESET SYSTEM ====== */
+.reset-btn{
+  width:100%;
+  margin-top:14px;
+  background: linear-gradient(135deg,#ff9ad5,#ffd1ea);
+  border:none;
+  color:#7a1d52;
+  padding:12px 16px;
+  border-radius:18px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 12px 22px rgba(0,0,0,0.12);
+  transition: transform .12s ease, filter .2s ease;
+}
+.reset-btn:hover{ transform: translateY(-1px) scale(1.01); filter: brightness(1.03); }
+.reset-btn:active{ transform: translateY(1px) scale(.99); }
+
+.kawaii-overlay{
+  position:fixed; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.25);
+  backdrop-filter: blur(6px);
+  z-index:9999;
+}
+.kawaii-hidden{ display:none !important; }
+
+.kawaii-card{
+  width:min(460px,92vw);
+  background:rgba(255,255,255,.94);
+  border-radius:26px;
+  padding:18px 18px 16px;
+  box-shadow:0 24px 70px rgba(0,0,0,.20);
+  border:2px solid rgba(255,170,220,.35);
+  text-align:center;
+  position:relative;
+}
+
+.kawaii-title{
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+.kawaii-text{ opacity:.92; margin-bottom:14px; }
+
+.kawaii-actions{
+  display:flex; gap:10px;
+  justify-content:center;
+  margin-top:10px;
+}
+
+.kawaii-btn{
+  padding:10px 14px;
+  border:none;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:900;
+  background:linear-gradient(135deg,#ff7ec8,#ffd2ea);
+  box-shadow:0 10px 20px rgba(0,0,0,.12);
+}
+.kawaii-btn.ghost{
+  background:rgba(255,255,255,.9);
+  border:2px solid rgba(255,150,210,.45);
+}
+.kawaii-btn.danger{
+  background:linear-gradient(135deg,#ff5b7a,#ffb3c1);
+  color:white;
+}
+
+.kawaii-input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:14px;
+  border:2px solid rgba(255,150,210,.35);
+  outline:none;
+  font-size:16px;
+  margin-top:8px;
+}
+
+.kawaii-error{
+  margin-top:10px;
+  font-weight:900;
+  color:#c4003a;
+}
 </style>
 </head>
 
@@ -244,6 +328,38 @@ body{
 <div id="menu" class="menu-screen">
 <h2>📋 Výběr levelu</h2>
 <div class="levels" id="levels"></div>
+
+<!-- ✅ RESET BUTTON ONLY IN MENU -->
+<button id="resetBtn" class="reset-btn">🧁 Reset progress</button>
+</div>
+
+<!-- ====== KAWAII RESET MODALS ====== -->
+<div id="resetModal" class="kawaii-overlay kawaii-hidden">
+  <div class="kawaii-card">
+    <div class="kawaii-title">🍪 Reset progress?</div>
+    <div class="kawaii-text">Sušenka říká: “Jsi si fakt jistý?” 🥺</div>
+
+    <div class="kawaii-actions">
+      <button id="resetNo" class="kawaii-btn ghost">Ne</button>
+      <button id="resetYes" class="kawaii-btn danger">Ano</button>
+    </div>
+  </div>
+</div>
+
+<div id="mathModal" class="kawaii-overlay kawaii-hidden">
+  <div class="kawaii-card">
+    <div class="kawaii-title">✨ Mini příklad</div>
+    <div class="kawaii-text">Spočítej: <b id="mathQ"></b></div>
+
+    <input id="mathA" class="kawaii-input" inputmode="numeric" placeholder="odpověď…" />
+
+    <div class="kawaii-actions">
+      <button id="mathCancel" class="kawaii-btn ghost">Zpět</button>
+      <button id="mathOk" class="kawaii-btn">OK</button>
+    </div>
+
+    <div id="mathErr" class="kawaii-error kawaii-hidden">Špatně 😭 zkus znovu</div>
+  </div>
 </div>
 
 <script>
@@ -312,6 +428,68 @@ function spawnConfetti(){
   }
 }
 
+/* ====== KAWAII RESET SYSTEM (ONLY LOCAL USER) ====== */
+const resetModal = $("resetModal");
+const mathModal  = $("mathModal");
+let mathAnswer = null;
+
+function openModal(el){ el.classList.remove("kawaii-hidden"); }
+function closeModal(el){ el.classList.add("kawaii-hidden"); }
+
+function askReset(source="menu"){
+  spawnConfetti();
+  setTimeout(spawnConfetti, 200);
+  openModal(resetModal);
+}
+
+function genMath(){
+  const a = 2 + Math.floor(Math.random()*8); // 2..9
+  const b = 1 + Math.floor(Math.random()*9); // 1..9
+  const c = 1 + Math.floor(Math.random()*6); // 1..6
+
+  if (Math.random() < 0.5) {
+    const ans = (a + b) - c;
+    return { q: `(${a} + ${b}) - ${c}`, ans };
+  } else {
+    const ans = a + (b - c);
+    return { q: `${a} + (${b} - ${c})`, ans };
+  }
+}
+
+function startResetFlow(){
+  closeModal(resetModal);
+
+  const { q, ans } = genMath();
+  mathAnswer = ans;
+
+  $("mathQ").textContent = q;
+  $("mathA").value = "";
+  $("mathErr").classList.add("kawaii-hidden");
+
+  openModal(mathModal);
+  setTimeout(()=> $("mathA").focus(), 30);
+}
+
+function resetProgressLocal(){
+  localStorage.removeItem("fruitSave");
+  location.reload();
+}
+
+function checkMathAndReset(){
+  const v = $("mathA").value.trim();
+  const n = Number(v);
+
+  if (!Number.isFinite(n) || n !== mathAnswer) {
+    $("mathErr").classList.remove("kawaii-hidden");
+    spawnConfetti();
+    return;
+  }
+
+  spawnConfetti();
+  setTimeout(spawnConfetti, 200);
+  resetProgressLocal();
+}
+
 function render(){
 const l=levels[s.lvl];
 $("coins").textContent=s.coins;
@@ -367,6 +545,13 @@ if(s.clicks[s.lvl]>=levels[s.lvl][2]){
   if(s.lvl<9){
     s.unlock=Math.max(s.unlock,s.lvl+1);
     s.lvl++;
+  } else {
+    // ✅ dohraná CELÁ hra (poslední level) -> ukázat reset tabulku
+    if(!s.completed){
+      s.completed = true;
+      save();
+      setTimeout(()=> askReset("win"), 250);
+    }
   }
 }
 save();
@@ -419,10 +604,23 @@ showMenu();
 }
 };
 
+/* ====== RESET BUTTON EVENTS (MENU ONLY) ====== */
+$("resetBtn").onclick = () => askReset("menu");
+
+$("resetNo").onclick  = () => closeModal(resetModal);
+$("resetYes").onclick = () => startResetFlow();
+
+$("mathCancel").onclick = () => closeModal(mathModal);
+$("mathOk").onclick     = () => checkMathAndReset();
+$("mathA").addEventListener("keydown",(e)=>{
+  if(e.key==="Enter") checkMathAndReset();
+});
+
 startAuto();
 render();
 </script>
-  <!-- ✅ Registrace Service Workeru -->
+
+<!-- ✅ Registrace Service Workeru -->
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
