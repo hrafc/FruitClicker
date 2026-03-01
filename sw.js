@@ -1,12 +1,15 @@
-const CACHE_NAME = "fruit-clicker-v4";
+// Fruit Clicker Service Worker
+// Režim: když je OFFLINE a jde o otevření stránky -> vždy vrátí offline.html
+
+const CACHE_NAME = "fruit-clicker-v5";
 
 const FILES = [
-  "./",
-  "./index.html",
-  "./offline.html",
-  "./logo.png",
-  "./manifest.json",
-  "./sw.js"
+  "/FruitClicker/",
+  "/FruitClicker/index.html",
+  "/FruitClicker/offline.html",
+  "/FruitClicker/logo.png",
+  "/FruitClicker/manifest.json",
+  "/FruitClicker/sw.js"
 ];
 
 self.addEventListener("install", (event) => {
@@ -28,21 +31,35 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
+  // ✅ NAVIGACE (otevření stránky / reload / přechod) -> NETWORK FIRST
+  // Offline = ukaž offline.html (i když je index.html v cache)
+  if (event.request.mode === "navigate") {
+    event.respondWith((async () => {
+      try {
+        const fresh = await fetch(event.request);
+        const cache = await caches.open(CACHE_NAME);
+        cache.put(event.request, fresh.clone());
+        return fresh;
+      } catch (e) {
+        return caches.match("/FruitClicker/offline.html");
+      }
+    })());
+    return;
+  }
+
+  // ✅ Ostatní soubory -> CACHE FIRST (rychlé)
   event.respondWith((async () => {
-    // 1) zkus cache
     const cached = await caches.match(event.request);
     if (cached) return cached;
 
-    // 2) zkus síť
     try {
       const fresh = await fetch(event.request);
-      // uložit do cache pro příště
       const cache = await caches.open(CACHE_NAME);
       cache.put(event.request, fresh.clone());
       return fresh;
     } catch (e) {
-      // 3) offline fallback
-      return caches.match("./offline.html");
+      // když nejde síť a soubor není v cache, vrať aspoň offline stránku
+      return caches.match("/FruitClicker/offline.html");
     }
   })());
 });
