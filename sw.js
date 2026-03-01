@@ -1,4 +1,4 @@
-const CACHE_NAME = "fruit-clicker-v999"; // změň číslo vždy když testuješ
+const CACHE_NAME = "fruit-clicker-v1"; // změň číslo vždy když testuješ
 
 const FILES = [
   "./index.html",
@@ -66,3 +66,4 @@ self.addEventListener("fetch", (event) => {
     }
   })());
 });
+
