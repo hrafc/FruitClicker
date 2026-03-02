@@ -545,7 +545,7 @@ $("levels").appendChild(div);
 
 async function doClick(){
   
-  if(!userId) return;
+  if(!window.userId) return;
 
   s.clicks[s.lvl] += s.clickMult;
 
@@ -715,11 +715,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let userId;
+window.userId = null;
 
 signInAnonymously(auth).then(async (userCredential) => {
-  userId = userCredential.user.uid;
-
+  
+  window.userId = userCredential.user.uid;
+  
   const playerRef = doc(db, "players", userId);
   const playerSnap = await getDoc(playerRef);
 
@@ -732,3 +733,4 @@ signInAnonymously(auth).then(async (userCredential) => {
 </script>
 </body>
 </html>
+
