@@ -1,4 +1,4 @@
-const CACHE_NAME = "fruit-clicker-v29";
+const CACHE_NAME = "fruit-clicker-v30";
 
 const FILES = [
   "/",
@@ -33,35 +33,20 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
 
+  // Pokud jde o otevření stránky
   if (req.mode === "navigate") {
     event.respondWith(
-      fetch(req).catch(() =>
-        caches.match("/offline.html")
-      )
+      fetch(req).catch(() => {
+        return caches.match("/offline.html");
+      })
     );
     return;
   }
 
+  // Ostatní soubory (obrázky, css, atd.)
   event.respondWith(
     caches.match(req).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE_NAME).then((cache) =>
-          cache.put(req, copy)
-        );
-        return res;
-      });
+      return cached || fetch(req);
     })
   );
 });
-
-
-
-
-
-
-
-
-
