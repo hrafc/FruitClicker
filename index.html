@@ -544,66 +544,71 @@ $("levels").appendChild(div);
 }
 
 async function doClick(){
+  
+  if(!userId) return;
 
-  // lokální kliky kvůli level progress
   s.clicks[s.lvl] += s.clickMult;
 
-  // 🔥 SERVER increment coins
+  // level check
+  if(s.clicks[s.lvl] >= levels[s.lvl][2]){
+    spawnConfetti();
+
+    if(s.lvl < 9){
+      s.unlock = Math.max(s.unlock, s.lvl + 1);
+      s.lvl++;
+    } else {
+      if(!s.completed){
+        s.completed = true;
+        save();
+        setTimeout(()=> askReset("win"), 250);
+      }
+    }
+  }
+
+  // server increment
   await updateDoc(doc(db, "players", userId), {
     coins: increment(s.coinMult)
   });
 
-  // načti aktuální hodnotu ze serveru
   const snap = await getDoc(doc(db, "players", userId));
   s.coins = snap.data().coins;
 
+  save();
   render();
-}
-
-if(s.clicks[s.lvl]>=levels[s.lvl][2]){
-  spawnConfetti(); // ✅ confetti při level-upu
-  if(s.lvl<9){
-    s.unlock=Math.max(s.unlock,s.lvl+1);
-    s.lvl++;
-  } else {
-    // ✅ dohraná CELÁ hra (poslední level) -> ukázat reset tabulku
-    if(!s.completed){
-      s.completed = true;
-      save();
-      setTimeout(()=> askReset("win"), 250);
-    }
-  }
-}
-save();
-render();
 }
 
 $("fruit").onclick=doClick;
 
 $("buyCoin").onclick=()=>{
-const price=multiplierPrices[s.coinBought];
-if(s.coinBought>=10||<price)return;
--=price;
-s.coinMult++;
-s.coinBought++;
-save();render();
+  const price = multiplierPrices[s.coinBought];
+  if(s.coinBought >= 10 || s.coins < price) return;
+
+  s.coins -= price;
+  s.coinMult++;
+  s.coinBought++;
+  save();
+  render();
 };
 
 $("buyClick").onclick=()=>{
-const price=multiplierPrices[s.clickBought];
-if(s.clickBought>=10||<price)return;
--=price;
-s.clickMult++;
-s.clickBought++;
-save();render();
+  const price = multiplierPrices[s.clickBought];
+  if(s.clickBought >= 10 || s.coins < price) return;
+
+  s.coins -= price;
+  s.clickMult++;
+  s.clickBought++;
+  save();
+  render();
 };
 
 $("buyAuto").onclick=()=>{
-if(s.auto||<3000)return;
--=3000;
-s.auto=true;
-startAuto();
-save();render();
+  if(s.auto || s.coins < 3000) return;
+
+  s.coins -= 3000;
+  s.auto = true;
+  startAuto();
+  save();
+  render();
 };
 
 function showMenu(){
@@ -687,7 +692,14 @@ if ("serviceWorker" in navigator) {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { 
+getFirestore, 
+doc, 
+setDoc, 
+getDoc,
+updateDoc,
+increment
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA2sOvXhZ83e2q3AyaSTGc-9FB4y6SspDs",
