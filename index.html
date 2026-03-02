@@ -510,11 +510,11 @@ $("coinInfo").textContent=`${s.coinMult}×`;
 $("clickInfo").textContent=`${s.clickMult}×`;
 
 const cp=multiplierPrices[s.coinBought];
-$("coinCost").textContent=s.coinBought>=10?"MAX":`Cena: ${cp}`;
+$("coinCost").textContent=s.coinBought>=10?"MAX":`Price: ${cp}`;
 $("buyCoin").disabled=s.coinBought>=10||s.coins<cp;
 
 const kp=multiplierPrices[s.clickBought];
-$("clickCost").textContent=s.clickBought>=10?"MAX":`Cena: ${kp}`;
+$("clickCost").textContent=s.clickBought>=10?"MAX":`Price: ${kp}`;
 $("buyClick").disabled=s.clickBought>=10||s.coins<kp;
 
 if(s.auto){
@@ -670,6 +670,7 @@ if ("serviceWorker" in navigator) {
 
 }
 </script>
+
 
 
 
