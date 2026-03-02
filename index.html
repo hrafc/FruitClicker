@@ -625,17 +625,16 @@ $("mathA").addEventListener("keydown",(e)=>{
 
 startAuto();
 render();
+  
 </script>
-
-<!-- ✅ Registrace Service Workeru -->
+  
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
     try {
-      const reg = await navigator.serviceWorker.register("/FruitClicker/sw.js", { scope: "/FruitClicker/" });
+      const reg = await navigator.serviceWorker.register("/sw.js");
       console.log("SW registered:", reg.scope);
 
-      // když už je update stažený a čeká, aktivuj ho hned
       if (reg.waiting) {
         reg.waiting.postMessage({ type: "SKIP_WAITING" });
       }
@@ -645,9 +644,8 @@ if ("serviceWorker" in navigator) {
         if (!nw) return;
 
         nw.addEventListener("statechange", () => {
-          if (nw.state === "installed") {
-            // nový SW je stažený -> aktivuj
-            if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
+          if (nw.state === "installed" && reg.waiting) {
+            reg.waiting.postMessage({ type: "SKIP_WAITING" });
           }
           if (nw.state === "activated") {
             location.reload();
@@ -655,8 +653,10 @@ if ("serviceWorker" in navigator) {
         });
       });
 
-      // když se SW změní, refresh (super spolehlivý)
+      let refreshing = false;
       navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (refreshing) return;
+        refreshing = true;
         location.reload();
       });
 
@@ -665,8 +665,3 @@ if ("serviceWorker" in navigator) {
     }
   });
 }
-</script>
-
-</body>
-</html>
-
