@@ -543,9 +543,22 @@ $("levels").appendChild(div);
 });
 }
 
-function doClick(){
-s.clicks[s.lvl]+=s.clickMult;
-s.coins+=s.coinMult;
+async function doClick(){
+
+  // lokální kliky kvůli level progress
+  s.clicks[s.lvl] += s.clickMult;
+
+  // 🔥 SERVER increment coins
+  await updateDoc(doc(db, "players", userId), {
+    coins: increment(s.coinMult)
+  });
+
+  // načti aktuální hodnotu ze serveru
+  const snap = await getDoc(doc(db, "players", userId));
+  s.coins = snap.data().coins;
+
+  render();
+}
 
 if(s.clicks[s.lvl]>=levels[s.lvl][2]){
   spawnConfetti(); // ✅ confetti při level-upu
@@ -569,8 +582,8 @@ $("fruit").onclick=doClick;
 
 $("buyCoin").onclick=()=>{
 const price=multiplierPrices[s.coinBought];
-if(s.coinBought>=10||s.coins<price)return;
-s.coins-=price;
+if(s.coinBought>=10||<price)return;
+-=price;
 s.coinMult++;
 s.coinBought++;
 save();render();
@@ -578,16 +591,16 @@ save();render();
 
 $("buyClick").onclick=()=>{
 const price=multiplierPrices[s.clickBought];
-if(s.clickBought>=10||s.coins<price)return;
-s.coins-=price;
+if(s.clickBought>=10||<price)return;
+-=price;
 s.clickMult++;
 s.clickBought++;
 save();render();
 };
 
 $("buyAuto").onclick=()=>{
-if(s.auto||s.coins<3000)return;
-s.coins-=3000;
+if(s.auto||<3000)return;
+-=3000;
 s.auto=true;
 startAuto();
 save();render();
@@ -675,6 +688,7 @@ if ("serviceWorker" in navigator) {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } 
 
 const firebaseConfig = {
   apiKey: "AIzaSyA2sOvXhZ83e2q3AyaSTGc-9FB4y6SspDs",
