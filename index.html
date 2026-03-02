@@ -670,8 +670,40 @@ if ("serviceWorker" in navigator) {
 
 }
 </script>
+  <!-- 🔥 FIREBASE BACKEND -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyA2sOvXhZ83e2q3AyaSTGc-9FB4y6SspDs",
+  authDomain: "fruitclicker-34842.firebaseapp.com",
+  projectId: "fruitclicker-34842",
+  storageBucket: "fruitclicker-34842.firebasestorage.app",
+  messagingSenderId: "191696269696",
+  appId: "1:191696269696:web:12d0dc7dded78bb75b5165",
+  measurementId: "G-07J8RDWVHZ"
+};
 
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
+let userId;
 
+signInAnonymously(auth).then(async (userCredential) => {
+  userId = userCredential.user.uid;
 
+  const playerRef = doc(db, "players", userId);
+  const playerSnap = await getDoc(playerRef);
+
+  if (!playerSnap.exists()) {
+    await setDoc(playerRef, { coins: 0 });
+  }
+
+  console.log("User ID:", userId);
+});
+</script>
+</body>
+</html>
