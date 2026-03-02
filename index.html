@@ -626,42 +626,46 @@ $("mathA").addEventListener("keydown",(e)=>{
 startAuto();
 render();
   
-</script>
-  
 <script>
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", async () => {
-    try {
-      const reg = await navigator.serviceWorker.register("/sw.js");
-      console.log("SW registered:", reg.scope);
 
-      if (reg.waiting) {
-        reg.waiting.postMessage({ type: "SKIP_WAITING" });
-      }
+  window.addEventListener("load", () => {
 
-      reg.addEventListener("updatefound", () => {
-        const nw = reg.installing;
-        if (!nw) return;
+    navigator.serviceWorker.register("/sw.js")
+      .then((reg) => {
+        console.log("SW registered:", reg.scope);
 
-        nw.addEventListener("statechange", () => {
-          if (nw.state === "installed" && reg.waiting) {
-            reg.waiting.postMessage({ type: "SKIP_WAITING" });
-          }
-          if (nw.state === "activated") {
-            location.reload();
-          }
+        // pokud už čeká nový SW → aktivuj ho
+        if (reg.waiting) {
+          reg.waiting.postMessage({ type: "SKIP_WAITING" });
+        }
+
+        // když se najde update
+        reg.addEventListener("updatefound", () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+
+          newWorker.addEventListener("statechange", () => {
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+              newWorker.postMessage({ type: "SKIP_WAITING" });
+            }
+          });
         });
+
+      })
+      .catch((err) => {
+        console.log("SW registration failed:", err);
       });
 
-      let refreshing = false;
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        if (refreshing) return;
-        refreshing = true;
-        location.reload();
-      });
+    // bezpečný refresh jen jednou
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
 
-    } catch (err) {
-      console.log("SW error:", err);
-    }
   });
+
 }
+</script>
