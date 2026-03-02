@@ -369,7 +369,7 @@ body{
   </div>
 </div>
 
-<script>
+<script type="module">
 const $=id=>document.getElementById(id);
 
 const multiplierPrices=[200,500,800,1300,1999,2400,3000,4500,5500,6500];
@@ -721,16 +721,15 @@ signInAnonymously(auth).then(async (userCredential) => {
   
   window.userId = userCredential.user.uid;
   
-  const playerRef = doc(db, "players", userId);
+  const playerRef = doc(db, "players", window.userId);
   const playerSnap = await getDoc(playerRef);
 
   if (!playerSnap.exists()) {
     await setDoc(playerRef, { coins: 0 });
   }
 
-  console.log("User ID:", userId);
+  console.log("User ID:", window.userId);
 });
 </script>
 </body>
 </html>
-
