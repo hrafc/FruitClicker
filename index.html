@@ -302,8 +302,8 @@ body{
   right: 60px;
   bottom: 80px;
 
-  width:240px;
-  padding:20px;
+  width:300px;
+  padding:25px;
   border-radius:24px;
 
   background: linear-gradient(135deg,#ffe6f5,#ffd6ec);
@@ -314,7 +314,7 @@ body{
 
   display:flex;
   flex-direction:column;
-  gap:12px;
+  gap:16px;
 
   box-shadow:0 20px 40px rgba(0,0,0,0.2);
 
@@ -327,30 +327,37 @@ body{
 }
 
 #audioBox button{
-  padding:10px;
+  padding:12px 0;
   border:none;
-  border-radius:16px;
-  font-weight:900;
+  border-radius:25px;   /* 🔥 víc zaoblené */
+  font-weight:800;
   cursor:pointer;
+  font-size:14px;
 
-  background:linear-gradient(135deg,#ff9ad5,#ffd1ea);
-  color:#7a1d52;
+  background: linear-gradient(135deg,#ff9ad5,#ffc8e8);
+  color:#6b2b4d;
 
-  box-shadow:0 8px 16px rgba(0,0,0,0.15);
-  transition: transform 0.15s ease;
+  box-shadow: 0 6px 15px rgba(255,150,210,0.4);
+  transition: all 0.2s ease;
 }
 
 #audioBox button:hover{
   transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(255,150,210,0.6);
 }
 
-.off{
-  background:linear-gradient(135deg,#ffd6ec,#ffe6f5);
-  color:#7a1d52;
+#audioBox button:active{
+  transform: scale(0.95);
 }
 
-.on{
-  background:linear-gradient(135deg,#ff7ec8,#ffb3e6);
+
+#audioBox .off{
+  background: linear-gradient(135deg,#ffd6e8,#ffc0df);
+  color:#8a3a63;
+}
+
+#audioBox .on{
+  background: linear-gradient(135deg,#ff7ec8,#ffb3e6);
   color:white;
 }
   @keyframes kawaiiPop {
@@ -914,6 +921,7 @@ soundSelect.onchange = () => {
   </div>
 </body>
 </html>
+
 
 
 
