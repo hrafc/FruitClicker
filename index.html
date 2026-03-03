@@ -730,7 +730,9 @@ async function doClick(){
 }
 
 $("fruit").onclick = () => {
-  playClickSound();
+  if (tapEnabled) {
+    playClickSound();
+  }
   doClick();
 };
 
@@ -858,6 +860,11 @@ if ("serviceWorker" in navigator) {
     <option value="rain">Rain</option>
   </select>
 
+  <hr style="border:none;height:2px;background:#f3a6d4;margin:8px 0;border-radius:10px;">
+
+<label>Tap Sound</label>
+<button id="tapToggle" class="on">ON</button>
+
   <button id="toggleBtn" class="off">OFF</button>
 </div>
 
@@ -868,6 +875,8 @@ if ("serviceWorker" in navigator) {
 const audio = document.getElementById("bgAudio");
 const audioBox = document.getElementById("audioBox");
 const toggleBtn = document.getElementById("toggleBtn");
+const tapToggle = document.getElementById("tapToggle");
+let tapEnabled = true;
 const volumeSlider = document.getElementById("volumeSlider");
 const soundSelect = document.getElementById("soundSelect");
 
@@ -905,6 +914,20 @@ setTimeout(() => {
   }
 };
 
+  tapToggle.onclick = () => {
+  if (tapEnabled) {
+    tapEnabled = false;
+    tapToggle.textContent = "OFF";
+    tapToggle.classList.remove("on");
+    tapToggle.classList.add("off");
+  } else {
+    tapEnabled = true;
+    tapToggle.textContent = "ON";
+    tapToggle.classList.remove("off");
+    tapToggle.classList.add("on");
+  }
+};
+
 // Volume control
 volumeSlider.oninput = () => {
   audio.volume = volumeSlider.value;
@@ -921,6 +944,7 @@ soundSelect.onchange = () => {
   </div>
 </body>
 </html>
+
 
 
 
