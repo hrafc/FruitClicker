@@ -384,6 +384,31 @@ body{
   border-radius:10px;
   margin:14px 0;
 }
+ @keyframes upgradePop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.15); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.upgrade-bounce {
+  animation: upgradePop 0.35s ease;
+}
+
+.upgrade-effect {
+  position: fixed;
+  font-weight: 900;
+  font-size: 18px;
+  color: #ff4fa3;
+  pointer-events: none;
+  animation: upgradeFloat 0.8s ease forwards;
+  z-index: 9999;
+}
+
+@keyframes upgradeFloat {
+  0% { transform: translateY(0); opacity:1; }
+  100% { transform: translateY(-40px); opacity:0; }
+}
   
 </style>
 </head>
@@ -512,6 +537,30 @@ signInAnonymously(auth).then(async (userCredential) => {
   console.log("User ID:", userId);
 });
 const $=id=>document.getElementById(id);
+  function showUpgradeEffect(button){
+
+  // 1️⃣ Bounce tlačítka
+  button.classList.add("upgrade-bounce");
+  setTimeout(()=>{
+    button.classList.remove("upgrade-bounce");
+  },350);
+
+  // 2️⃣ Plovoucí text
+  const effect = document.createElement("div");
+  effect.className = "upgrade-effect";
+  effect.textContent = "✨ UPGRADE ✨";
+
+  const rect = button.getBoundingClientRect();
+
+  effect.style.left = rect.left + rect.width/2 - 60 + "px";
+  effect.style.top = rect.top - 10 + "px";
+
+  document.body.appendChild(effect);
+
+  setTimeout(()=>{
+    effect.remove();
+  },800);
+}
 
   // 🎵 Cute click sound (bez mp3)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -760,6 +809,9 @@ $("buyCoin").onclick=()=>{
   s.coins -= price;
   s.coinMult++;
   s.coinBought++;
+
+  showUpgradeEffect($("buyCoin"));
+  
   save();
   render();
 };
@@ -771,6 +823,9 @@ $("buyClick").onclick=()=>{
   s.coins -= price;
   s.clickMult++;
   s.clickBought++;
+
+  showUpgradeEffect($("buyClick"));
+  
   save();
   render();
 };
@@ -780,6 +835,9 @@ $("buyAuto").onclick=()=>{
 
   s.coins -= 3000;
   s.auto = true;
+  
+  showUpgradeEffect($("buyAuto"));
+  
   startAuto();
   save();
   render();
@@ -962,4 +1020,5 @@ soundSelect.onchange = () => {
   </div>
 </body>
 </html>
+
 
