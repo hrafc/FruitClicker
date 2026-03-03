@@ -684,8 +684,11 @@ $("clickCost").textContent=s.clickBought>=10?"MAX":`Price: ${kp}`;
 $("buyClick").disabled=s.clickBought>=10||s.coins<kp;
 
 if(s.auto){
-$("autoCost").textContent="Bought";
-$("buyAuto").disabled=true;
+  $("autoCost").textContent="Bought";
+  $("buyAuto").disabled=true;
+} else {
+  $("autoCost").textContent="Price: 3000";
+  $("buyAuto").disabled = s.coins < 3000;
 }
 
 renderLevels();
@@ -959,3 +962,4 @@ soundSelect.onchange = () => {
   </div>
 </body>
 </html>
+
