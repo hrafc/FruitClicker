@@ -497,6 +497,17 @@ body{
   </div>
 </div>
 
+    <!-- ====== LEVEL COMPLETE MODAL ====== -->
+<div id="levelModal" class="kawaii-overlay kawaii-hidden">
+  <div class="kawaii-card">
+    <div class="kawaii-title">🎉 You finished the level.</div>
+
+    <div class="kawaii-actions">
+      <button id="nextLevelBtn" class="kawaii-btn">Next Level ➡️</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -656,8 +667,25 @@ const resetModal = $("resetModal");
 const mathModal  = $("mathModal");
 let mathAnswer = null;
 
+  // ====== LEVEL COMPLETE SYSTEM ======
+const levelModal = $("levelModal");
+const nextLevelBtn = $("nextLevelBtn");
+
+let levelPending = false;
+let pendingLevelIndex = null;
+
 function openModal(el){ el.classList.remove("kawaii-hidden"); }
 function closeModal(el){ el.classList.add("kawaii-hidden"); }
+
+  function openLevelModal(nextLevelIndex){
+  levelPending = true;
+  pendingLevelIndex = nextLevelIndex;
+  openModal(levelModal);
+}
+
+function closeLevelModal(){
+  closeModal(levelModal);
+}
 
 function askReset(source="menu"){
   spawnConfetti();
@@ -763,6 +791,7 @@ $("levels").appendChild(div);
 }
 
 async function doClick(){
+  if(levelPending) return;
   
   if(!userId) return;
 
@@ -772,17 +801,25 @@ async function doClick(){
   if(s.clicks[s.lvl] >= levels[s.lvl][2]){
     spawnConfetti();
 
-    if(s.lvl < 9){
-      s.unlock = Math.max(s.unlock, s.lvl + 1);
-      s.lvl++;
-    } else {
-      if(!s.completed){
-        s.completed = true;
-        save();
-        setTimeout(()=> askReset("win"), 250);
-      }
-    }
+   if(s.lvl < 9){
+  const next = s.lvl + 1;
+
+  // odemkni další level, ale nepřepínej hned
+  s.unlock = Math.max(s.unlock, next);
+
+  // ukaž modal
+  save();
+  render();
+  openLevelModal(next);
+  return;
+} else {
+  // poslední level = tvůj existující win/reset systém
+  if(!s.completed){
+    s.completed = true;
+    save();
+    setTimeout(()=> askReset("win"), 250);
   }
+}
 
   // server increment
   await updateDoc(doc(db, "players", userId), {
@@ -888,7 +925,24 @@ $("mathOk").onclick     = () => checkMathAndReset();
 $("mathA").addEventListener("keydown",(e)=>{
   if(e.key==="Enter") checkMathAndReset();
 });
+  
+nextLevelBtn.onclick = () => {
+  if (pendingLevelIndex === null) return;
 
+  // přepni level na ten další
+  s.lvl = pendingLevelIndex;
+
+  // uklid
+  levelPending = false;
+  pendingLevelIndex = null;
+
+  closeLevelModal();
+
+  save();
+  render();
+  showGame();
+};
+  
 startAuto();
 render();
 </script>
