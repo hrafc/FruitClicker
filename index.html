@@ -537,6 +537,7 @@ signInAnonymously(auth).then(async (userCredential) => {
   console.log("User ID:", userId);
 });
 const $=id=>document.getElementById(id);
+  window.tapEnabled = true;
   function showUpgradeEffect(button){
 
   // 1️⃣ Bounce tlačítka
@@ -796,13 +797,13 @@ async function doClick(){
 }
 
 $("fruit").onclick = () => {
-  if (tapEnabled) {
+  if (window.tapEnabled) {
     playClickSound();
   }
   doClick();
 };
 
-$("buyCoin").onclick=()=>{
+$("buyCoin").onclick=async ()=>{
   const price = multiplierPrices[s.coinBought];
   if(s.coinBought >= 10 || s.coins < price) return;
 
@@ -967,7 +968,6 @@ const audio = document.getElementById("bgAudio");
 const audioBox = document.getElementById("audioBox");
 const toggleBtn = document.getElementById("toggleBtn");
 const tapToggle = document.getElementById("tapToggle");
-let tapEnabled = true;
 const volumeSlider = document.getElementById("volumeSlider");
 const soundSelect = document.getElementById("soundSelect");
 
@@ -1006,13 +1006,13 @@ setTimeout(() => {
 };
 
   tapToggle.onclick = () => {
-  if (tapEnabled) {
-    tapEnabled = false;
+  if (window.tapEnabled) {
+    window.tapEnabled = false;
     tapToggle.textContent = "OFF";
     tapToggle.classList.remove("on");
     tapToggle.classList.add("off");
   } else {
-    tapEnabled = true;
+    window.tapEnabled = true;
     tapToggle.textContent = "ON";
     tapToggle.classList.remove("off");
     tapToggle.classList.add("on");
@@ -1032,6 +1032,5 @@ soundSelect.onchange = () => {
   }
 };
 </script>
-  </div>
 </body>
 </html>
