@@ -492,6 +492,31 @@ signInAnonymously(auth).then(async (userCredential) => {
 });
 const $=id=>document.getElementById(id);
 
+  // 🎵 Cute click sound (bez mp3)
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playClickSound() {
+  const oscillator = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+
+  oscillator.type = "sine";
+  oscillator.frequency.value = 600;
+
+  gainNode.gain.value = 0.1;
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  oscillator.start();
+
+  gainNode.gain.exponentialRampToValueAtTime(
+    0.0001,
+    audioCtx.currentTime + 0.08
+  );
+
+  oscillator.stop(audioCtx.currentTime + 0.08);
+}
+
 const multiplierPrices=[200,500,800,1300,1999,2400,3000,4500,5500,6500];
 
 const levels=[
@@ -697,7 +722,10 @@ async function doClick(){
   render();
 }
 
-$("fruit").onclick=doClick;
+$("fruit").onclick = () => {
+  playClickSound();
+  doClick();
+};
 
 $("buyCoin").onclick=()=>{
   const price = multiplierPrices[s.coinBought];
@@ -886,6 +914,7 @@ soundSelect.onchange = () => {
   </div>
 </body>
 </html>
+
 
 
 
