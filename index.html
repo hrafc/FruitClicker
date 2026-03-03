@@ -730,137 +730,117 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 
-  <!-- 🎵 AUDIO -->
+<!-- AUDIO -->
 <audio id="bgAudio" loop></audio>
 
-<!-- 🎛 AUDIO PANEL -->
-<div id="audioPanel">
-  <button id="settingsBtn">⚙️ Settings</button>
-  
-  <div id="settingsMenu" class="hidden">
-    <label>Volume</label>
-    <input type="range" id="volumeSlider" min="0" max="1" step="0.01">
-    
-    <label>Sound</label>
-    <select id="soundSelect">
-      <option value="lofi">Lofi Beats</option>
-      <option value="rain">Rain</option>
-    </select>
-  </div>
-  
-  <button id="toggleBtn">OFF</button>
+<!-- AUDIO PANEL -->
+<div id="audioBox">
+  <div class="audioTitle">🎵 Ambient</div>
+
+  <label>Volume</label>
+  <input type="range" id="volumeSlider" min="0" max="1" step="0.01">
+
+  <label>Sound</label>
+  <select id="soundSelect">
+    <option value="lofi">Lofi Beats</option>
+    <option value="rain">Rain</option>
+  </select>
+
+  <button id="toggleBtn" class="off">OFF</button>
 </div>
 
 <style>
-#audioPanel {
+#audioBox {
   position: fixed;
-  left: 20px;
-  bottom: 20px;
+  right: 40px;
+  bottom: 120px;
+  width: 220px;
+  background: rgba(0,0,0,0.75);
+  padding: 15px;
+  border-radius: 15px;
+  color: white;
   display: flex;
   flex-direction: column;
   gap: 8px;
   z-index: 9999;
 }
 
-#audioPanel button {
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
+#audioBox select,
+#audioBox input {
+  width: 100%;
 }
 
-#toggleBtn {
+#audioBox button {
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.off {
   background: #444;
   color: white;
 }
 
-#settingsBtn {
-  background: #888;
+.on {
+  background: green;
   color: white;
-}
-
-#settingsMenu {
-  background: #222;
-  padding: 10px;
-  border-radius: 10px;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.hidden {
-  display: none;
 }
 </style>
 
 <script>
 const audio = document.getElementById("bgAudio");
 const toggleBtn = document.getElementById("toggleBtn");
-const settingsBtn = document.getElementById("settingsBtn");
-const settingsMenu = document.getElementById("settingsMenu");
 const volumeSlider = document.getElementById("volumeSlider");
 const soundSelect = document.getElementById("soundSelect");
 
-// Zvuky (nahraj si svoje mp3 soubory do projektu!)
 const sounds = {
   lofi: "lofi.mp3",
   rain: "rain.mp3"
 };
 
-// Načtení uložených dat
-let isPlaying = localStorage.getItem("musicOn") === "true";
-let savedVolume = localStorage.getItem("volume") || 0.5;
-let savedSound = localStorage.getItem("sound") || "lofi";
+let isPlaying = false;
 
-audio.src = sounds[savedSound];
-audio.volume = savedVolume;
-volumeSlider.value = savedVolume;
-soundSelect.value = savedSound;
+// Nastavení výchozího zvuku
+audio.src = sounds["lofi"];
+audio.volume = 0.5;
+volumeSlider.value = 0.5;
 
-if (isPlaying) {
-  audio.play();
-  toggleBtn.textContent = "ON";
-  toggleBtn.style.background = "green";
-}
-
-// ON/OFF
+// Toggle ON/OFF
 toggleBtn.onclick = () => {
-  if (audio.paused) {
+  if (!isPlaying) {
     audio.play();
     toggleBtn.textContent = "ON";
-    toggleBtn.style.background = "green";
-    localStorage.setItem("musicOn", true);
+    toggleBtn.classList.remove("off");
+    toggleBtn.classList.add("on");
+    isPlaying = true;
   } else {
     audio.pause();
     toggleBtn.textContent = "OFF";
-    toggleBtn.style.background = "#444";
-    localStorage.setItem("musicOn", false);
+    toggleBtn.classList.remove("on");
+    toggleBtn.classList.add("off");
+    isPlaying = false;
   }
 };
 
-// Settings open
-settingsBtn.onclick = () => {
-  settingsMenu.classList.toggle("hidden");
-};
-
-// Volume
+// Volume control
 volumeSlider.oninput = () => {
   audio.volume = volumeSlider.value;
-  localStorage.setItem("volume", volumeSlider.value);
 };
 
 // Sound change
 soundSelect.onchange = () => {
   audio.src = sounds[soundSelect.value];
-  localStorage.setItem("sound", soundSelect.value);
-  if (!audio.paused) audio.play();
+  if (isPlaying) {
+    audio.play();
+  }
 };
 </script>
   
 </body>
 </html>
+
 
 
 
