@@ -302,8 +302,8 @@ body{
   right: 60px;
   bottom: 80px;
 
-  width:300px;
-  padding:25px;
+  width:340px;
+  padding:30px;
   border-radius:24px;
 
   background: linear-gradient(135deg,#ffe6f5,#ffd6ec);
@@ -370,7 +370,21 @@ body{
 .audio-active {
   animation: kawaiiPop 0.4s ease;
 }
+.audioSectionTitle{
+  font-weight:900;
+  font-size:15px;
+  margin-bottom:6px;
+  color:#7a1d52;
+}
 
+.audioDivider{
+  border:none;
+  height:2px;
+  background:#f3a6d4;
+  border-radius:10px;
+  margin:14px 0;
+}
+  
 </style>
 </head>
 
@@ -849,23 +863,24 @@ if ("serviceWorker" in navigator) {
 </div> <!-- konec .app -->
 
 <div id="audioBox">
-  <div class="audioTitle">🎵 Ambient</div>
+  <div class="audioSectionTitle">🎵 Ambient Music</div>
 
-  <label>Volume</label>
-  <input type="range" id="volumeSlider" min="0" max="1" step="0.01">
+<label>Volume</label>
+<input type="range" id="volumeSlider" min="0" max="1" step="0.01">
 
-  <label>Sound</label>
-  <select id="soundSelect">
-    <option value="lofi">Lofi Beats</option>
-    <option value="rain">Rain</option>
-  </select>
+<label>Sound</label>
+<select id="soundSelect">
+  <option value="lofi">Lofi Beats</option>
+  <option value="rain">Rain</option>
+</select>
 
-  <hr style="border:none;height:2px;background:#f3a6d4;margin:8px 0;border-radius:10px;">
+<button id="toggleBtn" class="off">OFF</button>
 
-<label>Tap Sound</label>
+<hr class="audioDivider">
+
+<div class="audioSectionTitle">🔊 Tap Sound</div>
+
 <button id="tapToggle" class="on">ON</button>
-
-  <button id="toggleBtn" class="off">OFF</button>
 </div>
 
 </div> <!-- konec .layout -->
@@ -944,16 +959,3 @@ soundSelect.onchange = () => {
   </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
