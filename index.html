@@ -20,8 +20,11 @@ body{
   font-family:'Comic Sans MS','Segoe UI',cursive,sans-serif;
   background: linear-gradient(160deg, #ffe6f0, #fff0b3, #b3f0ff, #c1ffc1);
   min-height:100vh;
-  display:grid;
-  place-items:center;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
   overflow:hidden;
 }
 
@@ -286,12 +289,56 @@ body{
   .app{ transform: scale(1); width: 94vw; }
   .fruit{ font-size: 110px; }
 }
+
+/* ===== AUDIO LAYOUT ===== */
+.layout{
+  display:flex;
+  gap:60px;
+  align-items:flex-start;
+}
+
+#audioBox{
+  width:240px;
+  background: rgba(0,0,0,0.75);
+  padding:20px;
+  border-radius:20px;
+  color:white;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:80px;
+}
+
+#audioBox input,
+#audioBox select{
+  width:100%;
+}
+
+#audioBox button{
+  padding:8px;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.off{
+  background:#444;
+  color:white;
+}
+
+.on{
+  background:green;
+  color:white;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<div class="layout">
+  <div class="app">
 
 <div class="top-left">🪙 <span id="coins">0</span></div>
 <div class="menu-btn" id="menuBtn">🏠 Menu</div>
@@ -730,10 +777,8 @@ if ("serviceWorker" in navigator) {
 }
 </script>
 
-<!-- AUDIO -->
-<audio id="bgAudio" loop></audio>
+</div> <!-- konec .app -->
 
-<!-- AUDIO PANEL -->
 <div id="audioBox">
   <div class="audioTitle">🎵 Ambient</div>
 
@@ -749,46 +794,9 @@ if ("serviceWorker" in navigator) {
   <button id="toggleBtn" class="off">OFF</button>
 </div>
 
-<style>
-#audioBox {
-  position: fixed;
-  right: 40px;
-  bottom: 120px;
-  width: 220px;
-  background: rgba(0,0,0,0.75);
-  padding: 15px;
-  border-radius: 15px;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 9999;
-}
+</div> <!-- konec .layout -->
 
-#audioBox select,
-#audioBox input {
-  width: 100%;
-}
-
-#audioBox button {
-  padding: 8px;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.off {
-  background: #444;
-  color: white;
-}
-
-.on {
-  background: green;
-  color: white;
-}
-</style>
-
+<audio id="bgAudio" loop></audio>
 <script>
 const audio = document.getElementById("bgAudio");
 const toggleBtn = document.getElementById("toggleBtn");
@@ -837,9 +845,10 @@ soundSelect.onchange = () => {
   }
 };
 </script>
-  
+  </div>
 </body>
 </html>
+
 
 
 
