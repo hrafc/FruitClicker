@@ -353,6 +353,16 @@ body{
   background:linear-gradient(135deg,#ff7ec8,#ffb3e6);
   color:white;
 }
+  @keyframes kawaiiPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.08); }
+  70% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+.audio-active {
+  animation: kawaiiPop 0.4s ease;
+}
 
 </style>
 </head>
@@ -821,6 +831,7 @@ if ("serviceWorker" in navigator) {
 <audio id="bgAudio" loop></audio>
 <script>
 const audio = document.getElementById("bgAudio");
+const audioBox = document.getElementById("audioBox");
 const toggleBtn = document.getElementById("toggleBtn");
 const volumeSlider = document.getElementById("volumeSlider");
 const soundSelect = document.getElementById("soundSelect");
@@ -841,6 +852,11 @@ volumeSlider.value = 0.5;
 toggleBtn.onclick = () => {
   if (!isPlaying) {
     audio.play();
+    audioBox.classList.add("audio-active");
+
+setTimeout(() => {
+  audioBox.classList.remove("audio-active");
+}, 400);
     toggleBtn.textContent = "ON";
     toggleBtn.classList.remove("off");
     toggleBtn.classList.add("on");
@@ -870,6 +886,7 @@ soundSelect.onchange = () => {
   </div>
 </body>
 </html>
+
 
 
 
