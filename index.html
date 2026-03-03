@@ -303,16 +303,22 @@ body{
   bottom: 80px;
 
   width:240px;
-  background: rgba(0,0,0,0.85);
   padding:20px;
-  border-radius:20px;
-  color:white;
+  border-radius:24px;
+
+  background: linear-gradient(135deg,#ffe6f5,#ffd6ec);
+  border:2px solid rgba(255,150,210,0.6);
+
+  color:#7a1d52;
+  font-weight:700;
+
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:12px;
 
-  box-shadow:0 20px 40px rgba(0,0,0,0.4);
-  backdrop-filter: blur(6px);
+  box-shadow:0 20px 40px rgba(0,0,0,0.2);
+
+  z-index: 10; /* důležité */
 }
 
 #audioBox input,
@@ -321,20 +327,30 @@ body{
 }
 
 #audioBox button{
-  padding:8px;
+  padding:10px;
   border:none;
-  border-radius:8px;
-  font-weight:bold;
+  border-radius:16px;
+  font-weight:900;
   cursor:pointer;
+
+  background:linear-gradient(135deg,#ff9ad5,#ffd1ea);
+  color:#7a1d52;
+
+  box-shadow:0 8px 16px rgba(0,0,0,0.15);
+  transition: transform 0.15s ease;
+}
+
+#audioBox button:hover{
+  transform: scale(1.05);
 }
 
 .off{
-  background:#444;
-  color:white;
+  background:linear-gradient(135deg,#ffd6ec,#ffe6f5);
+  color:#7a1d52;
 }
 
 .on{
-  background:green;
+  background:linear-gradient(135deg,#ff7ec8,#ffb3e6);
   color:white;
 }
 
@@ -854,6 +870,7 @@ soundSelect.onchange = () => {
   </div>
 </body>
 </html>
+
 
 
 
