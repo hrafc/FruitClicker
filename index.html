@@ -820,7 +820,7 @@ async function doClick(){
     setTimeout(()=> askReset("win"), 250);
   }
 }
-
+}
   // server increment
   await updateDoc(doc(db, "players", userId), {
     coins: increment(s.coinMult)
@@ -1088,4 +1088,5 @@ soundSelect.onchange = () => {
 </script>
 </body>
 </html>
+
 
