@@ -15,7 +15,7 @@
      crossorigin="anonymous"></script>
 
 <style>
-*{user-select:none; box-sizing:border-box; margin:0; padding:0;}
+*{user-select:none; -webkit-tap-highlight-color: transparent; box-sizing:border-box; margin:0; padding:0;}
 
 body{
   font-family:'Comic Sans MS','Segoe UI',cursive,sans-serif;
@@ -99,6 +99,8 @@ body{
 .fruit{
   font-size:140px;
   cursor:pointer;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
   transition: transform 0.2s;
   text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
   margin:12px 0;
@@ -414,8 +416,8 @@ body{
   /* ===== MOBILE SOUND SETTINGS BUTTON ===== */
 .sound-settings-btn{
   position:absolute;
-  top:14px;
-  right:130px; /* vedle Menu tlačítka */
+  top:66px;
+  right:18px; /* vedle Menu tlačítka */
   width:44px;
   height:44px;
   border:none;
@@ -432,6 +434,10 @@ body{
   z-index:5;
 }
 .sound-settings-btn:active{ transform:scale(0.95); }
+
+  @media (min-width: 900px){
+  .sound-settings-btn{ display:none !important; }
+}
 
 /* ===== SOUND MODAL (mobile) ===== */
 #audioOverlay{
@@ -1193,3 +1199,4 @@ soundSelect.onchange = () => {
 </script>
 </body>
 </html>
+
