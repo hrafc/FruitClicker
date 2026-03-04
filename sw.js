@@ -1,10 +1,10 @@
-const CACHE_NAME = "fruit-clicker-v70";
+const CACHE_NAME = "fruit-clicker-v71";
 
 const FILES = [
   "/",
   "/index.html",
   "/offline.html",
-  "/logo.png",
+  "/icon.png",
   "/manifest.json"
 ];
 
@@ -50,6 +50,7 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
 
 
 
