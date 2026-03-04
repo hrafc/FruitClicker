@@ -520,34 +520,38 @@ body{
   .audioClose{ display:none; }
 }
 
-  /* ===== LOADING OVERLAY ===== */
+/* ===== LOADING OVERLAY (FIXED) ===== */
 .loading-overlay{
   position:fixed;
-  inset:0;
+  top:0; left:0; right:0; bottom:0;
+  width:100vw;
+  height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:999999;
+  z-index:2147483647; /* max z-index */
   background: linear-gradient(160deg, #ffe6f0, #fff0b3, #b3f0ff, #c1ffc1);
+  pointer-events: all;
 }
 
 .loading-card{
   width:min(420px, 92vw);
-  background: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.88);
   border-radius:28px;
   padding:22px 22px 18px;
-  box-shadow:0 20px 50px rgba(0,0,0,0.18);
+  box-shadow:0 22px 60px rgba(0,0,0,0.18);
   border:2px solid rgba(255,150,210,0.45);
   text-align:center;
 }
 
 .loading-logo{
-  width:160px;
-  height:160px;
-  border-radius:28px;
+  width:140px;
+  height:140px;
+  border-radius:26px;
   object-fit:cover;
+  display:block;
+  margin:0 auto 14px;
   box-shadow:0 12px 28px rgba(0,0,0,0.18);
-  margin-bottom:14px;
 }
 
 .loading-text{
@@ -574,8 +578,9 @@ body{
   transition: width 120ms linear;
 }
 
-/* když loading skončí, overlay zmizí */
 .loading-hidden{
+  display:none !important;
+}
   display:none !important;
 }
   
@@ -1288,19 +1293,19 @@ soundSelect.onchange = () => {
 };
 </script>
 
-  <script>
+ <script>
 (function(){
   const overlay = document.getElementById("loadingOverlay");
   const textEl  = document.getElementById("loadingText");
   const fillEl  = document.getElementById("loadingFill");
 
-  // 5–10s náhodně
-  const total = 5000 + Math.floor(Math.random() * 5001);
+  if(!overlay || !textEl || !fillEl) return;
 
+  // 5–10 sekund
+  const total = 5000 + Math.floor(Math.random() * 5001);
   const start = performance.now();
 
-  // Blokuj klikání do hry dokud neskončí (overlay je nahoře)
-  const tick = (now) => {
+  function tick(now){
     const elapsed = now - start;
     const p = Math.min(1, elapsed / total);
     const percent = Math.floor(p * 100);
@@ -1308,21 +1313,23 @@ soundSelect.onchange = () => {
     textEl.textContent = `Loading... ${percent}%`;
     fillEl.style.width = percent + "%";
 
-    if (p < 1) {
+    if(p < 1){
       requestAnimationFrame(tick);
     } else {
-      // malá pauza pro feeling
-      setTimeout(() => {
-        overlay.classList.add("loading-hidden");
-      }, 150);
+      // schovej overlay
+      overlay.classList.add("loading-hidden");
     }
-  };
+  }
 
   requestAnimationFrame(tick);
+
+  // SAFETY: i kdyby se něco posralo, po 12s overlay zmizí
+  setTimeout(()=> overlay.classList.add("loading-hidden"), 12000);
 })();
 </script>
 
 </body>
 </html>
+
 
 
