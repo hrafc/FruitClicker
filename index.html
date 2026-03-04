@@ -410,6 +410,89 @@ body{
   0% { transform: translateY(0); opacity:1; }
   100% { transform: translateY(-40px); opacity:0; }
 }
+
+  /* ===== MOBILE SOUND SETTINGS BUTTON ===== */
+.sound-settings-btn{
+  position:absolute;
+  top:14px;
+  right:130px; /* vedle Menu tlačítka */
+  width:44px;
+  height:44px;
+  border:none;
+  border-radius:999px;
+  background:#ffd1ea;
+  color:#7a1d52;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 6px 14px rgba(0,0,0,0.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:transform .15s ease;
+  z-index:5;
+}
+.sound-settings-btn:active{ transform:scale(0.95); }
+
+/* ===== SOUND MODAL (mobile) ===== */
+#audioOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.25);
+  backdrop-filter: blur(6px);
+  z-index:9999;
+  display:none; /* default zavřeno */
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+#audioOverlay.open{ display:flex; }
+
+/* Panel uvnitř overlay */
+#audioBox{
+  position:relative;
+  right:auto;
+  bottom:auto;
+  width:min(420px, 92vw);
+  max-height:80vh;
+  overflow:auto;
+}
+
+/* Zavírací tlačítko v modalu */
+.audioClose{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:999px;
+  background:rgba(255,255,255,0.7);
+  color:#7a1d52;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 6px 14px rgba(0,0,0,0.15);
+}
+
+/* ===== DESKTOP: panel vpravo dole ===== */
+@media (min-width: 900px){
+  #audioOverlay{
+    display:block;
+    background:transparent;
+    backdrop-filter:none;
+    position:static;
+    padding:0;
+  }
+  #audioOverlay.open{ display:block; }
+  #audioBox{
+    position:fixed;
+    right:60px;
+    bottom:80px;
+    width:340px;
+    max-height:none;
+    overflow:visible;
+  }
+  .audioClose{ display:none; }
+}
   
 </style>
 </head>
@@ -421,6 +504,7 @@ body{
 
 <div class="top-left">🪙 <span id="coins">0</span></div>
 <div class="menu-btn" id="menuBtn">🏠 Menu</div>
+<button id="soundSettingsBtn" class="sound-settings-btn" aria-label="Sound settings">⚙️</button>
 
 <div id="game">
 
@@ -994,33 +1078,53 @@ if ("serviceWorker" in navigator) {
 
 </div> <!-- konec .app -->
 
-<div id="audioBox">
-  <div class="audioSectionTitle">🎵 Ambient Music</div>
+<div id="audioOverlay">
+  <div id="audioBox">
+    <button class="audioClose" id="audioCloseBtn">✕</button>
 
-<label>Volume</label>
-<input type="range" id="volumeSlider" min="0" max="1" step="0.01">
+    <div class="audioSectionTitle">🎵 Ambient Music</div>
 
-<label>Sound</label>
-<select id="soundSelect">
-  <option value="lofi">Lofi Beats</option>
-  <option value="rain">Rain</option>
-</select>
+    <label>Volume</label>
+    <input type="range" id="volumeSlider" min="0" max="1" step="0.01">
 
-<button id="toggleBtn" class="off">OFF</button>
+    <label>Sound</label>
+    <select id="soundSelect">
+      <option value="lofi">Lofi Beats</option>
+      <option value="rain">Rain</option>
+    </select>
 
-<hr class="audioDivider">
+    <button id="toggleBtn" class="off">OFF</button>
 
-<div class="audioSectionTitle">🔊 Tap Sound</div>
+    <hr class="audioDivider">
 
-<button id="tapToggle" class="on">ON</button>
+    <div class="audioSectionTitle">🔊 Tap Sound</div>
+
+    <button id="tapToggle" class="on">ON</button>
+  </div>
 </div>
-
-</div> <!-- konec .layout -->
 
 <audio id="bgAudio" loop></audio>
 <script>
 const audio = document.getElementById("bgAudio");
 const audioBox = document.getElementById("audioBox");
+const audioOverlay = document.getElementById("audioOverlay");
+const soundSettingsBtn = document.getElementById("soundSettingsBtn");
+const audioCloseBtn = document.getElementById("audioCloseBtn");
+
+// otevřít
+soundSettingsBtn.onclick = () => {
+  audioOverlay.classList.add("open");
+};
+
+// zavřít tlačítkem X
+audioCloseBtn.onclick = () => {
+  audioOverlay.classList.remove("open");
+};
+
+// zavřít kliknutím mimo box
+audioOverlay.addEventListener("click", (e) => {
+  if (e.target === audioOverlay) audioOverlay.classList.remove("open");
+});
 const toggleBtn = document.getElementById("toggleBtn");
 const tapToggle = document.getElementById("tapToggle");
 const volumeSlider = document.getElementById("volumeSlider");
@@ -1089,7 +1193,3 @@ soundSelect.onchange = () => {
 </script>
 </body>
 </html>
-
-
-
-
