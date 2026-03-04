@@ -331,37 +331,47 @@ body{
 
 #audioBox button{
   padding:12px 0;
-  border:none;
-  border-radius:25px;   /* 🔥 víc zaoblené */
-  font-weight:800;
+  border:2px solid rgba(122,29,82,0.25);   /* ✅ border pro kontrast */
+  border-radius:28px;
+  font-weight:900;
   cursor:pointer;
   font-size:14px;
 
-  background: linear-gradient(135deg,#ff9ad5,#ffc8e8);
-  color:#6b2b4d;
+  background: linear-gradient(135deg,#ff86c9,#ffc3e6); /* ✅ víc kontrast */
+  color:#5a1038;                                     /* ✅ tmavší text */
 
-  box-shadow: 0 6px 15px rgba(255,150,210,0.4);
-  transition: all 0.2s ease;
+  box-shadow:
+    0 10px 22px rgba(255,80,170,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.7);             /* ✅ “gloss” */
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 #audioBox button:hover{
-  transform: scale(1.05);
-  box-shadow: 0 10px 20px rgba(255,150,210,0.6);
+  transform: translateY(-1px) scale(1.03);
+  filter: brightness(1.03);
+  box-shadow:
+    0 14px 28px rgba(255,80,170,0.32),
+    inset 0 1px 0 rgba(255,255,255,0.8);
 }
 
 #audioBox button:active{
-  transform: scale(0.95);
+  transform: scale(0.98);
 }
 
-
 #audioBox .off{
-  background: linear-gradient(135deg,#ffd6e8,#ffc0df);
-  color:#8a3a63;
+  background: linear-gradient(135deg,#ffe7f3,#ffd0ea); /* světlejší OFF */
+  color:#6b2b4d;
+  border-color: rgba(122,29,82,0.18);
 }
 
 #audioBox .on{
-  background: linear-gradient(135deg,#ff7ec8,#ffb3e6);
+  background: linear-gradient(135deg,#ff4fb2,#ff9fd8); /* výraznější ON */
   color:white;
+  border-color: rgba(122,29,82,0.22);
+  box-shadow:
+    0 14px 30px rgba(255,60,160,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.35);
 }
   @keyframes kawaiiPop {
   0% { transform: scale(1); }
@@ -1304,3 +1314,4 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
