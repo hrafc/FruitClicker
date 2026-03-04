@@ -138,27 +138,37 @@ body{
 }
 .upgrade:hover{
   transform: translateY(-3px);
-}
 .upgrade button{
-  background:#ff99cc;
-  border:none;
+  background: linear-gradient(135deg,#ff4fb2,#ff9fd8); /* víc kontrast */
+  border:2px solid rgba(122,29,82,0.22);
   color:white;
-  padding:12px 20px;
-  border-radius:24px;
-  font-weight:bold;
+  padding:12px 22px;
+  border-radius:999px;
+  font-weight:900;
   cursor:pointer;
-  transition: transform 0.2s, background 0.3s;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  box-shadow:
+    0 14px 28px rgba(255,60,160,0.28),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.12);
 }
 .upgrade button:hover:not(:disabled){
-  transform: scale(1.1);
-  background:#ff66aa;
+  transform: translateY(-1px) scale(1.06);
+  filter: brightness(1.03);
+  box-shadow:
+    0 18px 34px rgba(255,60,160,0.36),
+    inset 0 1px 0 rgba(255,255,255,0.45);
 }
 .upgrade button:active:not(:disabled){
-  transform: scale(0.95);
+  transform: scale(0.98);
 }
 .upgrade button:disabled{
-  opacity:.5;
+  background: linear-gradient(135deg,#ffd6ea,#ffe9f4);
+  border:2px solid rgba(122,29,82,0.10);
+  color:#a35a86;
+  opacity:1;             /* necháme čitelné */
   cursor:not-allowed;
+  box-shadow:none;
 }
 
 /* ====== MENU SCREEN ====== */
@@ -1314,4 +1324,5 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
