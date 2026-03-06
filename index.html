@@ -695,7 +695,7 @@ body{
 
 <!-- ✅ RESET BUTTON ONLY IN MENU -->
 <button id="resetBtn" class="reset-btn">🧁 Reset progress </button>
-<a id="vipBtn" href="https://buy.stripe.com/..." target="_blank" class="supporter-btn">
+<a id="vipBtn" href="https://buy.stripe.com/fZu28q46QbkD1WU6j233W01" target="_blank" class="supporter-btn">
    👑 Buy a VIP - 49 Kč
 </a>
 </div>
@@ -794,8 +794,6 @@ const provider = new GoogleAuthProvider();
     save();
     render();
 
-    document.getElementById("loginBtn").onclick = loginWithGoogle;
-
     console.log("Logged in as:", user.email);
 
   } catch(err){
@@ -804,6 +802,8 @@ const provider = new GoogleAuthProvider();
 }
   
 let userId = null;
+
+  document.getElementById("loginBtn").onclick = loginWithGoogle;
 
 const $=id=>document.getElementById(id);
   window.tapEnabled = true;
@@ -1075,7 +1075,10 @@ $("levels").appendChild(div);
 async function doClick(){
   if(levelPending) return;
   
-  if(!userId) return;
+  if(!userId){
+  alert("Please login with Google first 💙");
+  return;
+}
 
   s.clicks[s.lvl] += s.clickMult;
 
@@ -1430,6 +1433,7 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
 
 
