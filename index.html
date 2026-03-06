@@ -665,6 +665,9 @@ body{
 </div>
 
 <div id="menu" class="menu-screen">
+  <button id="loginBtn" class="reset-btn">
+  🔐 Login with Google
+</button>
 <h2>📋 Level selection ✅ </h2>
 <div class="levels" id="levels"></div>
 
@@ -717,7 +720,11 @@ body{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { 
   getFirestore, 
   doc, 
@@ -739,21 +746,43 @@ import {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
+  async function loginWithGoogle(){
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    window.userId = user.uid;
+
+    const playerRef = doc(db, "players", user.uid);
+    const playerSnap = await getDoc(playerRef);
+
+    if (!playerSnap.exists()) {
+      await setDoc(playerRef, { 
+        coins: 0,
+        supporter: false
+      });
+    }
+
+    const data = (await getDoc(playerRef)).data();
+    s.coins = data.coins || 0;
+    s.supporter = data.supporter || false;
+
+    document.getElementById("loginBtn").onclick = loginWithGoogle;
+
+    save();
+    render();
+
+    console.log("Logged in as:", user.email);
+
+  } catch(err){
+    console.error("Login error:", err);
+  }
+}
+  
 let userId = null;
 
-signInAnonymously(auth).then(async (userCredential) => {
-  userId = userCredential.user.uid;
-
-  const playerRef = doc(db, "players", userId);
-  const playerSnap = await getDoc(playerRef);
-
-  if (!playerSnap.exists()) {
-    await setDoc(playerRef, { coins: 0 });
-  }
-
-  console.log("User ID:", userId);
-});
 const $=id=>document.getElementById(id);
   window.tapEnabled = true;
   function showUpgradeEffect(button){
@@ -1367,6 +1396,7 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
 
 
