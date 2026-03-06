@@ -1,4 +1,4 @@
-const CACHE_NAME = "fruit-clicker-v82";
+const CACHE_NAME = "fruit-clicker-v83";
 
 const FILES = [
   "/",
@@ -50,5 +50,6 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
 
 
