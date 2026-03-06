@@ -833,7 +833,10 @@ window.s = s;
 
 let autoInterval=null;
 
-function save(){localStorage.setItem("fruitSave",JSON.stringify(s));}
+function save(){
+localStorage.setItem("fruitSave",JSON.stringify(s));
+}
+window.save = save;
 
 function startAuto(){
 if(autoInterval) clearInterval(autoInterval);
@@ -951,6 +954,7 @@ function checkMathAndReset(){
 }
 
 function render(){
+window.render = render;
 const l=levels[s.lvl];
 $("coins").textContent=s.coins;
 $("levelText").textContent=`Level ${s.lvl+1} – ${l[0]}`;
@@ -1363,6 +1367,7 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
 
 
