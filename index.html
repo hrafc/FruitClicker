@@ -670,7 +670,7 @@ body{
 
 <!-- ✅ RESET BUTTON ONLY IN MENU -->
 <button id="resetBtn" class="reset-btn">🧁 Reset progress </button>
-<a href="https://buy.stripe.com/aFabJ0dHqagz6dadLu33W00" target="_blank" class="supporter-btn">
+<a id="vipBtn" href="https://buy.stripe.com/..." target="_blank" class="supporter-btn">
    👑 Buy a VIP - 49 Kč
 </a>
 </div>
@@ -827,6 +827,7 @@ coins:0,
 coinMult:1,clickMult:1,
 coinBought:0,clickBought:0,
 auto:false
+supporter:false
 };
 
 let autoInterval=null;
@@ -977,6 +978,16 @@ if(s.auto){
 }
 
 renderLevels();
+
+if(s.supporter){
+  const btn = document.getElementById("vipBtn");
+  if(btn){
+    btn.textContent = "👑 BOUGHT";
+    btn.style.pointerEvents = "none";
+    btn.style.opacity = "0.6";
+  }
+}
+  
 }
 
 function renderLevels(){
@@ -1351,6 +1362,7 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
 
 
