@@ -626,6 +626,89 @@ body{
 .google-login:hover{
   transform:scale(1.05);
 }
+
+/* ========================= */
+/* 👑 VIP GOLD LEGEND MODE */
+/* ========================= */
+
+.app.vip {
+  background: linear-gradient(160deg, #fff8dc, #ffeaa7, #ffd700);
+  position: relative;
+  overflow: hidden;
+  animation: vipGlow 3s ease-in-out infinite;
+}
+
+/* Pulzující glow */
+@keyframes vipGlow {
+  0%,100% { box-shadow: 0 0 25px gold; }
+  50% { box-shadow: 0 0 50px #ffd700; }
+}
+
+/* Rotující border */
+.app.vip::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 36px;
+  padding: 4px;
+  background: conic-gradient(
+    from 0deg,
+    gold,
+    #fff8dc,
+    #ffd700,
+    gold
+  );
+  animation: spinBorder 4s linear infinite;
+  z-index: 0;
+}
+
+.app.vip::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 30px;
+  background: linear-gradient(160deg, #fff8dc, #ffeaa7);
+  z-index: 0;
+}
+
+.app.vip > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes spinBorder {
+  to { transform: rotate(360deg); }
+}
+
+/* ✨ Zlaté částice */
+.vip-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: gold;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: floatGold 3s linear forwards;
+}
+
+@keyframes floatGold {
+  0% { transform: translateY(0) scale(1); opacity:1; }
+  100% { transform: translateY(-60px) scale(0.5); opacity:0; }
+}
+
+/* 🌟 Jiskry */
+.vip-sparkle {
+  position: absolute;
+  font-size: 12px;
+  color: gold;
+  pointer-events: none;
+  animation: sparkleFade 1.5s ease-out forwards;
+}
+
+@keyframes sparkleFade {
+  0% { opacity:1; transform: scale(1); }
+  100% { opacity:0; transform: scale(1.6); }
+}
   
 </style>
 </head>
@@ -645,7 +728,7 @@ body{
 
 <div class="layout">
   <div class="app">
-
+<div id="vipBadge" style="display:none;">👑 VIP</div>
 <div class="top-left">🪙 <span id="coins">0</span></div>
 <div class="menu-btn" id="menuBtn">🏠 Menu</div>
 <button id="soundSettingsBtn" class="sound-settings-btn" aria-label="Sound settings">⚙️</button>
@@ -782,14 +865,28 @@ const provider = new GoogleAuthProvider();
 
     if (!playerSnap.exists()) {
       await setDoc(playerRef, { 
-        coins: 0,
-        supporter: false
-      });
+  coins: 0,
+  supporter: false,
+  vipBonusClaimed: false
+});
     }
 
     const data = (await getDoc(playerRef)).data();
     s.coins = data.coins || 0;
     s.supporter = data.supporter || false;
+
+    // 🎁 VIP BONUS SYSTEM
+if (data.supporter && !data.vipBonusClaimed) {
+
+  await updateDoc(playerRef, {
+    coins: increment(10000),
+    vipBonusClaimed: true
+  });
+
+  s.coins += 10000;
+
+  alert("👑 VIP BONUS! You received 10000 coins!");
+}
 
     save();
     render();
@@ -925,6 +1022,45 @@ function spawnConfetti(){
   }
 }
 
+ /* ===== VIP EFFECTS ===== */
+
+function spawnVipParticles(){
+  if(!s.supporter) return;
+
+  const app = document.querySelector(".app");
+
+  const particle = document.createElement("div");
+  particle.className = "vip-particle";
+
+  particle.style.left = Math.random() * 100 + "%";
+  particle.style.bottom = "0px";
+
+  app.appendChild(particle);
+
+  setTimeout(()=> particle.remove(),3000);
+}
+
+function spawnVipSparkle(){
+  if(!s.supporter) return;
+
+  const app = document.querySelector(".app");
+
+  const sparkle = document.createElement("div");
+  sparkle.className = "vip-sparkle";
+  sparkle.textContent = "✨";
+
+  sparkle.style.left = Math.random() * 90 + "%";
+  sparkle.style.top = Math.random() * 90 + "%";
+
+  app.appendChild(sparkle);
+
+  setTimeout(()=> sparkle.remove(),1500);
+}
+
+// 👑 VIP animation loops (JEN JEDNOU)
+setInterval(spawnVipParticles, 400);
+setInterval(spawnVipSparkle, 800);
+
 /* ====== KAWAII RESET SYSTEM (ONLY LOCAL USER) ====== */
 const resetModal = $("resetModal");
 const mathModal  = $("mathModal");
@@ -1031,6 +1167,7 @@ if(s.auto){
 } else {
   $("autoCost").textContent="Price: 3000";
   $("buyAuto").disabled = s.coins < 3000;
+
 }
 
 renderLevels();
@@ -1051,9 +1188,20 @@ if(userId){
     loginBtn.style.display = "none";
   }
 }
-  
+
+// 👑 VIP badge + gold effect
+const appCard = document.querySelector(".app");
+
+if(s.supporter){
+  document.getElementById("vipBadge").style.display = "block";
+  appCard.classList.add("vip");
+} else {
+  document.getElementById("vipBadge").style.display = "none";
+  appCard.classList.remove("vip");
 }
 
+}
+  
 function renderLevels(){
 $("levels").innerHTML="";
 levels.forEach((lvl,i)=>{
@@ -1080,7 +1228,7 @@ async function doClick(){
   return;
 }
 
-  s.clicks[s.lvl] += s.clickMult;
+s.clicks[s.lvl] += s.clickMult;
 
   // level check
   if(s.clicks[s.lvl] >= levels[s.lvl][2]){
@@ -1108,7 +1256,9 @@ async function doClick(){
 }
   // server increment
   await updateDoc(doc(db, "players", userId), {
-    coins: increment(s.coinMult)
+   coins: increment(
+  s.supporter ? s.coinMult * 2 : s.coinMult
+)
   });
 
   const snap = await getDoc(doc(db, "players", userId));
@@ -1433,6 +1583,7 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
 
 
