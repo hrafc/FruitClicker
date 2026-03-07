@@ -658,6 +658,7 @@ body{
   );
   animation: spinBorder 4s linear infinite;
   z-index: -1;
+  pointer-events: none;
 }
 
 .app.vip::after {
@@ -667,6 +668,7 @@ body{
   border-radius: 30px;
   background: linear-gradient(160deg, #fff8dc, #ffeaa7);
   z-index: -1;
+  pointer-events: none;
 }
 
 .app.vip > * {
@@ -1362,18 +1364,17 @@ $("mathA").addEventListener("keydown",(e)=>{
 nextLevelBtn.onclick = () => {
   if (pendingLevelIndex === null) return;
 
-  // přepni level na ten další
   s.lvl = pendingLevelIndex;
-
-  // uklid
   levelPending = false;
   pendingLevelIndex = null;
 
   closeLevelModal();
 
-  save();
-  render();
-  showGame();
+  setTimeout(() => {
+    save();
+    render();
+    showGame();
+  }, 50);
 };
 
 startAuto();
@@ -1581,6 +1582,7 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
 
 
