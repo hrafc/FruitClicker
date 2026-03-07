@@ -903,12 +903,11 @@ if (data.supporter && !data.vipBonusClaimed) {
     save();
     render();
 
-    console.log("Logged in as:", user.email);
+    console.log("Logged in as:", user.email); {
 
-   catch(err){
+  } catch(err){
     console.error("Login error:", err);
   }
-}
   
 let userId = null;
 
@@ -1594,4 +1593,5 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
