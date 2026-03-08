@@ -1028,16 +1028,27 @@ window.s = s;
 
 let autoInterval=null;
 
-function save(){
-localStorage.setItem("fruitSave",JSON.stringify(s));
-}
-window.save = save;
+async function save(){
+  if(!userId) return;
 
-function startAuto(){
-if(autoInterval) clearInterval(autoInterval);
-if(s.auto){
-autoInterval=setInterval(doClick,1000);
-}
+  try{
+    await updateDoc(doc(db,"players",userId),{
+      coins: s.coins,
+      lvl: s.lvl,
+      unlock: s.unlock,
+      clicks: s.clicks,
+      coinMult: s.coinMult,
+      clickMult: s.clickMult,
+      coinBought: s.coinBought,
+      clickBought: s.clickBought,
+      auto: s.auto
+    });
+
+    console.log("✅ Save OK");
+
+  } catch(err){
+    console.error("🔥 BLOCKED BY RULES:", err);
+  }
 }
 
 /* ====== FALLING FRUIT ====== */
@@ -1632,3 +1643,4 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
