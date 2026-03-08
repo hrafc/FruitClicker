@@ -948,6 +948,14 @@ let userId = null;
   s.supporter = data.supporter || false;
   s.auto = data.auto || false;
 
+  s.lvl = data.lvl || 0;
+  s.unlock = data.unlock || 0;
+  s.clicks = data.clicks || Array(10).fill(0);
+  s.coinMult = data.coinMult || 1;
+  s.clickMult = data.clickMult || 1;
+  s.coinBought = data.coinBought || 0;
+  s.clickBought = data.clickBought || 0;
+
   if(s.auto){
     startAuto();
   }
@@ -1671,6 +1679,7 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
 
 
