@@ -889,29 +889,32 @@ const provider = new GoogleAuthProvider();
       });
     }
 
-    const dataSnap = await getDoc(playerRef);
-    const data = dataSnap.data();
+   const dataSnap = await getDoc(playerRef);
 
-    s.coins = data.coins || 0;
-    s.supporter = data.supporter || false;
+if (!dataSnap.exists()) return;
 
-    // 🎁 VIP BONUS SYSTEM
-    if (data.supporter && !data.vipBonusClaimed) {
+const data = dataSnap.data();
 
-      await updateDoc(playerRef, {
-        coins: increment(10000),
-        vipBonusClaimed: true
-      });
+s.coins = data.coins || 0;
+s.supporter = data.supporter || false;
 
-      s.coins += 10000;
+// 🎁 VIP BONUS SYSTEM
+if (data.supporter && !data.vipBonusClaimed) {
 
-      alert("👑 VIP BONUS! You received 10000 coins!");
-    }
+  await updateDoc(playerRef, {
+    coins: increment(10000),
+    vipBonusClaimed: true
+  });
 
-    save();
-    render();
+  s.coins += 10000;
 
-    console.log("Logged in as:", user.email);
+  alert("👑 VIP BONUS! You received 10000 coins!");
+}
+
+save();
+render();
+
+console.log("Logged in as:", user.email);
 
   } catch(err){
     console.error("Login error:", err);
@@ -1629,14 +1632,3 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
