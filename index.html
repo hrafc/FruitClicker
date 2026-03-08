@@ -856,7 +856,6 @@ const provider = new GoogleAuthProvider();
   async function loginWithGoogle(){
   try {
 
-    // 💥 DOČASNĚ VYPNOUT VIP CLASS
     document.querySelector(".app").classList.remove("vip");
 
     const result = await signInWithPopup(auth, provider);
@@ -875,39 +874,34 @@ const provider = new GoogleAuthProvider();
       });
     }
 
-    const data = (await getDoc(playerRef)).data();
+    const dataSnap = await getDoc(playerRef);
+    const data = dataSnap.data();
+
     s.coins = data.coins || 0;
     s.supporter = data.supporter || false;
 
-    save();
-    render();
-
-   } catch(err){
-    console.error("Login error:", err);
-  }
-}
-
     // 🎁 VIP BONUS SYSTEM
-if (data.supporter && !data.vipBonusClaimed) {
+    if (data.supporter && !data.vipBonusClaimed) {
 
-  await updateDoc(playerRef, {
-    coins: increment(10000),
-    vipBonusClaimed: true
-  });
+      await updateDoc(playerRef, {
+        coins: increment(10000),
+        vipBonusClaimed: true
+      });
 
-  s.coins += 10000;
+      s.coins += 10000;
 
-  alert("👑 VIP BONUS! You received 10000 coins!");
-}
+      alert("👑 VIP BONUS! You received 10000 coins!");
+    }
 
     save();
     render();
 
-    console.log("Logged in as:", user.email); 
+    console.log("Logged in as:", user.email);
 
-  catch(err){
+  } catch(err){
     console.error("Login error:", err);
   }
+}
   
 let userId = null;
 
@@ -1593,6 +1587,7 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
 
 
