@@ -72,6 +72,11 @@ body{
   border-radius:999px;
   font-weight:900;
   box-shadow:0 4px 10px rgba(0,0,0,0.2);
+
+  .app.vip #coins {
+  color: gold;
+  text-shadow: 0 0 10px #ffd700;
+}
 }
 
 /* ====== MENU BUTTON ====== */
@@ -87,6 +92,11 @@ body{
   font-weight:800;
   transition:0.2s;
   box-shadow:0 4px 10px rgba(0,0,0,0.2);
+
+  .app.vip .menu-btn {
+  background: linear-gradient(135deg,#ffd700,#ffcc00);
+  color: black;
+}
 }
 .menu-btn:hover{
   transform: scale(1.1);
@@ -120,7 +130,26 @@ body{
   background: linear-gradient(90deg,#ff99cc,#ff66aa,#ff3399);
   width:0%;
   transition: width 0.3s;
+  
+  /* 👑 VIP GOLD PROGRESS */
+.app.vip .bar {
+  background: linear-gradient(
+    90deg,
+    #ffd700,
+    #fff4a3,
+    #ffd700,
+    #ffcc00
+  );
+  background-size: 200% 100%;
+  animation: goldFlow 2s linear infinite;
 }
+
+@keyframes goldFlow {
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
+}
+  
 
 /* ====== UPGRADES ====== */
 .upgrade{
@@ -634,12 +663,20 @@ body{
   border: 4px solid gold;
   border-radius: 32px;
   position: relative;
-  animation: vipPulse 2.5s ease-in-out infinite;
+  animation: vipPulse 2.2s ease-in-out infinite;
 }
 
 @keyframes vipPulse {
-  0%,100% { box-shadow: 0 0 15px gold; }
-  50% { box-shadow: 0 0 35px #ffd700; }
+  0%,100% {
+    box-shadow:
+      0 0 15px gold,
+      0 0 30px rgba(255,215,0,0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 35px #ffd700,
+      0 0 60px rgba(255,215,0,0.7);
+  }
 }
 
 /* 👑 VIP badge */
@@ -1036,15 +1073,18 @@ function spawnVipParticles(){
 
   const app = document.querySelector(".app");
 
-  const particle = document.createElement("div");
-  particle.className = "vip-particle";
+  for(let i=0;i<3;i++){   // 🔥 víc částic najednou
 
-  particle.style.left = Math.random() * 100 + "%";
-  particle.style.bottom = "0px";
+    const particle = document.createElement("div");
+    particle.className = "vip-particle";
 
-  app.appendChild(particle);
+    particle.style.left = Math.random() * 100 + "%";
+    particle.style.bottom = "0px";
 
-  setTimeout(()=> particle.remove(),3000);
+    app.appendChild(particle);
+
+    setTimeout(()=> particle.remove(),3000);
+  }
 }
 
 function spawnVipSparkle(){
@@ -1065,8 +1105,8 @@ function spawnVipSparkle(){
 }
 
 // 👑 VIP animation loops (JEN JEDNOU)
-setInterval(spawnVipParticles, 500);
-setInterval(spawnVipSparkle, 900);
+setInterval(spawnVipParticles, 300);
+setInterval(spawnVipSparkle, 600);
 
 /* ====== KAWAII RESET SYSTEM (ONLY LOCAL USER) ====== */
 const resetModal = $("resetModal");
@@ -1589,6 +1629,7 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
 
 
