@@ -941,16 +941,16 @@ let userId = null;
     const playerRef = doc(db, "players", user.uid);
     const snap = await getDoc(playerRef);
 
-    if (snap.exists()) {
-      const data = snap.data();
-      s.coins = data.coins || 0;
-      s.supporter = data.supporter || false;
-    }
+   if (snap.exists()) {
+  const data = snap.data();
 
-    s.auto = data.auto || false;
+  s.coins = data.coins || 0;
+  s.supporter = data.supporter || false;
+  s.auto = data.auto || false;
 
-if(s.auto){
-  startAuto();
+  if(s.auto){
+    startAuto();
+  }
 }
 
     render();
@@ -1679,3 +1679,4 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
