@@ -1045,43 +1045,52 @@ let autoInterval=null;
 
   function startAuto(){
   if(autoInterval) clearInterval(autoInterval);
-
   if(!s.auto || !userId) return;
 
   autoInterval = setInterval(async () => {
 
-    const gain = s.supporter ? s.coinMult * 2 : s.coinMult;
+    // 1️⃣ Přidej kliky
+    s.clicks[s.lvl] += s.clickMult;
 
+    // 2️⃣ Level check
+    if(s.clicks[s.lvl] >= levels[s.lvl][2]){
+      if(s.lvl < 9){
+        s.unlock = Math.max(s.unlock, s.lvl + 1);
+        s.lvl++;
+      }
+    }
+
+    // 3️⃣ Přidej coins
+    const gain = s.supporter ? s.coinMult * 2 : s.coinMult;
     s.coins += gain;
 
-    try{
-      await updateDoc(doc(db, "players", userId), {
-        coins: increment(gain)
-      });
-    } catch(e){
-      console.log("Auto blocked by rules", e);
-    }
+    // 4️⃣ Ulož VŠE najednou
+    await updateDoc(doc(db,"players",userId),{
+      coins: increment(gain),
+      clicks: s.clicks,
+      lvl: s.lvl,
+      unlock: s.unlock
+    });
 
     render();
 
-  }, 1000);
+  },1000);
 }
 
 async function save(){
   if(!userId) return;
 
-  try{
-    await updateDoc(doc(db,"players",userId),{
-      coins: s.coins,
-      lvl: s.lvl,
-      unlock: s.unlock,
-      clicks: s.clicks,
-      coinMult: s.coinMult,
-      clickMult: s.clickMult,
-      coinBought: s.coinBought,
-      clickBought: s.clickBought,
-      auto: s.auto
-    });
+  await updateDoc(doc(db,"players",userId),{
+    lvl: s.lvl,
+    unlock: s.unlock,
+    clicks: s.clicks,
+    coinMult: s.coinMult,
+    clickMult: s.clickMult,
+    coinBought: s.coinBought,
+    clickBought: s.clickBought,
+    auto: s.auto
+  });
+}
 
     console.log("✅ Save OK");
 
@@ -1322,49 +1331,32 @@ $("levels").appendChild(div);
 
 async function doClick(){
   if(levelPending) return;
-  
-  if(!userId){
-  alert("Please login with Google first 💙");
-  return;
-}
+  if(!userId) return;
 
-s.clicks[s.lvl] += s.clickMult;
+  // 1️⃣ Přidej kliky
+  s.clicks[s.lvl] += s.clickMult;
 
-  // level check
+  // 2️⃣ Level check
   if(s.clicks[s.lvl] >= levels[s.lvl][2]){
-    spawnConfetti();
-
-   if(s.lvl < 9){
-  const next = s.lvl + 1;
-
-  // odemkni další level, ale nepřepínej hned
-  s.unlock = Math.max(s.unlock, next);
-
-  // ukaž modal
-  save();
-  render();
-  openLevelModal(next);
-  return;
-} else {
-  // poslední level = tvůj existující win/reset systém
-  if(!s.completed){
-    s.completed = true;
-    save();
-    setTimeout(()=> askReset("win"), 250);
+    if(s.lvl < 9){
+      s.unlock = Math.max(s.unlock, s.lvl + 1);
+      s.lvl++;
+    }
   }
-}
-}
-  // server increment
- const gain = s.supporter ? s.coinMult * 2 : s.coinMult;
 
-s.coins += gain;
+  // 3️⃣ Coins
+  const gain = s.supporter ? s.coinMult * 2 : s.coinMult;
+  s.coins += gain;
 
-await updateDoc(doc(db, "players", userId), {
-  coins: increment(gain)
-});
+  // 4️⃣ Ulož všechno najednou
+  await updateDoc(doc(db,"players",userId),{
+    coins: increment(gain),
+    clicks: s.clicks,
+    lvl: s.lvl,
+    unlock: s.unlock
+  });
 
-render();
-  
+  render();
 }
 
 $("fruit").onclick = () => {
@@ -1679,4 +1671,5 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
