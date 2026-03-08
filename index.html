@@ -1080,17 +1080,17 @@ let autoInterval=null;
 async function save(){
   if(!userId) return;
 
-  await updateDoc(doc(db,"players",userId),{
-    lvl: s.lvl,
-    unlock: s.unlock,
-    clicks: s.clicks,
-    coinMult: s.coinMult,
-    clickMult: s.clickMult,
-    coinBought: s.coinBought,
-    clickBought: s.clickBought,
-    auto: s.auto
-  });
-}
+  try{
+    await updateDoc(doc(db,"players",userId),{
+      lvl: s.lvl,
+      unlock: s.unlock,
+      clicks: s.clicks,
+      coinMult: s.coinMult,
+      clickMult: s.clickMult,
+      coinBought: s.coinBought,
+      clickBought: s.clickBought,
+      auto: s.auto
+    });
 
     console.log("✅ Save OK");
 
@@ -1671,5 +1671,6 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
 
