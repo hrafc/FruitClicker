@@ -73,10 +73,6 @@ body{
   font-weight:900;
   box-shadow:0 4px 10px rgba(0,0,0,0.2);
 
-  .app.vip #coins {
-  color: gold;
-  text-shadow: 0 0 10px #ffd700;
-}
 }
 
 /* ====== MENU BUTTON ====== */
@@ -93,10 +89,6 @@ body{
   transition:0.2s;
   box-shadow:0 4px 10px rgba(0,0,0,0.2);
 
-  .app.vip .menu-btn {
-  background: linear-gradient(135deg,#ffd700,#ffcc00);
-  color: black;
-}
 }
 .menu-btn:hover{
   transform: scale(1.1);
@@ -130,19 +122,6 @@ body{
   background: linear-gradient(90deg,#ff99cc,#ff66aa,#ff3399);
   width:0%;
   transition: width 0.3s;
-  
-  /* 👑 VIP GOLD PROGRESS */
-.app.vip .bar {
-  background: linear-gradient(
-    90deg,
-    #ffd700,
-    #fff4a3,
-    #ffd700,
-    #ffcc00
-  );
-  background-size: 200% 100%;
-  animation: goldFlow 2s linear infinite;
-}
 
 @keyframes goldFlow {
   0% { background-position: 0% 0; }
@@ -723,6 +702,37 @@ body{
   0% { transform: translateY(0) scale(1); opacity:1; }
   100% { transform: translateY(-60px) scale(0.5); opacity:0; }
 }
+
+  /* ===================== */
+/* 👑 VIP MODE FIXED */
+/* ===================== */
+
+.app.vip #coins {
+  color: gold;
+  text-shadow: 0 0 10px #ffd700;
+}
+
+.app.vip .menu-btn {
+  background: linear-gradient(135deg,#ffd700,#ffcc00);
+  color: black;
+}
+
+.app.vip .bar {
+  background: linear-gradient(
+    90deg,
+    #ffd700,
+    #fff4a3,
+    #ffd700,
+    #ffcc00
+  );
+  background-size: 200% 100%;
+  animation: goldFlow 2s linear infinite;
+}
+
+@keyframes goldFlow {
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
   
 </style>
 </head>
@@ -937,6 +947,12 @@ let userId = null;
       s.supporter = data.supporter || false;
     }
 
+    s.auto = data.auto || false;
+
+if(s.auto){
+  startAuto();
+}
+
     render();
 
     console.log("Auto login:", user.email);
@@ -1026,6 +1042,30 @@ supporter:false
 window.s = s;
 
 let autoInterval=null;
+
+  function startAuto(){
+  if(autoInterval) clearInterval(autoInterval);
+
+  if(!s.auto || !userId) return;
+
+  autoInterval = setInterval(async () => {
+
+    const gain = s.supporter ? s.coinMult * 2 : s.coinMult;
+
+    s.coins += gain;
+
+    try{
+      await updateDoc(doc(db, "players", userId), {
+        coins: increment(gain)
+      });
+    } catch(e){
+      console.log("Auto blocked by rules", e);
+    }
+
+    render();
+
+  }, 1000);
+}
 
 async function save(){
   if(!userId) return;
@@ -1315,17 +1355,16 @@ s.clicks[s.lvl] += s.clickMult;
 }
 }
   // server increment
-  await updateDoc(doc(db, "players", userId), {
-   coins: increment(
-  s.supporter ? s.coinMult * 2 : s.coinMult
-)
-  });
+ const gain = s.supporter ? s.coinMult * 2 : s.coinMult;
 
-  const snap = await getDoc(doc(db, "players", userId));
-  s.coins = snap.data().coins;
+s.coins += gain;
 
-  save();
-  render();
+await updateDoc(doc(db, "players", userId), {
+  coins: increment(gain)
+});
+
+render();
+  
 }
 
 $("fruit").onclick = () => {
@@ -1437,8 +1476,6 @@ nextLevelBtn.onclick = () => {
   }, 50);
 };
 
-startAuto();
-render();
 </script>
   
 <script>
@@ -1642,5 +1679,3 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
-
-
