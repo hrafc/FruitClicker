@@ -626,66 +626,52 @@ body{
 }
 
 /* ========================= */
-/* 👑 VIP GOLD LEGEND MODE */
+/* 👑 STABLE VIP MODE */
 /* ========================= */
 
 .app.vip {
-  background: linear-gradient(160deg, #fff8dc, #ffeaa7, #ffd700);
-  position: relative;
-  overflow: hidden;
-  animation: vipGlow 3s ease-in-out infinite;
-}
-
-/* Pulzující glow */
-@keyframes vipGlow {
-  0%,100% { box-shadow: 0 0 25px gold; }
-  50% { box-shadow: 0 0 50px #ffd700; }
-}
-
-/* Rotující border */
-.app.vip::before {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  border-radius: 36px;
-  padding: 4px;
-  background: conic-gradient(
-    from 0deg,
-    gold,
-    #fff8dc,
-    #ffd700,
-    gold
-  );
-  animation: spinBorder 4s linear infinite;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.app.vip {
-  background:
-    linear-gradient(160deg, #fff8dc, #ffeaa7) padding-box,
-    conic-gradient(from 0deg, gold, #fff8dc, #ffd700, gold) border-box;
-
-  border: 4px solid transparent;
+  background: linear-gradient(160deg, #fff8dc, #ffeaa7);
+  border: 4px solid gold;
   border-radius: 32px;
-
-  animation: spinBorder 4s linear infinite, vipGlow 3s ease-in-out infinite;
+  position: relative;
+  animation: vipPulse 2.5s ease-in-out infinite;
 }
 
-@keyframes spinBorder {
-  to { background-position: 200% 0; }
+@keyframes vipPulse {
+  0%,100% { box-shadow: 0 0 15px gold; }
+  50% { box-shadow: 0 0 35px #ffd700; }
 }
 
-@keyframes vipGlow {
-  0%,100% { box-shadow: 0 0 25px gold; }
-  50% { box-shadow: 0 0 50px #ffd700; }
+/* 👑 VIP badge */
+#vipBadge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg,#ffd700,#ffcc00);
+  color: black;
+  font-weight: 900;
+  padding: 6px 16px;
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+  z-index: 5;
 }
 
-@keyframes spinBorder {
-  to { transform: rotate(360deg); }
+/* ✨ Sparkle */
+.vip-sparkle {
+  position: absolute;
+  font-size: 14px;
+  color: gold;
+  pointer-events: none;
+  animation: sparkleFade 1.2s ease-out forwards;
 }
 
-/* ✨ Zlaté částice */
+@keyframes sparkleFade {
+  0% { opacity:1; transform: scale(1); }
+  100% { opacity:0; transform: scale(1.6); }
+}
+
+/* 🟡 Floating particles */
 .vip-particle {
   position: absolute;
   width: 6px;
@@ -699,20 +685,6 @@ body{
 @keyframes floatGold {
   0% { transform: translateY(0) scale(1); opacity:1; }
   100% { transform: translateY(-60px) scale(0.5); opacity:0; }
-}
-
-/* 🌟 Jiskry */
-.vip-sparkle {
-  position: absolute;
-  font-size: 12px;
-  color: gold;
-  pointer-events: none;
-  animation: sparkleFade 1.5s ease-out forwards;
-}
-
-@keyframes sparkleFade {
-  0% { opacity:1; transform: scale(1); }
-  100% { opacity:0; transform: scale(1.6); }
 }
   
 </style>
@@ -1089,12 +1061,12 @@ function spawnVipSparkle(){
 
   app.appendChild(sparkle);
 
-  setTimeout(()=> sparkle.remove(),1500);
+  setTimeout(()=> sparkle.remove(),1200);
 }
 
 // 👑 VIP animation loops (JEN JEDNOU)
-setInterval(spawnVipParticles, 400);
-setInterval(spawnVipSparkle, 800);
+setInterval(spawnVipParticles, 500);
+setInterval(spawnVipSparkle, 900);
 
 /* ====== KAWAII RESET SYSTEM (ONLY LOCAL USER) ====== */
 const resetModal = $("resetModal");
@@ -1617,6 +1589,7 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
 
 
