@@ -828,7 +828,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { 
   getAuth, 
   GoogleAuthProvider, 
-  signInWithPopup 
+  signInWithPopup,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { 
   getFirestore, 
@@ -904,6 +905,30 @@ const provider = new GoogleAuthProvider();
 }
   
 let userId = null;
+
+  onAuthStateChanged(auth, async (user) => {
+  if (user) {
+
+    userId = user.uid;
+
+    const playerRef = doc(db, "players", user.uid);
+    const snap = await getDoc(playerRef);
+
+    if (snap.exists()) {
+      const data = snap.data();
+      s.coins = data.coins || 0;
+      s.supporter = data.supporter || false;
+    }
+
+    save();
+    render();
+
+    console.log("Auto login:", user.email);
+
+  } else {
+    userId = null;
+  }
+});
 
   document.getElementById("loginBtn").onclick = loginWithGoogle;
 
@@ -1587,6 +1612,7 @@ soundSelect.onchange = () => {
 
 </body>
 </html>
+
 
 
 
