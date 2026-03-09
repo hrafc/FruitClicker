@@ -1251,30 +1251,33 @@ function startResetFlow(){
 
 async function resetProgressLocal(){
 
-  if(!userId) return;
+  if(userId){
 
-  const playerRef = doc(db,"players",userId);
-  const snap = await getDoc(playerRef);
+    const playerRef = doc(db,"players",userId);
+    const snap = await getDoc(playerRef);
 
-  if(!snap.exists()) return;
+    if(snap.exists()){
+      const data = snap.data();
+      const isVip = data.supporter === true;
 
-  const data = snap.data();
-  const isVip = data.supporter === true;
+      await updateDoc(playerRef,{
+        coins: 0,
+        lvl: 0,
+        unlock: 0,
+        clicks: Array(10).fill(0),
+        coinMult: 1,
+        clickMult: 1,
+        coinBought: 0,
+        clickBought: 0,
+        auto: false,
+        vipBonusClaimed: isVip ? false : false
+      });
+    }
 
-  await updateDoc(playerRef,{
-    coins: 0,
-    lvl: 0,
-    unlock: 0,
-    clicks: Array(10).fill(0),
-    coinMult: 1,
-    clickMult: 1,
-    coinBought: 0,
-    clickBought: 0,
-    auto: false,
-
-    // 👑 pokud je VIP → znovu povolit bonus
-    vipBonusClaimed: isVip ? false : false
-  });
+  } else {
+    // offline user
+    localStorage.removeItem("fruitSave");
+  }
 
   location.reload();
 }
@@ -1743,6 +1746,7 @@ soundSelect.onchange = () => {
 </body>
   
 </html>
+
 
 
 
