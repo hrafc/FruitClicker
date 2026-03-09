@@ -877,6 +877,18 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
+const vipModal = document.getElementById("vipModal");
+const vipOkBtn = document.getElementById("vipOkBtn");
+
+function showVipModal(){
+  vipModal.classList.remove("kawaii-hidden");
+}
+
+function closeVipModal(){
+  vipModal.classList.add("kawaii-hidden");
+}
+
+vipOkBtn.onclick = closeVipModal;
 
   async function loginWithGoogle(){
   try {
@@ -918,7 +930,7 @@ if (data.supporter && !data.vipBonusClaimed) {
 
   s.coins += 10000;
 
-  alert("👑 VIP BONUS! You received 10000 coins!");
+  showVipModal();
 }
 
 save();
@@ -1237,8 +1249,33 @@ function startResetFlow(){
   setTimeout(()=> $("mathA").focus(), 30);
 }
 
-function resetProgressLocal(){
-  localStorage.removeItem("fruitSave");
+async function resetProgressLocal(){
+
+  if(!userId) return;
+
+  const playerRef = doc(db,"players",userId);
+  const snap = await getDoc(playerRef);
+
+  if(!snap.exists()) return;
+
+  const data = snap.data();
+  const isVip = data.supporter === true;
+
+  await updateDoc(playerRef,{
+    coins: 0,
+    lvl: 0,
+    unlock: 0,
+    clicks: Array(10).fill(0),
+    coinMult: 1,
+    clickMult: 1,
+    coinBought: 0,
+    clickBought: 0,
+    auto: false,
+
+    // 👑 pokud je VIP → znovu povolit bonus
+    vipBonusClaimed: isVip ? false : false
+  });
+
   location.reload();
 }
 
@@ -1677,8 +1714,36 @@ soundSelect.onchange = () => {
 })();
 </script>
 
+  <div id="vipModal" class="kawaii-overlay kawaii-hidden">
+  <div class="kawaii-card" style="max-width:500px">
+
+    <div class="kawaii-title" style="font-size:24px">
+      👑 VIP ACTIVATED
+    </div>
+
+    <div style="margin:15px 0; text-align:left; font-weight:700; line-height:1.6">
+
+      ⭐ 10 000 Welcome Coins<br>
+      ⭐ 2× Coin Income Boost<br>
+      ⭐ Exclusive Golden App Style<br>
+      ⭐ VIP Crown Badge<br>
+      ⭐ Premium Sparkle Effects<br>
+      ⭐ Future VIP Perks
+
+    </div>
+
+    <button id="vipOkBtn" class="kawaii-btn">
+      ⭐ Claim and Continue ⭐
+    </button>
+
+ </div>
+    
+</div>
+
 </body>
+  
 </html>
+
 
 
 
