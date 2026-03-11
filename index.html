@@ -1257,6 +1257,7 @@ async function resetProgressLocal(){
     const snap = await getDoc(playerRef);
 
     if(snap.exists()){
+
       const data = snap.data();
       const isVip = data.supporter === true;
 
@@ -1270,19 +1271,20 @@ async function resetProgressLocal(){
         coinBought: 0,
         clickBought: 0,
         auto: false,
-        vipBonusClaimed: isVip ? false : false
+        vipBonusClaimed: false
       });
+
     }
 
   } else {
-    // offline user
     localStorage.removeItem("fruitSave");
   }
 
   location.reload();
 }
 
-function checkMathAndReset(){
+async function checkMathAndReset(){
+
   const v = $("mathA").value.trim();
   const n = Number(v);
 
@@ -1292,9 +1294,19 @@ function checkMathAndReset(){
     return;
   }
 
-  spawnConfetti();
-  setTimeout(spawnConfetti, 200);
-  resetProgressLocal();
+  try {
+
+    spawnConfetti();
+    setTimeout(spawnConfetti, 200);
+
+    await resetProgressLocal();
+
+    console.log("RESET SUCCESS");
+
+  } catch(err){
+    console.error("RESET ERROR:", err);
+    alert("Reset failed – check console");
+  }
 }
 
 function render(){
@@ -1746,6 +1758,7 @@ soundSelect.onchange = () => {
 </body>
   
 </html>
+
 
 
 
