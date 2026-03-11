@@ -879,7 +879,24 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 const vipModal = document.getElementById("vipModal");
 const vipOkBtn = document.getElementById("vipOkBtn");
+const vipClaimBtn = document.getElementById("vipClaimBtn");
 
+vipClaimBtn.onclick = async () => {
+
+  const playerRef = doc(db,"players",userId);
+
+  await updateDoc(playerRef,{
+    coins: increment(10000),
+    vipBonusClaimed: true
+  });
+
+  s.coins += 10000;
+  s.supporter = true;
+
+  closeVipModal();
+  render();
+};
+  
 function showVipModal(){
   vipModal.classList.remove("kawaii-hidden");
 }
@@ -923,14 +940,12 @@ s.supporter = data.supporter || false;
 // 🎁 VIP BONUS SYSTEM
 if (data.supporter && !data.vipBonusClaimed) {
 
-  await updateDoc(playerRef, {
-    coins: increment(10000),
-    vipBonusClaimed: true
-  });
-
-  s.coins += 10000;
+  // 👇 vypni VIP vizuál před claimem
+  s.supporter = false;
+  document.querySelector(".app").classList.remove("vip");
 
   showVipModal();
+  return;
 }
 
 save();
@@ -1747,9 +1762,11 @@ soundSelect.onchange = () => {
 
     </div>
 
-    <button id="vipOkBtn" class="kawaii-btn">
-      ⭐ Claim and Continue ⭐
-    </button>
+    <button id="vipClaimBtn" class="kawaii-btn">
+      
+   ⭐ Claim & Continue  ⭐
+      
+</button>
 
  </div>
     
@@ -1758,6 +1775,7 @@ soundSelect.onchange = () => {
 </body>
   
 </html>
+
 
 
 
