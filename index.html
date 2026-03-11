@@ -878,7 +878,6 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 const vipModal = document.getElementById("vipModal");
-const vipOkBtn = document.getElementById("vipOkBtn");
 const vipClaimBtn = document.getElementById("vipClaimBtn");
 
 vipClaimBtn.onclick = async () => {
@@ -904,8 +903,6 @@ function showVipModal(){
 function closeVipModal(){
   vipModal.classList.add("kawaii-hidden");
 }
-
-vipOkBtn.onclick = closeVipModal;
 
   async function loginWithGoogle(){
   try {
@@ -1775,6 +1772,7 @@ soundSelect.onchange = () => {
 </body>
   
 </html>
+
 
 
 
