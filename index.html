@@ -797,43 +797,13 @@ body{
 </div>
 
 <div id="menu" class="menu-screen">
-<h2>📋 Level selection ✅ </h2>
+<h2 id="divisionTitle">📋 Level Selection</h2>
 <div class="levels" id="levels"></div>
 
 <!-- ✅ RESET BUTTON ONLY IN MENU -->
-<button id="resetBtn" class="reset-btn">🧁 Reset progress </button>
 <a id="vipBtn" href="https://buy.stripe.com/fZu28q46QbkD1WU6j233W01" target="_blank" class="supporter-btn">
    👑 Buy a VIP - 49 Kč
 </a>
-</div>
-
-<!-- ====== KAWAII RESET MODALS ====== -->
-<div id="resetModal" class="kawaii-overlay kawaii-hidden">
-  <div class="kawaii-card">
-    <div class="kawaii-title">🍪 Reset progress?</div>
-    <div class="kawaii-text">Cookie say: “Are you sure ??” 🥺</div>
-
-    <div class="kawaii-actions">
-      <button id="resetNo" class="kawaii-btn ghost">No❎</button>
-      <button id="resetYes" class="kawaii-btn danger">Yes✅</button>
-    </div>
-  </div>
-</div>
-
-<div id="mathModal" class="kawaii-overlay kawaii-hidden">
-  <div class="kawaii-card">
-    <div class="kawaii-title">✨ Verification</div>
-    <div class="kawaii-text">Answer: <b id="mathQ"></b></div>
-
-    <input id="mathA" class="kawaii-input" inputmode="numeric" placeholder="answer..." />
-
-    <div class="kawaii-actions">
-      <button id="mathCancel" class="kawaii-btn ghost">Back</button>
-      <button id="mathOk" class="kawaii-btn">OK</button>
-    </div>
-
-    <div id="mathErr" class="kawaii-error kawaii-hidden">Wrong 😭 try again</div>
-  </div>
 </div>
 
     <!-- ====== LEVEL COMPLETE MODAL ====== -->
@@ -946,7 +916,7 @@ if (data.supporter && !data.vipBonusClaimed) {
 }
 
 save();
-render();
+;
 
 console.log("Logged in as:", user.email);
 
@@ -993,6 +963,11 @@ let userId = null;
     userId = null;
   }
 });
+
+  document.getElementById("divisionTitle").textContent =
+  s.division === 1
+    ? "📋 Level Selection – Division 1"
+    : "📋 Level Selection – Division 2";
 
   document.getElementById("loginBtn").onclick = loginWithGoogle;
 
@@ -1063,8 +1038,24 @@ const levels=[
 ["Plum","🍇",2500]
 ];
 
+const division2Levels = [
+["Dragonfruit","🐉",3000],
+["Coconut","🥥",4500],
+["Mango","🥭",5350],
+["Kiwi","🥝",6000],
+["Cherry","🍒",7500],
+["Blueberry","🫐",8500],
+["Avocado","🥑",10000],
+["Lemon","🍋",11000],
+["Lychee","🍇",13000],
+["Pomegranate","🍷",15000]
+];
+
 let s=JSON.parse(localStorage.getItem("fruitSave"))||{
-lvl:0,unlock:0,clicks:Array(10).fill(0),
+division: 1,
+lvl:0,
+unlock:0,
+clicks:Array(10).fill(0),
 coins:0,
 coinMult:1,clickMult:1,
 coinBought:0,clickBought:0,
@@ -1085,12 +1076,49 @@ let autoInterval=null;
     s.clicks[s.lvl] += s.clickMult;
 
     // 2️⃣ Level check
-    if(s.clicks[s.lvl] >= levels[s.lvl][2]){
-      if(s.lvl < 9){
-        s.unlock = Math.max(s.unlock, s.lvl + 1);
-        s.lvl++;
-      }
+   const currentLevels = s.division === 1 ? levels : division2Levels;
+
+if(s.clicks[s.lvl] >= currentLevels[s.lvl][2]){
+
+  if(s.lvl < 9){
+
+    const nextLevel = s.lvl + 1;
+    s.unlock = Math.max(s.unlock, nextLevel);
+
+    openLevelModal(nextLevel);
+    return;
+
+  } else {
+
+    if(s.division === 1){
+
+      // 🔥 Přechod do Division 2
+      s.division = 2;
+      s.lvl = 0;
+      s.unlock = 0;
+      s.clicks = Array(10).fill(0);
+
+      // reset upgrady pro Division 2
+      s.coinMult = 1;
+      s.clickMult = 1;
+      s.coinBought = 0;
+      s.clickBought = 0;
+      s.auto = false;
+
+      alert("🔥 CONTINUE TO DIVISION 2 🔥");
+
+      render();
+      return;
+
+    } else {
+
+      alert("👑 YOU COMPLETED BOTH DIVISIONS 👑");
+      return;
+
     }
+
+  }
+}
 
     // 3️⃣ Přidej coins
     const gain = s.supporter ? s.coinMult * 2 : s.coinMult;
@@ -1132,7 +1160,10 @@ async function save(){
 }
 
 /* ====== FALLING FRUIT ====== */
-const bgFruits=["🍓","🍌","🍉","🍍","🍎","🍑","🍊","🍪","🍇"];
+const bgFruitsDiv1 = ["🍓","🍌","🍉","🍍","🍎","🍑","🍊","🍪","🍇"];
+const bgFruitsDiv2 = ["🥭","🥥","🥝","🍒","🫐","🥑","🍋","🌸","🌺"];
+
+const bgFruits = s.division === 1 ? bgFruitsDiv1 : bgFruitsDiv2;
 for(let i=0;i<20;i++){
   const f=document.createElement("div");
   f.className="falling";
@@ -1227,103 +1258,10 @@ function closeLevelModal(){
   closeModal(levelModal);
 }
 
-function askReset(source="menu"){
-  spawnConfetti();
-  setTimeout(spawnConfetti, 200);
-  openModal(resetModal);
-}
-
-function genMath(){
-  const a = 2 + Math.floor(Math.random()*8); // 2..9
-  const b = 1 + Math.floor(Math.random()*9); // 1..9
-  const c = 1 + Math.floor(Math.random()*6); // 1..6
-
-  if (Math.random() < 0.5) {
-    const ans = (a + b) - c;
-    return { q: `(${a} + ${b}) - ${c}`, ans };
-  } else {
-    const ans = a + (b - c);
-    return { q: `${a} + (${b} - ${c})`, ans };
-  }
-}
-
-function startResetFlow(){
-  closeModal(resetModal);
-
-  const { q, ans } = genMath();
-  mathAnswer = ans;
-
-  $("mathQ").textContent = q;
-  $("mathA").value = "";
-  $("mathErr").classList.add("kawaii-hidden");
-
-  openModal(mathModal);
-  setTimeout(()=> $("mathA").focus(), 30);
-}
-
-async function resetProgressLocal(){
-
-  if(userId){
-
-    const playerRef = doc(db,"players",userId);
-    const snap = await getDoc(playerRef);
-
-    if(snap.exists()){
-
-      const data = snap.data();
-      const isVip = data.supporter === true;
-
-      await updateDoc(playerRef,{
-        coins: 0,
-        lvl: 0,
-        unlock: 0,
-        clicks: Array(10).fill(0),
-        coinMult: 1,
-        clickMult: 1,
-        coinBought: 0,
-        clickBought: 0,
-        auto: false,
-        vipBonusClaimed: false
-      });
-
-    }
-
-  } else {
-    localStorage.removeItem("fruitSave");
-  }
-
-  location.reload();
-}
-
-async function checkMathAndReset(){
-
-  const v = $("mathA").value.trim();
-  const n = Number(v);
-
-  if (!Number.isFinite(n) || n !== mathAnswer) {
-    $("mathErr").classList.remove("kawaii-hidden");
-    spawnConfetti();
-    return;
-  }
-
-  try {
-
-    spawnConfetti();
-    setTimeout(spawnConfetti, 200);
-
-    await resetProgressLocal();
-
-    console.log("RESET SUCCESS");
-
-  } catch(err){
-    console.error("RESET ERROR:", err);
-    alert("Reset failed – check console");
-  }
-}
-
 function render(){
+const currentLevels = s.division === 1 ? levels : division2Levels;
 window.render = render;
-const l=levels[s.lvl];
+const l = currentLevels[s.lvl];
 $("coins").textContent=s.coins;
 $("levelText").textContent=`Level ${s.lvl+1} – ${l[0]}`;
 $("fruit").textContent=l[1];
@@ -1402,6 +1340,7 @@ $("levels").appendChild(div);
 }
 
 async function doClick(){
+  const currentLevels = s.division === 1 ? levels : division2Levels;
   if(levelPending) return;
   if(!userId) return;
 
@@ -1409,7 +1348,7 @@ async function doClick(){
   s.clicks[s.lvl] += s.clickMult;
 
   // 2️⃣ Level check
-  if(s.clicks[s.lvl] >= levels[s.lvl][2]){
+  const currentLevels = s.division === 1 ? levels : division2Levels;
     if(s.lvl < 9){
       s.unlock = Math.max(s.unlock, s.lvl + 1);
       s.lvl++;
@@ -1448,7 +1387,11 @@ $("buyCoin").onclick=async ()=>{
   coins: increment(-price)
 });
   
-  s.coinMult++;
+  if(s.division === 1){
+  s.coinMult += 1;
+} else {
+  s.coinMult += 2;
+}
   s.coinBought++;
 
   showUpgradeEffect($("buyCoin"));
@@ -1467,7 +1410,11 @@ $("buyClick").onclick=async ()=>{
   coins: increment(-price)
 });
   
-  s.clickMult++;
+  if(s.division === 1){
+  s.clickMult += 1;
+} else {
+  s.clickMult += 2;
+}
   s.clickBought++;
 
   showUpgradeEffect($("buyClick"));
@@ -1511,18 +1458,6 @@ showGame();
 showMenu();
 }
 };
-
-/* ====== RESET BUTTON EVENTS (MENU ONLY) ====== */
-$("resetBtn").onclick = () => askReset("menu");
-
-$("resetNo").onclick  = () => closeModal(resetModal);
-$("resetYes").onclick = () => startResetFlow();
-
-$("mathCancel").onclick = () => closeModal(mathModal);
-$("mathOk").onclick     = () => checkMathAndReset();
-$("mathA").addEventListener("keydown",(e)=>{
-  if(e.key==="Enter") checkMathAndReset();
-});
   
 nextLevelBtn.onclick = () => {
   if (pendingLevelIndex === null) return;
