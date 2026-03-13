@@ -1348,7 +1348,6 @@ async function doClick(){
   s.clicks[s.lvl] += s.clickMult;
 
   // 2️⃣ Level check
-  const currentLevels = s.division === 1 ? levels : division2Levels;
     if(s.lvl < 9){
       s.unlock = Math.max(s.unlock, s.lvl + 1);
       s.lvl++;
