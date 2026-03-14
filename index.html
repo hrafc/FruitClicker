@@ -122,13 +122,12 @@ body{
   background: linear-gradient(90deg,#ff99cc,#ff66aa,#ff3399);
   width:0%;
   transition: width 0.3s;
+}
 
 @keyframes goldFlow {
   0% { background-position: 0% 0; }
   100% { background-position: 200% 0; }
 }
-}
-  
 
 /* ====== UPGRADES ====== */
 .upgrade{
@@ -729,9 +728,95 @@ body{
   animation: goldFlow 2s linear infinite;
 }
 
+  .modal-vip-card{
+  background: linear-gradient(160deg, #fff8dc, #ffeaa7);
+  border: 3px solid gold;
+  box-shadow:
+    0 0 18px gold,
+    0 0 40px rgba(255,215,0,0.35),
+    0 24px 70px rgba(0,0,0,.20);
+}
+
+.modal-vip-card .kawaii-title{
+  color:#6b5200;
+  text-shadow: 0 0 8px rgba(255,215,0,0.35);
+}
+
+.modal-vip-card .kawaii-text{
+  color:#5a4300;
+  font-weight:800;
+}
+
+.modal-vip-card .kawaii-btn{
+  background: linear-gradient(135deg,#ffd700,#ffcc00);
+  color:black;
+  border:2px solid rgba(120,90,0,0.25);
+  box-shadow:
+    0 14px 30px rgba(255,215,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.5);
+}
+
 @keyframes goldFlow {
   0% { background-position: 0% 0; }
   100% { background-position: 200% 0; }
+}
+
+  /* ===== DIVISION COMPLETE MODAL ===== */
+.division-vip-card{
+  background: linear-gradient(160deg, #fff8dc, #ffeaa7);
+  border: 3px solid gold;
+  box-shadow:
+    0 0 18px gold,
+    0 0 40px rgba(255,215,0,0.35),
+    0 24px 70px rgba(0,0,0,.20);
+}
+
+.division-vip-card .kawaii-title{
+  color:#6b5200;
+  text-shadow: 0 0 8px rgba(255,215,0,0.35);
+}
+
+.division-vip-card .kawaii-text{
+  color:#5a4300;
+  font-weight:800;
+}
+
+.division-vip-card .kawaii-btn{
+  background: linear-gradient(135deg,#ffd700,#ffcc00);
+  color:black;
+  border:2px solid rgba(120,90,0,0.25);
+  box-shadow:
+    0 14px 30px rgba(255,215,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.5);
+}
+
+  /* ===== FINAL COMPLETE MODAL ===== */
+.final-vip-card{
+  background: linear-gradient(160deg, #fff8dc, #ffeaa7);
+  border: 3px solid gold;
+  box-shadow:
+    0 0 18px gold,
+    0 0 40px rgba(255,215,0,0.35),
+    0 24px 70px rgba(0,0,0,.20);
+}
+
+.final-vip-card .kawaii-title{
+  color:#6b5200;
+  text-shadow: 0 0 8px rgba(255,215,0,0.35);
+}
+
+.final-vip-card .kawaii-text{
+  color:#5a4300;
+  font-weight:800;
+}
+
+.final-vip-card .kawaii-btn{
+  background: linear-gradient(135deg,#ffd700,#ffcc00);
+  color:black;
+  border:2px solid rgba(120,90,0,0.25);
+  box-shadow:
+    0 14px 30px rgba(255,215,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.5);
 }
   
 </style>
@@ -901,8 +986,10 @@ if (!dataSnap.exists()) return;
 
 const data = dataSnap.data();
 
+s.division = data.division || 1;
 s.coins = data.coins || 0;
 s.supporter = data.supporter || false;
+
 
 // 🎁 VIP BONUS SYSTEM
 if (data.supporter && !data.vipBonusClaimed) {
@@ -938,10 +1025,12 @@ let userId = null;
    if (snap.exists()) {
   const data = snap.data();
 
-  s.coins = data.coins || 0;
-  s.supporter = data.supporter || false;
-  s.auto = data.auto || false;
+s.division = data.division || 1;
+s.coins = data.coins || 0;
+s.supporter = data.supporter || false;
+s.auto = data.auto || false;
 
+     
   s.lvl = data.lvl || 0;
   s.unlock = data.unlock || 0;
   s.clicks = data.clicks || Array(10).fill(0);
@@ -1072,69 +1161,105 @@ let autoInterval=null;
   if(!s.auto || !userId) return;
 
   autoInterval = setInterval(async () => {
+    const currentLevels = s.division === 1 ? levels : division2Levels;
 
-    // 1️⃣ Přidej kliky
+    // 1️⃣ klik
     s.clicks[s.lvl] += s.clickMult;
 
-    // 2️⃣ Level check
-   const currentLevels = s.division === 1 ? levels : division2Levels;
-
-if(s.clicks[s.lvl] >= currentLevels[s.lvl][2]){
-
-  if(s.lvl < 9){
-
-    const nextLevel = s.lvl + 1;
-    s.unlock = Math.max(s.unlock, nextLevel);
-
-    openLevelModal(nextLevel);
-    return;
-
-  } else {
-
-    if(s.division === 1){
-
-      // 🔥 Přechod do Division 2
-      s.division = 2;
-      s.lvl = 0;
-      s.unlock = 0;
-      s.clicks = Array(10).fill(0);
-
-      // reset upgrady pro Division 2
-      s.coinMult = 1;
-      s.clickMult = 1;
-      s.coinBought = 0;
-      s.clickBought = 0;
-      s.auto = false;
-
-      alert("🔥 CONTINUE TO DIVISION 2 🔥");
-
-      render();
-      return;
-
-    } else {
-
-      alert("👑 YOU COMPLETED BOTH DIVISIONS 👑");
-      return;
-
-    }
-
-  }
-}
-
-    // 3️⃣ Přidej coins
+    // 2️⃣ coins
     const gain = s.supporter ? s.coinMult * 2 : s.coinMult;
     s.coins += gain;
 
-    // 4️⃣ Ulož VŠE najednou
+    // 3️⃣ kontrola dokončení
+    if(s.clicks[s.lvl] >= currentLevels[s.lvl][2]){
+
+      // běžný level
+      if(s.lvl < 9){
+        const nextLevel = s.lvl + 1;
+        s.unlock = Math.max(s.unlock, nextLevel);
+
+        await updateDoc(doc(db,"players",userId),{
+          coins: increment(gain),
+          division: s.division,
+          clicks: s.clicks,
+          lvl: s.lvl,
+          unlock: s.unlock,
+          auto: s.auto
+        });
+
+        render();
+        openLevelModal(nextLevel);
+        return;
+      }
+
+      // konec Division 1
+      if(s.division === 1){
+        s.division = 2;
+        renderFallingBackground();
+        s.lvl = 0;
+        s.unlock = 0;
+        s.clicks = Array(10).fill(0);
+
+        s.coinMult = 1;
+        s.clickMult = 1;
+        s.coinBought = 0;
+        s.clickBought = 0;
+        s.auto = false;
+
+        if(autoInterval){
+          clearInterval(autoInterval);
+          autoInterval = null;
+        }
+
+        await updateDoc(doc(db,"players",userId),{
+          coins: increment(gain),
+          division: s.division,
+          lvl: s.lvl,
+          unlock: s.unlock,
+          clicks: s.clicks,
+          coinMult: s.coinMult,
+          clickMult: s.clickMult,
+          coinBought: s.coinBought,
+          clickBought: s.clickBought,
+          auto: s.auto
+        });
+
+        render();
+        openDivisionModal();
+        return;
+      }
+
+      // konec celé hry
+      if(autoInterval){
+        clearInterval(autoInterval);
+        autoInterval = null;
+      }
+
+      await updateDoc(doc(db,"players",userId),{
+        coins: increment(gain),
+        division: s.division,
+        clicks: s.clicks,
+        lvl: s.lvl,
+        unlock: s.unlock,
+        auto: s.auto
+      });
+
+      render();
+      openFinalModal();
+      return;
+    }
+
+    // normální průběžné uložení
     await updateDoc(doc(db,"players",userId),{
       coins: increment(gain),
+      division: s.division,
       clicks: s.clicks,
       lvl: s.lvl,
-      unlock: s.unlock
+      unlock: s.unlock,
+      auto: s.auto
     });
 
     render();
-
   },1000);
 }
 
@@ -1143,6 +1268,7 @@ async function save(){
 
   try{
     await updateDoc(doc(db,"players",userId),{
+      division: s.division,
       lvl: s.lvl,
       unlock: s.unlock,
       clicks: s.clicks,
@@ -1164,19 +1290,26 @@ async function save(){
 const bgFruitsDiv1 = ["🍓","🍌","🍉","🍍","🍎","🍑","🍊","🍪","🍇"];
 const bgFruitsDiv2 = ["🥭","🥥","🥝","🍒","🫐","🥑","🍋","🌸","🌺"];
 
-const bgFruits = s.division === 1 ? bgFruitsDiv1 : bgFruitsDiv2;
-for(let i=0;i<20;i++){
-  const f=document.createElement("div");
-  f.className="falling";
-  f.textContent=bgFruits[Math.floor(Math.random()*bgFruits.length)];
-  f.style.left=Math.random()*100+"vw";
-  let speed=8+Math.random()*10;   // ✅ pomale "lazo plazo"
-  f.style.animationDuration=speed+"s";
-  f.style.fontSize=(28+Math.random()*44)+"px";
-  f.style.animationDelay=(-Math.random()*speed)+"s"; // ✅ aby nepadaly všechny najednou
-  document.body.appendChild(f);
+function renderFallingBackground(){
+  document.querySelectorAll(".falling").forEach(el => el.remove());
+
+  const bgFruits = s.division === 1 ? bgFruitsDiv1 : bgFruitsDiv2;
+
+  for(let i=0;i<20;i++){
+    const f=document.createElement("div");
+    f.className="falling";
+    f.textContent=bgFruits[Math.floor(Math.random()*bgFruits.length)];
+    f.style.left=Math.random()*100+"vw";
+    let speed=8+Math.random()*10;
+    f.style.animationDuration=speed+"s";
+    f.style.fontSize=(28+Math.random()*44)+"px";
+    f.style.animationDelay=(-Math.random()*speed)+"s";
+    document.body.appendChild(f);
+  }
 }
 
+renderFallingBackground();
+  
 /* ====== CONFETTI ====== */
 function spawnConfetti(){
   for(let i=0;i<40;i++){
@@ -1242,13 +1375,48 @@ let mathAnswer = null;
   // ====== LEVEL COMPLETE SYSTEM ======
 const levelModal = $("levelModal");
 const nextLevelBtn = $("nextLevelBtn");
+  
+const divisionModal = $("divisionModal");
+const divisionModalCard = $("divisionModalCard");
+const divisionContinueBtn = $("divisionContinueBtn");
+  
+const finalModal = $("finalModal");
+const finalModalCard = $("finalModalCard");
+const finalOkBtn = $("finalOkBtn");
 
 let levelPending = false;
 let pendingLevelIndex = null;
 
 function openModal(el){ el.classList.remove("kawaii-hidden"); }
 function closeModal(el){ el.classList.add("kawaii-hidden"); }
+function openDivisionModal(){
+  if(s.supporter){
+    divisionModalCard.classList.add("division-vip-card");
+  } else {
+    divisionModalCard.classList.remove("division-vip-card");
+  }
 
+  openModal(divisionModal);
+}
+
+function closeDivisionModal(){
+  closeModal(divisionModal);
+}
+
+  function openFinalModal(){
+  if(s.supporter){
+    finalModalCard.classList.add("final-vip-card");
+  } else {
+    finalModalCard.classList.remove("final-vip-card");
+  }
+
+  openModal(finalModal);
+}
+
+function closeFinalModal(){
+  closeModal(finalModal);
+}
+  
   function openLevelModal(nextLevelIndex){
   levelPending = true;
   pendingLevelIndex = nextLevelIndex;
@@ -1386,6 +1554,7 @@ async function doClick(){
       // konec Division 1
       if(s.division === 1){
         s.division = 2;
+        renderFallingBackground();
         s.lvl = 0;
         s.unlock = 0;
         s.clicks = Array(10).fill(0);
@@ -1411,9 +1580,14 @@ async function doClick(){
           auto: s.auto
         });
 
-        alert("🔥 CONTINUE TO DIVISION 2 🔥");
-        render();
-        return;
+        if(autoInterval){
+  clearInterval(autoInterval);
+  autoInterval = null;
+}
+
+render();
+openDivisionModal();
+return;
 
       } else {
 
@@ -1424,9 +1598,14 @@ async function doClick(){
           unlock: s.unlock
         });
 
-        alert("👑 YOU COMPLETED BOTH DIVISIONS 👑");
-        render();
-        return;
+       if(autoInterval){
+  clearInterval(autoInterval);
+  autoInterval = null;
+}
+
+render();
+openFinalModal();
+return;
       }
     }
   }
@@ -1545,6 +1724,19 @@ nextLevelBtn.onclick = () => {
     render();
     showGame();
   }, 50);
+};
+
+  divisionContinueBtn.onclick = async () => {
+  closeDivisionModal();
+  await save();
+  render();
+  showGame();
+};
+
+finalOkBtn.onclick = () => {
+  closeFinalModal();
+  render();
+  showGame();
 };
 
 </script>
@@ -1750,41 +1942,54 @@ soundSelect.onchange = () => {
 
   <div id="vipModal" class="kawaii-overlay kawaii-hidden">
   <div class="kawaii-card" style="max-width:500px">
-
     <div class="kawaii-title" style="font-size:24px">
       👑 VIP ACTIVATED
     </div>
 
     <div style="margin:15px 0; text-align:left; font-weight:700; line-height:1.6">
-
       ⭐ 10 000 Welcome Coins<br>
       ⭐ 2× Coin Income Boost<br>
       ⭐ Exclusive Golden App Style<br>
       ⭐ VIP Crown Badge<br>
       ⭐ Premium Sparkle Effects<br>
       ⭐ Future VIP Perks
-
     </div>
 
     <button id="vipClaimBtn" class="kawaii-btn">
-      
-   ⭐ Claim & Continue  ⭐
-      
-</button>
+      ⭐ Claim & Continue ⭐
+    </button>
+  </div>
+</div>
 
- </div>
-    
+<div id="divisionModal" class="kawaii-overlay kawaii-hidden">
+  <div id="divisionModalCard" class="kawaii-card">
+    <div class="kawaii-title">🏆 You Have Completed Division 1</div>
+    <div class="kawaii-text">
+      A whole new division is waiting for you.
+    </div>
+
+    <div class="kawaii-actions">
+      <button id="divisionContinueBtn" class="kawaii-btn">
+        Continue To Division 2 ➡️
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="finalModal" class="kawaii-overlay kawaii-hidden">
+  <div id="finalModalCard" class="kawaii-card">
+    <div class="kawaii-title">👑 You Completed Both Divisions</div>
+    <div class="kawaii-text">
+      You finished the whole game. Amazing job!
+    </div>
+
+    <div class="kawaii-actions">
+      <button id="finalOkBtn" class="kawaii-btn">
+        Awesome 🎉
+      </button>
+    </div>
+  </div>
 </div>
 
 </body>
-  
 </html>
-
-
-
-
-
-
-
-
-
