@@ -1352,23 +1352,86 @@ function renderLevels(){
 
 async function doClick(){
   const currentLevels = s.division === 1 ? levels : division2Levels;
+
   if(levelPending) return;
   if(!userId) return;
 
-  // 1️⃣ Přidej kliky
+  // 1️⃣ přidej kliky
   s.clicks[s.lvl] += s.clickMult;
 
-  // 2️⃣ Level check
-    if(s.lvl < 9){
-      s.unlock = Math.max(s.unlock, s.lvl + 1);
-      s.lvl++;
-    }
-
-  // 3️⃣ Coins
+  // 2️⃣ přidej coins
   const gain = s.supporter ? s.coinMult * 2 : s.coinMult;
   s.coins += gain;
 
-  // 4️⃣ Ulož všechno najednou
+  // 3️⃣ zkontroluj dokončení levelu
+  if(s.clicks[s.lvl] >= currentLevels[s.lvl][2]){
+
+    if(s.lvl < 9){
+      const nextLevel = s.lvl + 1;
+      s.unlock = Math.max(s.unlock, nextLevel);
+
+      await updateDoc(doc(db,"players",userId),{
+        coins: increment(gain),
+        clicks: s.clicks,
+        lvl: s.lvl,
+        unlock: s.unlock
+      });
+
+      render();
+      openLevelModal(nextLevel);
+      return;
+
+    } else {
+
+      // konec Division 1
+      if(s.division === 1){
+        s.division = 2;
+        s.lvl = 0;
+        s.unlock = 0;
+        s.clicks = Array(10).fill(0);
+
+        s.coinMult = 1;
+        s.clickMult = 1;
+        s.coinBought = 0;
+        s.clickBought = 0;
+        s.auto = false;
+
+        if(autoInterval) clearInterval(autoInterval);
+
+        await updateDoc(doc(db,"players",userId),{
+          coins: increment(gain),
+          division: s.division,
+          lvl: s.lvl,
+          unlock: s.unlock,
+          clicks: s.clicks,
+          coinMult: s.coinMult,
+          clickMult: s.clickMult,
+          coinBought: s.coinBought,
+          clickBought: s.clickBought,
+          auto: s.auto
+        });
+
+        alert("🔥 CONTINUE TO DIVISION 2 🔥");
+        render();
+        return;
+
+      } else {
+
+        await updateDoc(doc(db,"players",userId),{
+          coins: increment(gain),
+          clicks: s.clicks,
+          lvl: s.lvl,
+          unlock: s.unlock
+        });
+
+        alert("👑 YOU COMPLETED BOTH DIVISIONS 👑");
+        render();
+        return;
+      }
+    }
+  }
+
+  // 4️⃣ normální save když level ještě není hotový
   await updateDoc(doc(db,"players",userId),{
     coins: increment(gain),
     clicks: s.clicks,
