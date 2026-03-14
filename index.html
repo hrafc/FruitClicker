@@ -1194,40 +1194,41 @@ let autoInterval=null;
 
       // konec Division 1
       if(s.division === 1){
-        s.division = 2;
-        renderFallingBackground();
-        s.lvl = 0;
-        s.unlock = 0;
-        s.clicks = Array(10).fill(0);
+  s.division = 2;
+  s.coins = 0;
+  renderFallingBackground();
+  s.lvl = 0;
+  s.unlock = 0;
+  s.clicks = Array(10).fill(0);
 
-        s.coinMult = 1;
-        s.clickMult = 1;
-        s.coinBought = 0;
-        s.clickBought = 0;
-        s.auto = false;
+  s.coinMult = 1;
+  s.clickMult = 1;
+  s.coinBought = 0;
+  s.clickBought = 0;
+  s.auto = false;
 
-        if(autoInterval){
-          clearInterval(autoInterval);
-          autoInterval = null;
-        }
+  if(autoInterval){
+    clearInterval(autoInterval);
+    autoInterval = null;
+  }
 
-        await updateDoc(doc(db,"players",userId),{
-          coins: increment(gain),
-          division: s.division,
-          lvl: s.lvl,
-          unlock: s.unlock,
-          clicks: s.clicks,
-          coinMult: s.coinMult,
-          clickMult: s.clickMult,
-          coinBought: s.coinBought,
-          clickBought: s.clickBought,
-          auto: s.auto
-        });
+  await updateDoc(doc(db,"players",userId),{
+    coins: 0,
+    division: s.division,
+    lvl: s.lvl,
+    unlock: s.unlock,
+    clicks: s.clicks,
+    coinMult: s.coinMult,
+    clickMult: s.clickMult,
+    coinBought: s.coinBought,
+    clickBought: s.clickBought,
+    auto: s.auto
+  });
 
-        render();
-        openDivisionModal();
-        return;
-      }
+  render();
+  openDivisionModal();
+  return;
+}
 
       // konec celé hry
       if(autoInterval){
@@ -1553,43 +1554,43 @@ async function doClick(){
 
       // konec Division 1
       if(s.division === 1){
-        s.division = 2;
-        renderFallingBackground();
-        s.lvl = 0;
-        s.unlock = 0;
-        s.clicks = Array(10).fill(0);
+  s.division = 2;
+  s.coins = 0;
+  renderFallingBackground();
+  s.lvl = 0;
+  s.unlock = 0;
+  s.clicks = Array(10).fill(0);
 
-        s.coinMult = 1;
-        s.clickMult = 1;
-        s.coinBought = 0;
-        s.clickBought = 0;
-        s.auto = false;
+  s.coinMult = 1;
+  s.clickMult = 1;
+  s.coinBought = 0;
+  s.clickBought = 0;
+  s.auto = false;
 
-        if(autoInterval) clearInterval(autoInterval);
+  if(autoInterval){
+    clearInterval(autoInterval);
+    autoInterval = null;
+  }
 
-        await updateDoc(doc(db,"players",userId),{
-          coins: increment(gain),
-          division: s.division,
-          lvl: s.lvl,
-          unlock: s.unlock,
-          clicks: s.clicks,
-          coinMult: s.coinMult,
-          clickMult: s.clickMult,
-          coinBought: s.coinBought,
-          clickBought: s.clickBought,
-          auto: s.auto
-        });
+  await updateDoc(doc(db,"players",userId),{
+    coins: 0,
+    division: s.division,
+    lvl: s.lvl,
+    unlock: s.unlock,
+    clicks: s.clicks,
+    coinMult: s.coinMult,
+    clickMult: s.clickMult,
+    coinBought: s.coinBought,
+    clickBought: s.clickBought,
+    auto: s.auto
+  });
 
-        if(autoInterval){
-  clearInterval(autoInterval);
-  autoInterval = null;
+  render();
+  openDivisionModal();
+  return;
 }
-
-render();
-openDivisionModal();
-return;
-
-      } else {
+    
+      else {
 
         await updateDoc(doc(db,"players",userId),{
           coins: increment(gain),
