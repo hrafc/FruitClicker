@@ -964,11 +964,6 @@ let userId = null;
   }
 });
 
-  document.getElementById("divisionTitle").textContent =
-  s.division === 1
-    ? "📋 Level Selection – Division 1"
-    : "📋 Level Selection – Division 2";
-
   document.getElementById("loginBtn").onclick = loginWithGoogle;
 
 const $=id=>document.getElementById(id);
@@ -1062,7 +1057,13 @@ coinBought:0,clickBought:0,
 auto:false,
 supporter:false
 };
+  
 window.s = s;
+
+  document.getElementById("divisionTitle").textContent =
+  s.division === 1
+    ? "📋 Level Selection – Division 1"
+    : "📋 Level Selection – Division 2";
 
 let autoInterval=null;
 
@@ -1322,21 +1323,31 @@ if(s.supporter){
 }
   
 function renderLevels(){
-$("levels").innerHTML="";
-levels.forEach((lvl,i)=>{
-const div=document.createElement("div");
-div.className="level-item"+(i>s.unlock?" locked":"");
-div.textContent=`Level ${i+1} – ${lvl[0]}`;
-if(i<=s.unlock){
-div.onclick=()=>{
-s.lvl=i;
-save();
-render();
-showGame();
-};
-}
-$("levels").appendChild(div);
-});
+  $("levels").innerHTML="";
+
+  const currentLevels = s.division === 1 ? levels : division2Levels;
+
+  document.getElementById("divisionTitle").textContent =
+    s.division === 1
+      ? "📋 Level Selection – Division 1"
+      : "📋 Level Selection – Division 2";
+
+  currentLevels.forEach((lvl,i)=>{
+    const div=document.createElement("div");
+    div.className="level-item"+(i>s.unlock?" locked":"");
+    div.textContent=`Level ${i+1} – ${lvl[0]}`;
+
+    if(i<=s.unlock){
+      div.onclick=()=>{
+        s.lvl=i;
+        save();
+        render();
+        showGame();
+      };
+    }
+
+    $("levels").appendChild(div);
+  });
 }
 
 async function doClick(){
