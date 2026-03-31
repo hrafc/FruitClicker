@@ -1,12 +1,12 @@
 const CACHE_NAME = "fruit-clicker-v1.2.4";
 
 const FILES = [
-  "/",
-  "/index.html",
-  "/offline.html",
-  "/icon.png",
-  "/logo.png",
-  "/manifest.json"
+  "./",
+  "./index.html",
+  "./offline.html",
+  "./icon.png",
+  "./logo.png",
+  "./manifest.json"
 ];
 
 self.addEventListener("install", (event) => {
