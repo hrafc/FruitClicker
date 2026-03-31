@@ -1,96 +1,100 @@
-const CACHE_NAME = "fruit-clicker-v1.7.5";
+const CACHE_NAME = "fruit-clicker-v1.7.6";
 
 const FILES = [
   "./",
   "./index.html",
   "./offline.html",
   "./icon.png",
-  "./logo.png",
-  "./manifest.json"
+  "./manifest.json",
+  "./logo.png"
 ];
 
+const OFFLINE_URL = new URL("./offline.html", self.location).href;
+const ICON_URL = new URL("./icon.png", self.location).href;
+
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES))
-  );
-  self.skipWaiting();
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+
+    for (const file of FILES) {
+      try {
+        await cache.add(file);
+      } catch (err) {
+        console.warn("[SW] Nepodařilo se uložit do cache:", file, err);
+      }
+    }
+
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
-    )
-  );
-  self.clients.claim();
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+
+    await Promise.all(
+      keys
+        .filter((key) => key !== CACHE_NAME)
+        .map((key) => caches.delete(key))
+    );
+
+    await self.clients.claim();
+  })());
 });
 
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // Nech externí služby být, ať je SW nerozbíjí
-  if (
-    url.origin !== location.origin ||
-    url.hostname.includes("googleapis.com") ||
-    url.hostname.includes("gstatic.com") ||
-    url.hostname.includes("googlesyndication.com") ||
-    url.hostname.includes("doubleclick.net") ||
-    url.hostname.includes("firebaseapp.com") ||
-    url.hostname.includes("firebasestorage.app")
-  ) {
+  // Externí věci nech být
+  if (url.origin !== self.location.origin) {
     return;
   }
 
   // HTML stránky
   if (req.mode === "navigate") {
-    event.respondWith(
-      fetch(req)
-        .then((response) => response)
-        .catch(() => caches.match("/offline.html"))
-    );
+    event.respondWith((async () => {
+      try {
+        return await fetch(req);
+      } catch {
+        const offlinePage = await caches.match(OFFLINE_URL);
+        return offlinePage || new Response("Offline", { status: 503 });
+      }
+    })());
     return;
   }
 
   // Ostatní soubory
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
+  event.respondWith((async () => {
+    const cached = await caches.match(req);
+    if (cached) return cached;
 
-      return fetch(req)
-        .then((response) => {
-          if (!response || response.status !== 200 || response.type !== "basic") {
-            return response;
-          }
+    try {
+      const response = await fetch(req);
 
-          const responseClone = response.clone();
+      if (response && response.status === 200 && response.type === "basic") {
+        const cache = await caches.open(CACHE_NAME);
+        cache.put(req, response.clone());
+      }
 
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(req, responseClone);
-          });
+      return response;
+    } catch {
+      if (req.destination === "image") {
+        const fallbackIcon = await caches.match(ICON_URL);
+        if (fallbackIcon) return fallbackIcon;
+      }
 
-          return response;
-        })
-        .catch(() => {
-          if (req.destination === "image") {
-            return caches.match("/icon.png");
-          }
+      if (req.destination === "document") {
+        const offlinePage = await caches.match(OFFLINE_URL);
+        if (offlinePage) return offlinePage;
+      }
 
-          if (req.destination === "document") {
-            return caches.match("/offline.html");
-          }
-
-          return new Response("", {
-            status: 204,
-            statusText: "No Content"
-          });
-        });
-    })
-  );
+      return new Response("", {
+        status: 204,
+        statusText: "No Content"
+      });
+    }
+  })());
 });
 
 self.addEventListener("message", (event) => {
