@@ -1,7 +1,7 @@
 {
   "name": "Fruit Clicker",
   "short_name": "FruitClicker",
-  "start_url": "/",
+  "start_url": "./",
   "scope": "/",
   "display": "standalone",
   "background_color": "#fff8f0",
