@@ -1,4 +1,4 @@
-const CACHE_NAME = "fruit-clicker-v1.7.6";
+const CACHE_NAME = "fruit-clicker-v1.7.7";
 
 const FILES = [
   "./",
@@ -16,13 +16,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
 
-    for (const file of FILES) {
-      try {
-        await cache.add(file);
-      } catch (err) {
-        console.warn("[SW] Nepodařilo se uložit do cache:", file, err);
-      }
-    }
+    await cache.addAll(FILES);
 
     await self.skipWaiting();
   })());
@@ -51,18 +45,23 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // HTML stránky
-  if (req.mode === "navigate") {
-    event.respondWith((async () => {
-      try {
-        return await fetch(req);
-      } catch {
-        const offlinePage = await caches.match(OFFLINE_URL);
-        return offlinePage || new Response("Offline", { status: 503 });
-      }
-    })());
-    return;
-  }
+  self.addEventListener("fetch", (event) => {
+  const req = event.request;
+
+  // only same-origin
+  if (new URL(req.url).origin !== location.origin) return;
+
+  event.respondWith(
+    caches.match(req).then((cached) => {
+      return cached || fetch(req).catch(async () => {
+        if (req.mode === "navigate") {
+          return await caches.match("./offline.html");
+        }
+        return new Response("", { status: 204 });
+      });
+    })
+  );
+});
 
   // Ostatní soubory
   event.respondWith((async () => {
