@@ -1135,6 +1135,19 @@ const division2Levels = [
 ["Pomegranate","🍷",15000]
 ];
 
+const division3Levels = [
+["Pear","🍐",18000],
+["Corn","🌽",20000],
+["Olive","🫒",22500],
+["Chili","🌶️",25000],
+["Garlic","🧄",28000],
+["Onion","🧅",31500],
+["Beans","🫘",35000],
+["Lettuce","🥬",39000],
+["Chestnut","🌰",44000],
+["Bell Pepper","🫑",50000]
+];
+
 let s=JSON.parse(localStorage.getItem("fruitSave"))||{
 division: 1,
 lvl:0,
@@ -1161,7 +1174,15 @@ let autoInterval=null;
   if(!s.auto || !userId) return;
 
   autoInterval = setInterval(async () => {
-    const currentLevels = s.division === 1 ? levels : division2Levels;
+    let currentLevels;
+
+if (s.division === 1) {
+    currentLevels = levels;
+} else if (s.division === 2) {
+    currentLevels = division2Levels;
+} else {
+    currentLevels = division3Levels;
+}
 
     // 1️⃣ klik
     s.clicks[s.lvl] += s.clickMult;
@@ -1230,6 +1251,45 @@ let autoInterval=null;
   return;
 }
 
+      
+// konec Division 2
+if(s.division === 2){
+    s.division = 3;
+    s.coins = 0;
+    renderFallingBackground();
+    s.lvl = 0;
+    s.unlock = 0;
+    s.clicks = Array(10).fill(0);
+
+    s.coinMult = 1;
+    s.clickMult = 1;
+    s.coinBought = 0;
+    s.clickBought = 0;
+    s.auto = false;
+
+    if(autoInterval){
+        clearInterval(autoInterval);
+        autoInterval = null;
+    }
+
+    await updateDoc(doc(db,"players",userId),{
+        coins:0,
+        division:s.division,
+        lvl:s.lvl,
+        unlock:s.unlock,
+        clicks:s.clicks,
+        coinMult:s.coinMult,
+        clickMult:s.clickMult,
+        coinBought:s.coinBought,
+        clickBought:s.clickBought,
+        auto:s.auto
+    });
+
+    render();
+    openDivisionModal();
+    return;
+}
+
       // konec celé hry
       if(autoInterval){
         clearInterval(autoInterval);
@@ -1290,11 +1350,20 @@ async function save(){
 /* ====== FALLING FRUIT ====== */
 const bgFruitsDiv1 = ["🍓","🍌","🍉","🍍","🍎","🍑","🍊","🍪","🍇"];
 const bgFruitsDiv2 = ["🥭","🥥","🥝","🍒","🫐","🥑","🍋","🌸","🌺"];
+const bgFruitsDiv3 = ["🍐","🌽","🫒","🌶️","🧄","🧅","🫘","🥬","🌰","🫑"];
 
 function renderFallingBackground(){
   document.querySelectorAll(".falling").forEach(el => el.remove());
 
-  const bgFruits = s.division === 1 ? bgFruitsDiv1 : bgFruitsDiv2;
+  let bgFruits;
+
+if (s.division === 1) {
+    bgFruits = bgFruitsDiv1;
+} else if (s.division === 2) {
+    bgFruits = bgFruitsDiv2;
+} else {
+    bgFruits = bgFruitsDiv3;
+}
 
   for(let i=0;i<20;i++){
     const f=document.createElement("div");
@@ -1429,7 +1498,16 @@ function closeLevelModal(){
 }
 
 function render(){
-const currentLevels = s.division === 1 ? levels : division2Levels;
+let currentLevels;
+
+if (s.division === 1) {
+    currentLevels = levels;
+} else if (s.division === 2) {
+    currentLevels = division2Levels;
+} else {
+    currentLevels = division3Levels;
+}
+  
 window.render = render;
 const l = currentLevels[s.lvl];
 $("coins").textContent=s.coins;
@@ -1494,12 +1572,26 @@ if(s.supporter){
 function renderLevels(){
   $("levels").innerHTML="";
 
-  const currentLevels = s.division === 1 ? levels : division2Levels;
+  let currentLevels;
 
-  document.getElementById("divisionTitle").textContent =
-    s.division === 1
-      ? "📋 Level Selection – Division 1"
-      : "📋 Level Selection – Division 2";
+if (s.division === 1) {
+    currentLevels = levels;
+} else if (s.division === 2) {
+    currentLevels = division2Levels;
+} else {
+    currentLevels = division3Levels;
+}
+
+  let divisionName = "Division 1";
+
+if (s.division === 2) {
+    divisionName = "Division 2";
+} else if (s.division === 3) {
+    divisionName = "Division 3";
+}
+
+document.getElementById("divisionTitle").textContent =
+    "📋 Level Selection – " + divisionName;
 
   currentLevels.forEach((lvl,i)=>{
     const div=document.createElement("div");
@@ -1520,7 +1612,15 @@ function renderLevels(){
 }
 
 async function doClick(){
-  const currentLevels = s.division === 1 ? levels : division2Levels;
+  let currentLevels;
+
+if (s.division === 1) {
+    currentLevels = levels;
+} else if (s.division === 2) {
+    currentLevels = division2Levels;
+} else {
+    currentLevels = division3Levels;
+}
 
   if(levelPending) return;
   if(!userId) return;
