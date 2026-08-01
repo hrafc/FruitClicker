@@ -818,6 +818,68 @@ body{
     0 14px 30px rgba(255,215,0,0.35),
     inset 0 1px 0 rgba(255,255,255,0.5);
 }
+
+/* ===== DIVISION SELECTOR ===== */
+
+.division-selector{
+    margin-top:18px;
+    padding:14px;
+    background:rgba(255,255,255,0.5);
+    border-radius:20px;
+    box-shadow:0 8px 16px rgba(0,0,0,0.1);
+}
+
+.division-selector-title{
+    font-size:18px;
+    font-weight:900;
+    margin-bottom:12px;
+}
+
+.division-buttons{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+.division-button{
+    border:none;
+    padding:12px 10px;
+    border-radius:16px;
+    background:linear-gradient(135deg,#ff9fd8,#ffd1ea);
+    color:#7a1d52;
+    font-weight:900;
+    font-size:14px;
+    cursor:pointer;
+    box-shadow:0 8px 16px rgba(0,0,0,0.12);
+    transition:transform .2s, filter .2s;
+}
+
+.division-button:hover:not(:disabled){
+    transform:translateY(-3px) scale(1.03);
+    filter:brightness(1.04);
+}
+
+.division-button:active:not(:disabled){
+    transform:scale(.97);
+}
+
+.division-button:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+}
+
+.division-button.active{
+    box-shadow:
+        0 0 0 3px rgba(255,102,170,.25),
+        0 10px 20px rgba(255,60,160,.25);
+    transform:translateY(-2px);
+}
+
+@media(max-width:520px){
+    .division-buttons{
+        grid-template-columns:1fr;
+    }
+}
   
 </style>
 </head>
@@ -884,6 +946,23 @@ body{
 <div id="menu" class="menu-screen">
 <h2 id="divisionTitle">📋 Level Selection</h2>
 <div class="levels" id="levels"></div>
+<div id="divisionSelector" class="division-selector">
+    <div class="division-selector-title">🌎 Choose Division</div>
+
+    <div class="division-buttons">
+        <button class="division-button" id="division1Btn">
+            🍓 Division 1
+        </button>
+
+        <button class="division-button" id="division2Btn">
+            🐉 Division 2
+        </button>
+
+        <button class="division-button" id="division3Btn">
+            🍐 Division 3
+        </button>
+    </div>
+</div>
 
 <!-- ✅ RESET BUTTON ONLY IN MENU -->
 <a id="vipBtn" href="https://buy.stripe.com/fZu28q46QbkD1WU6j233W01" target="_blank" class="supporter-btn">
@@ -1149,16 +1228,79 @@ const division3Levels = [
 ];
 
 let s=JSON.parse(localStorage.getItem("fruitSave"))||{
-division: 1,
-lvl:0,
-unlock:0,
-clicks:Array(10).fill(0),
-coins:0,
-coinMult:1,clickMult:1,
-coinBought:0,clickBought:0,
-auto:false,
-supporter:false
+    division: 1,
+
+    // Progress for each division
+    divisionProgress: {
+        1: {
+            lvl: 0,
+            unlock: 0,
+            clicks: Array(10).fill(0)
+        },
+        2: {
+            lvl: 0,
+            unlock: 0,
+            clicks: Array(10).fill(0)
+        },
+        3: {
+            lvl: 0,
+            unlock: 0,
+            clicks: Array(10).fill(0)
+        }
+    },
+
+    coins:0,
+    coinMult:1,
+    clickMult:1,
+    coinBought:0,
+    clickBought:0,
+    auto:false,
+    supporter:false
 };
+
+// ===== OLD SAVE COMPATIBILITY =====
+
+if(!s.divisionProgress){
+    s.divisionProgress = {
+        1: {
+            lvl: s.lvl || 0,
+            unlock: s.unlock || 0,
+            clicks: s.clicks || Array(10).fill(0)
+        },
+        2: {
+            lvl: 0,
+            unlock: 0,
+            clicks: Array(10).fill(0)
+        },
+        3: {
+            lvl: 0,
+            unlock: 0,
+            clicks: Array(10).fill(0)
+        }
+    };
+}
+
+function loadDivisionProgress(){
+
+    const p = s.divisionProgress[s.division];
+
+    s.lvl = p.lvl;
+    s.unlock = p.unlock;
+    s.clicks = p.clicks;
+
+}
+
+function saveDivisionProgress(){
+
+    s.divisionProgress[s.division] = {
+        lvl: s.lvl,
+        unlock: s.unlock,
+        clicks: s.clicks
+    };
+
+}
+
+loadDivisionProgress();
   
 window.s = s;
 
@@ -1538,7 +1680,8 @@ if(s.auto){
 }
 
 renderLevels();
-
+updateDivisionButtons();
+  
 if(s.supporter){
   const btn = document.getElementById("vipBtn");
   if(btn){
@@ -1802,6 +1945,58 @@ function showGame(){
 $("menu").style.display="none";
 $("game").style.display="block";
 }
+
+// ===== DIVISION SELECTOR =====
+
+const division1Btn = $("division1Btn");
+const division2Btn = $("division2Btn");
+const division3Btn = $("division3Btn");
+
+function updateDivisionButtons(){
+
+    // Division 1 is always unlocked
+    division1Btn.disabled = false;
+
+    // Division 2 unlocks after completing Division 1
+    division2Btn.disabled = s.division < 2;
+
+    // Division 3 unlocks after completing Division 2
+    division3Btn.disabled = s.division < 3;
+
+    // Highlight current division
+    division1Btn.classList.toggle("active", s.division === 1);
+    division2Btn.classList.toggle("active", s.division === 2);
+    division3Btn.classList.toggle("active", s.division === 3);
+}
+
+function switchDivision(division){
+
+    // Don't allow locked divisions
+    if(division > s.division) return;
+
+    // Save the division we're leaving
+    saveDivisionProgress();
+
+    // Switch division
+    s.division = division;
+
+    // Load that division's progress
+    loadDivisionProgress();
+
+    // Change background fruits
+    renderFallingBackground();
+
+    // Update everything
+    render();
+    save();
+
+    showGame();
+}
+
+// Division buttons
+division1Btn.onclick = () => switchDivision(1);
+division2Btn.onclick = () => switchDivision(2);
+division3Btn.onclick = () => switchDivision(3);
 
 $("menuBtn").onclick=()=>{
 if($("menu").style.display==="block"){
