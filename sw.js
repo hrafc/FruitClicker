@@ -1,4 +1,4 @@
-const CACHE_NAME = "fruit-clicker-v6.7.3";
+const CACHE_NAME = "fruit-clicker-v6.7.4";
 
 const FILES = [
   "./",
