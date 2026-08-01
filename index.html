@@ -1869,9 +1869,10 @@ await updateDoc(doc(db,"players",userId),{
     autoInterval = null;
   }
 
+  saveDivisionProgress();
+        
   await updateDoc(doc(db,"players",userId),{
     coins: 0,
-    saveDivisionProgress();
     division: s.division,
     divisionProgress: s.divisionProgress,
     coinMult: s.coinMult,
@@ -1907,11 +1908,12 @@ return;
       }
     }
   }
-
+  
+   saveDivisionProgress();
+  
   // 4️⃣ normální save když level ještě není hotový
   await updateDoc(doc(db,"players",userId),{
     coins: increment(gain),
-    saveDivisionProgress();
     division: s.division,
     divisionProgress: s.divisionProgress,
   });
