@@ -1069,6 +1069,25 @@ s.division = data.division || 1;
 s.coins = data.coins || 0;
 s.supporter = data.supporter || false;
 
+s.divisionProgress = data.divisionProgress || {
+    1:{
+        lvl:data.lvl || 0,
+        unlock:data.unlock || 0,
+        clicks:data.clicks || Array(10).fill(0)
+    },
+    2:{
+        lvl:0,
+        unlock:0,
+        clicks:Array(10).fill(0)
+    },
+    3:{
+        lvl:0,
+        unlock:0,
+        clicks:Array(10).fill(0)
+    }
+};
+
+loadDivisionProgress();
 
 // 🎁 VIP BONUS SYSTEM
 if (data.supporter && !data.vipBonusClaimed) {
@@ -1110,9 +1129,25 @@ s.supporter = data.supporter || false;
 s.auto = data.auto || false;
 
      
-  s.lvl = data.lvl || 0;
-  s.unlock = data.unlock || 0;
-  s.clicks = data.clicks || Array(10).fill(0);
+  s.divisionProgress = data.divisionProgress || {
+    1:{
+        lvl:data.lvl || 0,
+        unlock:data.unlock || 0,
+        clicks:data.clicks || Array(10).fill(0)
+    },
+    2:{
+        lvl:0,
+        unlock:0,
+        clicks:Array(10).fill(0)
+    },
+    3:{
+        lvl:0,
+        unlock:0,
+        clicks:Array(10).fill(0)
+    }
+};
+
+loadDivisionProgress();
   s.coinMult = data.coinMult || 1;
   s.clickMult = data.clickMult || 1;
   s.coinBought = data.coinBought || 0;
@@ -1295,7 +1330,7 @@ function saveDivisionProgress(){
     s.divisionProgress[s.division] = {
         lvl: s.lvl,
         unlock: s.unlock,
-        clicks: s.clicks
+        clicks: [...s.clicks]
     };
 
 }
@@ -1304,10 +1339,16 @@ loadDivisionProgress();
   
 window.s = s;
 
-  document.getElementById("divisionTitle").textContent =
-  s.division === 1
-    ? "📋 Level Selection – Division 1"
-    : "📋 Level Selection – Division 2";
+ let divisionName = "Division 1";
+
+if (s.division === 2) {
+    divisionName = "Division 2";
+} else if (s.division === 3) {
+    divisionName = "Division 3";
+}
+
+document.getElementById("divisionTitle").textContent =
+    "📋 Level Selection – " + divisionName;
 
 let autoInterval=null;
 
@@ -1341,14 +1382,16 @@ if (s.division === 1) {
         const nextLevel = s.lvl + 1;
         s.unlock = Math.max(s.unlock, nextLevel);
 
-        await updateDoc(doc(db,"players",userId),{
-          coins: increment(gain),
-          division: s.division,
-          clicks: s.clicks,
-          lvl: s.lvl,
-          unlock: s.unlock,
-          auto: s.auto
-        });
+        saveDivisionProgress();
+
+saveDivisionProgress();
+
+await updateDoc(doc(db,"players",userId),{
+    coins: increment(gain),
+    division: s.division,
+    divisionProgress: s.divisionProgress,
+    auto: s.auto
+});
 
         render();
         openLevelModal(nextLevel);
@@ -1357,12 +1400,16 @@ if (s.division === 1) {
 
       // konec Division 1
       if(s.division === 1){
+  saveDivisionProgress();
   s.division = 2;
   s.coins = 0;
   renderFallingBackground();
   s.lvl = 0;
   s.unlock = 0;
   s.clicks = Array(10).fill(0);
+
+  saveDivisionProgress();
+  loadDivisionProgress();
 
   s.coinMult = 1;
   s.clickMult = 1;
@@ -1375,18 +1422,20 @@ if (s.division === 1) {
     autoInterval = null;
   }
 
-  await updateDoc(doc(db,"players",userId),{
-    coins: 0,
-    division: s.division,
-    lvl: s.lvl,
-    unlock: s.unlock,
-    clicks: s.clicks,
-    coinMult: s.coinMult,
-    clickMult: s.clickMult,
-    coinBought: s.coinBought,
-    clickBought: s.clickBought,
-    auto: s.auto
-  });
+ saveDivisionProgress();
+
+saveDivisionProgress();
+
+await updateDoc(doc(db,"players",userId),{
+    coins:0,
+    division:s.division,
+    divisionProgress:s.divisionProgress,
+    coinMult:s.coinMult,
+    clickMult:s.clickMult,
+    coinBought:s.coinBought,
+    clickBought:s.clickBought,
+    auto:s.auto
+});
 
   render();
   openDivisionModal();
@@ -1396,6 +1445,7 @@ if (s.division === 1) {
       
 // konec Division 2
 if(s.division === 2){
+    saveDivisionProgress();
     s.division = 3;
     s.coins = 0;
     renderFallingBackground();
@@ -1403,6 +1453,9 @@ if(s.division === 2){
     s.unlock = 0;
     s.clicks = Array(10).fill(0);
 
+    saveDivisionProgress();
+    loadDivisionProgress();
+    
     s.coinMult = 1;
     s.clickMult = 1;
     s.coinBought = 0;
@@ -1414,18 +1467,18 @@ if(s.division === 2){
         autoInterval = null;
     }
 
-    await updateDoc(doc(db,"players",userId),{
-        coins:0,
-        division:s.division,
-        lvl:s.lvl,
-        unlock:s.unlock,
-        clicks:s.clicks,
-        coinMult:s.coinMult,
-        clickMult:s.clickMult,
-        coinBought:s.coinBought,
-        clickBought:s.clickBought,
-        auto:s.auto
-    });
+    saveDivisionProgress();
+
+await updateDoc(doc(db,"players",userId),{
+    coins: 0,
+    division: s.division,
+    divisionProgress: s.divisionProgress,
+    coinMult: s.coinMult,
+    clickMult: s.clickMult,
+    coinBought: s.coinBought,
+    clickBought: s.clickBought,
+    auto: s.auto
+});
 
     render();
     openDivisionModal();
@@ -1438,14 +1491,14 @@ if(s.division === 2){
         autoInterval = null;
       }
 
-      await updateDoc(doc(db,"players",userId),{
-        coins: increment(gain),
-        division: s.division,
-        clicks: s.clicks,
-        lvl: s.lvl,
-        unlock: s.unlock,
-        auto: s.auto
-      });
+      saveDivisionProgress();
+
+await updateDoc(doc(db,"players",userId),{
+    coins: increment(gain),
+    division: s.division,
+    divisionProgress: s.divisionProgress,
+    auto: s.auto
+});
 
       render();
       openFinalModal();
@@ -1453,14 +1506,14 @@ if(s.division === 2){
     }
 
     // normální průběžné uložení
-    await updateDoc(doc(db,"players",userId),{
-      coins: increment(gain),
-      division: s.division,
-      clicks: s.clicks,
-      lvl: s.lvl,
-      unlock: s.unlock,
-      auto: s.auto
-    });
+    saveDivisionProgress();
+
+await updateDoc(doc(db,"players",userId),{
+    coins: increment(gain),
+    division: s.division,
+    divisionProgress: s.divisionProgress,
+    auto: s.auto
+});
 
     render();
   },1000);
@@ -1469,12 +1522,12 @@ if(s.division === 2){
 async function save(){
   if(!userId) return;
 
+  saveDivisionProgress();
+
   try{
     await updateDoc(doc(db,"players",userId),{
       division: s.division,
-      lvl: s.lvl,
-      unlock: s.unlock,
-      clicks: s.clicks,
+      divisionProgress: s.divisionProgress,
       coinMult: s.coinMult,
       clickMult: s.clickMult,
       coinBought: s.coinBought,
@@ -1784,9 +1837,9 @@ if (s.division === 1) {
 
       await updateDoc(doc(db,"players",userId),{
         coins: increment(gain),
-        clicks: s.clicks,
-        lvl: s.lvl,
-        unlock: s.unlock
+        saveDivisionProgress();
+      division: s.division,
+      divisionProgress: s.divisionProgress,
       });
 
       render();
@@ -1817,10 +1870,9 @@ if (s.division === 1) {
 
   await updateDoc(doc(db,"players",userId),{
     coins: 0,
+    saveDivisionProgress();
     division: s.division,
-    lvl: s.lvl,
-    unlock: s.unlock,
-    clicks: s.clicks,
+    divisionProgress: s.divisionProgress,
     coinMult: s.coinMult,
     clickMult: s.clickMult,
     coinBought: s.coinBought,
@@ -1837,9 +1889,10 @@ if (s.division === 1) {
 
         await updateDoc(doc(db,"players",userId),{
           coins: increment(gain),
-          clicks: s.clicks,
-          lvl: s.lvl,
-          unlock: s.unlock
+          ksaveDivisionProgress();
+
+          division: s.division,
+          divisionProgress: s.divisionProgress,
         });
 
        if(autoInterval){
@@ -1857,9 +1910,9 @@ return;
   // 4️⃣ normální save když level ještě není hotový
   await updateDoc(doc(db,"players",userId),{
     coins: increment(gain),
-    clicks: s.clicks,
-    lvl: s.lvl,
-    unlock: s.unlock
+    saveDivisionProgress();
+    division: s.division,
+    divisionProgress: s.divisionProgress,
   });
 
   render();
@@ -1971,28 +2024,26 @@ function updateDivisionButtons(){
 
 function switchDivision(division){
 
-    // Don't allow locked divisions
     if(division > s.division) return;
 
-    // Save the division we're leaving
+    // save current division
     saveDivisionProgress();
 
-    // Switch division
+    // switch
     s.division = division;
 
-    // Load that division's progress
+    // load target division
     loadDivisionProgress();
 
-    // Change background fruits
     renderFallingBackground();
 
-    // Update everything
     render();
+
     save();
 
     showGame();
 }
-
+  
 // Division buttons
 division1Btn.onclick = () => switchDivision(1);
 division2Btn.onclick = () => switchDivision(2);
