@@ -1835,12 +1835,13 @@ if (s.division === 1) {
       const nextLevel = s.lvl + 1;
       s.unlock = Math.max(s.unlock, nextLevel);
 
-      await updateDoc(doc(db,"players",userId),{
-        coins: increment(gain),
-        saveDivisionProgress();
-      division: s.division,
-      divisionProgress: s.divisionProgress,
-      });
+      saveDivisionProgress();
+
+await updateDoc(doc(db,"players",userId),{
+    coins: increment(gain),
+    division: s.division,
+    divisionProgress: s.divisionProgress,
+});
 
       render();
       openLevelModal(nextLevel);
