@@ -1889,6 +1889,8 @@ await updateDoc(doc(db,"players",userId),{
     
       else {
 
+        saveDivisionProgress();
+        
         await updateDoc(doc(db,"players",userId),{
           coins: increment(gain),
           ksaveDivisionProgress();
